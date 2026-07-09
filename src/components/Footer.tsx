@@ -43,8 +43,11 @@ export function Footer() {
             </ul>
           </div>
         </div>
-        <div className="mt-12 pt-8 border-t border-slate-800 text-center text-sm text-slate-500">
+        <div className="mt-12 pt-8 border-t border-slate-800 text-center text-sm text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p>&copy; {new Date().getFullYear()} Resellxpk. All rights reserved.</p>
+          <p className="text-slate-500">
+            Developed by <a href="https://hightouchlabs.ai" target="_blank" rel="noopener noreferrer" className="font-semibold text-indigo-400 hover:text-indigo-300 transition-colors">HighTouchLabs.ai</a>
+          </p>
         </div>
       </div>
     </footer>
