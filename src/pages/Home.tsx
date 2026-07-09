@@ -1,0 +1,145 @@
+import { ShoppingBag, Truck, ShieldCheck, Wallet } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { useEffect } from 'react';
+import { useAuth } from '@/context/AuthContext';
+
+export function Home() {
+  const { user, profile, isAdmin } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user && profile && isAdmin) {
+      if (profile.email === 'kingx1129@gmail.com' || user.email === 'kingx1129@gmail.com') {
+        navigate('/super-admin');
+      } else {
+        navigate('/admin');
+      }
+    }
+  }, [user, profile, isAdmin, navigate]);
+  return (
+    <div className="space-y-16 pb-20">
+      {/* Hero Section */}
+      <section className="relative bg-white dark:bg-slate-900 pt-20 pb-32 overflow-hidden transition-colors duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            {/* Left Content */}
+            <div className="relative z-10 space-y-10">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-400 rounded-full text-xs font-black uppercase tracking-widest border border-indigo-100 dark:border-indigo-900/50">
+                <div className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" />
+                Pakistan's #1 Reseller Platform
+              </div>
+              <h1 className="text-6xl md:text-8xl font-black text-slate-900 dark:text-white leading-[0.95] tracking-tighter text-gradient">
+                Empower Your <br />
+                <span className="text-indigo-600">Business</span> Journey
+              </h1>
+              <p className="text-xl text-slate-500 dark:text-slate-300 leading-relaxed max-w-xl font-medium">
+                Join thousands of successful entrepreneurs. Start your online business with 
+                <span className="text-slate-900 dark:text-white font-bold"> zero investment</span> and access premium products with high margins.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-5 pt-4">
+                <Link to="/auth">
+                  <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white font-black px-12 h-16 text-lg rounded-2xl shadow-2xl shadow-indigo-200 dark:shadow-none transition-all hover:scale-105 active:scale-95">
+                    Get Started Free
+                  </Button>
+                </Link>
+                <Link to="/shop">
+                  <Button size="lg" variant="outline" className="border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 font-black px-12 h-16 text-lg rounded-2xl transition-all hover:scale-105 active:scale-95">
+                    Browse Products
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Visual */}
+            <div className="relative">
+              <div className="absolute -top-20 -right-20 w-96 h-96 bg-indigo-50 dark:bg-indigo-950/10 rounded-full blur-3xl opacity-50" />
+              <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-purple-50 dark:bg-purple-950/10 rounded-full blur-3xl opacity-50" />
+              
+              <div className="relative flex justify-center lg:justify-end">
+                <div className="relative w-full max-w-lg">
+                  {/* Mockup Placeholder */}
+                  <div className="relative z-10 bg-white dark:bg-slate-850 rounded-[3rem] p-4 shadow-2xl border-8 border-slate-900 dark:border-slate-800 overflow-hidden aspect-[9/19] w-64 mx-auto lg:mr-0 lg:ml-auto">
+                    <div className="absolute top-0 left-0 w-full h-6 bg-slate-900 flex justify-center items-center">
+                      <div className="w-12 h-1 bg-slate-800 rounded-full" />
+                    </div>
+                    <div className="mt-4 space-y-4">
+                      <div className="h-40 bg-slate-105 dark:bg-slate-800 rounded-2xl animate-pulse" />
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="h-24 bg-slate-50 dark:bg-slate-900 rounded-xl animate-pulse" />
+                        <div className="h-24 bg-slate-50 dark:bg-slate-900 rounded-xl animate-pulse" />
+                        <div className="h-24 bg-slate-50 dark:bg-slate-900 rounded-xl animate-pulse" />
+                        <div className="h-24 bg-slate-50 dark:bg-slate-900 rounded-xl animate-pulse" />
+                      </div>
+                      <div className="h-32 bg-slate-50 dark:bg-slate-900 rounded-2xl animate-pulse" />
+                    </div>
+                  </div>
+                  
+                  {/* Secondary Mockup (Desktop style) */}
+                  <div className="absolute -bottom-10 -left-10 hidden md:block w-80 aspect-video bg-white dark:bg-slate-850 rounded-2xl shadow-2xl border-4 border-slate-100 dark:border-slate-800 overflow-hidden z-20">
+                    <div className="h-4 bg-slate-100 dark:bg-slate-800 flex items-center px-2 gap-1">
+                      <div className="w-1.5 h-1.5 bg-rose-400 rounded-full" />
+                      <div className="w-1.5 h-1.5 bg-amber-400 rounded-full" />
+                      <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full" />
+                    </div>
+                    <div className="p-4 space-y-2">
+                      <div className="h-4 w-1/2 bg-slate-100 dark:bg-slate-800 rounded" />
+                      <div className="grid grid-cols-3 gap-2 pt-2">
+                        <div className="h-12 bg-slate-50 dark:bg-slate-900 rounded" />
+                        <div className="h-12 bg-slate-50 dark:bg-slate-900 rounded" />
+                        <div className="h-12 bg-slate-50 dark:bg-slate-900 rounded" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-black text-slate-900 dark:text-white mb-4">Why Choose Us?</h2>
+          <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto font-medium">We provide the infrastructure, products, and support you need to build a successful reselling business from scratch.</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {[
+            { icon: ShoppingBag, title: "Quality Products", desc: "Handpicked items from top suppliers", color: "bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400" },
+            { icon: Truck, title: "Fast Shipping", desc: "Reliable delivery via TCS & Leopards", color: "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400" },
+            { icon: Wallet, title: "Instant Profit", desc: "Set your own margins and earn big", color: "bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400" },
+            { icon: ShieldCheck, title: "Secure Returns", desc: "Hassle-free return management", color: "bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400" }
+          ].map((feature, i) => (
+            <div key={i} className="premium-card p-8 group">
+              <div className={`w-14 h-14 ${feature.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500`}>
+                <feature.icon className="w-7 h-7" />
+              </div>
+              <h3 className="text-xl font-black text-slate-900 dark:text-white mb-3">{feature.title}</h3>
+              <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed font-medium">{feature.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="bg-slate-900 py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+            {[
+              { label: "Active Resellers", value: "50K+" },
+              { label: "Products Delivered", value: "1M+" },
+              { label: "Cities Covered", value: "200+" },
+              { label: "Daily Orders", value: "5K+" }
+            ].map((stat, i) => (
+              <div key={i} className="space-y-2">
+                <p className="text-5xl font-black text-white tracking-tighter">{stat.value}</p>
+                <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}

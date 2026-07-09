@@ -1,0 +1,241 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: userId (auth.uid)
+    // Fields:
+    //   - uid: string (required)
+    //   - fullName: string (required)
+    //   - email: string (required, email format)
+    //   - role: string (required, ['customer', 'reseller', 'admin', 'creator', 'supplier'])
+    //   - walletBalance: number (required)
+    //   - pendingProfit: number (required)
+    //   - totalWithdrawn: number (required)
+    //   - photoURL: string (optional)
+    //   - isVerified: boolean (required)
+    //   - createdAt: string (required, ISO 8601)
+    //
+    // Collection: products
+    // Document ID: productId
+    // Fields:
+    //   - title: string (required)
+    //   - price: number (required)
+    //   - stock: number (required)
+    //   - tags: list (optional)
+    //   - images: list (required)
+    //
+    // Collection: orders
+    // Document ID: orderId
+    // Fields:
+    //   - resellerId: string (optional)
+    //   - creatorId: string (optional)
+    //   - status: string (required, ['Pending', 'Confirmed', 'Packed', 'Shipped', 'Delivered', 'Returned', 'Refused', 'Cancelled'])
+    //   - profit: number (required)
+    //   - shippingCost: number (required)
+    //   - carrier: string (optional)
+    //   - trackingNumber: string (optional)
+    //
+    // Collection: settings
+    // Document ID: shop
+    // Fields:
+    //   - primaryColor: string (required)
+    //   - accentColor: string (required)
+    //   - shopName: string (required)
+    //   - heroTitle: string (required)
+    //   - heroSubtitle: string (required)
+    //   - logoUrl: string (optional)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (request.auth.token.email == "kingx1129@gmail.com" ||
+         request.auth.token.email == "storeilia08@gmail.com" ||
+         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'));
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return data.uid is string &&
+             data.fullName is string && data.fullName.size() > 0 && data.fullName.size() < 100 &&
+             isValidEmail(data.email) &&
+             data.role in ['customer', 'reseller', 'admin'] &&
+             data.walletBalance is number &&
+             data.pendingProfit is number &&
+             data.totalWithdrawn is number &&
+             (!('photoURL' in data) || data.photoURL is string) &&
+             data.isVerified is bool;
+    }
+
+    function isValidOrder(data) {
+      return data.customerName is string && data.customerName.size() > 0 &&
+             data.status in ['Pending', 'Confirmed', 'Packed', 'Shipped', 'Delivered', 'Returned', 'Refused', 'Cancelled'] &&
+             data.profit is number &&
+             data.shippingCost is number &&
+             (!('carrier' in data) || data.carrier is string) &&
+             (!('trackingNumber' in data) || data.trackingNumber is string);
+    }
+
+    function isValidReview(data) {
+      return data.productId is string &&
+             data.userId == request.auth.uid &&
+             data.userName is string &&
+             data.rating is number && data.rating >= 1 && data.rating <= 5 &&
+             data.comment is string && data.comment.size() > 0 && data.comment.size() < 1000 &&
+             data.createdAt is string &&
+             (!('userPhoto' in data) || data.userPhoto is string);
+    }
+
+    function isValidShopSettings(data) {
+      return data.primaryColor is string && data.primaryColor.matches("^#[0-9a-fA-F]{6}$") &&
+             data.accentColor is string && data.accentColor.matches("^#[0-9a-fA-F]{6}$") &&
+             data.shopName is string && data.shopName.size() > 0 && data.shopName.size() < 100 &&
+             data.heroTitle is string && data.heroTitle.size() > 0 && data.heroTitle.size() < 200 &&
+             data.heroSubtitle is string && data.heroSubtitle.size() > 0 && data.heroSubtitle.size() < 500 &&
+             (!('logoUrl' in data) || (data.logoUrl is string && (data.logoUrl == "" || data.logoUrl.matches("^https?://.*"))));
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      
+      allow create: if isAuthenticated() && 
+                      isValidUser(request.resource.data) && 
+                      (isOwner(userId) && request.resource.data.role in ['customer', 'creator', 'reseller'] || isAdmin());
+      
+      allow update: if isAuthenticated() && 
+                      isValidUser(request.resource.data) && 
+                      (
+                        (isOwner(userId) && 
+                         request.resource.data.role == resource.data.role && 
+                         request.resource.data.isVerified == resource.data.isVerified &&
+                         request.resource.data.totalWithdrawn == resource.data.totalWithdrawn &&
+                         request.resource.data.walletBalance >= 0 &&
+                         request.resource.data.pendingProfit >= 0 &&
+                         (
+                           (resource.data.role == 'customer') ||
+                           (request.resource.data.walletBalance == resource.data.walletBalance &&
+                            request.resource.data.pendingProfit == resource.data.pendingProfit) ||
+                           (request.resource.data.walletBalance + request.resource.data.pendingProfit == 
+                            resource.data.walletBalance + resource.data.pendingProfit)
+                         )) || 
+                        isAdmin()
+                      );
+
+      match /paymentMethods/{methodId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+
+      match /walletTransactions/{txId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /orders/{orderId} {
+      allow read: if isAuthenticated() && 
+                    (request.auth.uid == resource.data.resellerId || 
+                     request.auth.uid == resource.data.creatorId || 
+                     request.auth.uid == resource.data.customerId ||
+                     isAdmin());
+      
+      allow create: if isValidOrder(request.resource.data);
+      
+      allow update: if isAuthenticated() && 
+                      (
+                        isAdmin() || 
+                        (
+                          request.auth.uid == resource.data.resellerId && 
+                          resource.data.status == 'Pending' && 
+                          (request.time.toMillis() - timestamp.value(resource.data.createdAt).toMillis() <= 300000) &&
+                          (
+                            // Cancellation: status -> Cancelled
+                            (request.resource.data.status == 'Cancelled' &&
+                             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'cancellationNote', 'statusHistory', 'updatedAt'])) ||
+                            // Editing: details updated, status remains Pending
+                            (request.resource.data.status == 'Pending' &&
+                             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['customerName', 'customerPhone', 'customerCity', 'customerAddress', 'items', 'sellingPrice', 'companyPrice', 'shippingCost', 'profit', 'carrier', 'updatedAt']))
+                          )
+                        ) ||
+                        (
+                          request.auth.uid == resource.data.resellerId &&
+                          resource.data.status == 'Delivered' &&
+                          !('profitReleasedAt' in resource.data) &&
+                          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['profitReleasedAt'])
+                        )
+                      );
+    }
+
+    match /withdrawals/{withdrawalId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isAuthenticated() && 
+                      request.resource.data.userId == request.auth.uid && 
+                      request.resource.data.status == 'Pending';
+      allow update: if isAdmin();
+    }
+
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && isValidReview(request.resource.data);
+      allow update, delete: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin() && (settingId != 'shop' || isValidShopSettings(request.resource.data));
+    }
+
+    match /wishlist/{wishlistId} {
+      allow read: if isAuthenticated() && request.auth.uid == resource.data.userId;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    match /coupons/{couponId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /clicks/{clickId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.creatorId || isAdmin());
+      allow create: if request.resource.data.creatorId is string && request.resource.data.productId is string;
+      allow update, delete: if isAdmin();
+    }
+
+  }
+}

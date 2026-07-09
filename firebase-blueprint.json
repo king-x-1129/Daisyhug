@@ -1,0 +1,194 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile information including role and financial stats",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "fullName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["customer", "reseller", "admin", "creator"] },
+        "mobile": { "type": "string" },
+        "city": { "type": "string" },
+        "province": { "type": "string" },
+        "address": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "isVerified": { "type": "boolean" },
+        "walletBalance": { "type": "number" },
+        "pendingProfit": { "type": "number" },
+        "totalWithdrawn": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "fullName", "email", "role", "isVerified", "walletBalance", "pendingProfit", "totalWithdrawn", "createdAt"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Product details for the catalog",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "price": { "type": "number" },
+        "companyPrice": { "type": "number" },
+        "stock": { "type": "number" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "variants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "price": { "type": "number" },
+              "stock": { "type": "number" },
+              "image": { "type": "string" },
+              "sku": { "type": "string" }
+            },
+            "required": ["id", "name", "stock"]
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "description", "category", "price", "companyPrice", "stock", "images", "createdAt"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer order details",
+      "type": "object",
+      "properties": {
+        "customerId": { "type": "string" },
+        "resellerId": { "type": "string" },
+        "creatorId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "customerCity": { "type": "string" },
+        "customerAddress": { "type": "string" },
+        "items": { "type": "array" },
+        "sellingPrice": { "type": "number" },
+        "shippingCost": { "type": "number" },
+        "profit": { "type": "number" },
+        "status": { "type": "string", "enum": ["Pending", "Confirmed", "Packed", "Shipped", "Delivered", "Returned", "Refused", "Cancelled"] },
+        "carrier": { "type": "string" },
+        "trackingNumber": { "type": "string" },
+        "cancellationNote": { "type": "string" },
+        "statusHistory": { 
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "status": { "type": "string" },
+              "timestamp": { "type": "string", "format": "date-time" },
+              "note": { "type": "string" }
+            }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["customerName", "customerPhone", "customerCity", "customerAddress", "items", "sellingPrice", "shippingCost", "profit", "status", "createdAt", "updatedAt"]
+    },
+    "Withdrawal": {
+      "title": "Withdrawal",
+      "description": "Withdrawal request from a reseller or creator",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "amount": { "type": "number" },
+        "method": { "type": "string" },
+        "status": { "type": "string", "enum": ["Pending", "Approved", "Rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "amount", "method", "status", "createdAt"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Product review and rating",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userPhoto": { "type": "string" },
+        "rating": { "type": "number" },
+        "comment": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["productId", "userId", "userName", "rating", "comment", "createdAt"]
+    },
+    "AffiliateClick": {
+      "title": "AffiliateClick",
+      "description": "Tracking for affiliate link clicks",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string" },
+        "creatorId": { "type": "string" },
+        "referrer": { "type": "string" },
+        "userAgent": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["productId", "creatorId", "timestamp"]
+    },
+    "WishlistItem": {
+      "title": "WishlistItem",
+      "description": "Product saved to user's wishlist",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "productId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "productId", "createdAt"]
+    },
+    "Coupon": {
+      "title": "Coupon",
+      "description": "Discount coupon for orders",
+      "type": "object",
+      "properties": {
+        "code": { "type": "string" },
+        "type": { "type": "string", "enum": ["percentage", "fixed"] },
+        "value": { "type": "number" },
+        "minOrderAmount": { "type": "number" },
+        "expiryDate": { "type": "string", "format": "date-time" },
+        "isActive": { "type": "boolean" }
+      },
+      "required": ["code", "type", "value", "isActive"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile documents"
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Product catalog"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Order records"
+    },
+    "/withdrawals/{withdrawalId}": {
+      "schema": "Withdrawal",
+      "description": "Withdrawal requests"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Product reviews"
+    },
+    "/clicks/{clickId}": {
+      "schema": "AffiliateClick",
+      "description": "Affiliate link click tracking"
+    },
+    "/wishlist/{wishlistId}": {
+      "schema": "WishlistItem",
+      "description": "User wishlist items"
+    },
+    "/coupons/{couponId}": {
+      "schema": "Coupon",
+      "description": "Discount coupons"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "workbench.startupEditor": "readme",
+  "explorer.fileNesting.enabled": true,
+  "explorer.excludeGitIgnore": true,
+  "css.lint.unknownAtRules": "ignore"
+}

@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /reseller/
+Disallow: /profile
+Disallow: /checkout
+Disallow: /cart
+
+Sitemap: https://resellxpk.com/sitemap.xml
