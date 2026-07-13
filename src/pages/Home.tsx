@@ -182,12 +182,41 @@ export function Home() {
                       <div className="w-1.5 h-1.5 bg-amber-400 rounded-full" />
                       <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full" />
                     </div>
-                    <div className="p-4 space-y-2">
-                      <div className="h-4 w-1/2 bg-slate-100 dark:bg-slate-800 rounded" />
-                      <div className="grid grid-cols-3 gap-2 pt-2">
-                        <div className="h-12 bg-slate-50 dark:bg-slate-900 rounded" />
-                        <div className="h-12 bg-slate-50 dark:bg-slate-900 rounded" />
-                        <div className="h-12 bg-slate-50 dark:bg-slate-900 rounded" />
+                    <div className="p-4 space-y-3">
+                      {/* Window title placeholder */}
+                      <div className="flex items-center justify-between">
+                        <div className="h-4 w-1/3 bg-slate-100 dark:bg-slate-800 rounded animate-pulse" />
+                        <div className="h-3 w-1/5 bg-indigo-50 dark:bg-indigo-950/40 rounded animate-pulse" style={{ animationDelay: '0.2s' }} />
+                      </div>
+                      
+                      {/* Staggered loading grid lines simulating chart data/metrics */}
+                      <div className="grid grid-cols-3 gap-3 pt-1">
+                        <motion.div 
+                          animate={{ opacity: [0.4, 1, 0.4] }}
+                          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.1 }}
+                          className="h-14 bg-indigo-50/50 dark:bg-indigo-950/20 rounded-xl p-2 border border-indigo-50/50 dark:border-indigo-900/10 space-y-1 flex flex-col justify-between"
+                        >
+                          <div className="h-2 w-2/3 bg-indigo-200 dark:bg-indigo-900/50 rounded" />
+                          <div className="h-4 w-full bg-indigo-600/20 dark:bg-indigo-400/20 rounded" />
+                        </motion.div>
+                        
+                        <motion.div 
+                          animate={{ opacity: [0.4, 1, 0.4] }}
+                          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+                          className="h-14 bg-purple-50/50 dark:bg-purple-950/20 rounded-xl p-2 border border-purple-50/50 dark:border-purple-900/10 space-y-1 flex flex-col justify-between"
+                        >
+                          <div className="h-2 w-2/3 bg-purple-200 dark:bg-purple-900/50 rounded" />
+                          <div className="h-4 w-full bg-purple-600/20 dark:bg-purple-400/20 rounded" />
+                        </motion.div>
+                        
+                        <motion.div 
+                          animate={{ opacity: [0.4, 1, 0.4] }}
+                          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                          className="h-14 bg-emerald-50/50 dark:bg-emerald-950/20 rounded-xl p-2 border border-emerald-50/50 dark:border-emerald-900/10 space-y-1 flex flex-col justify-between"
+                        >
+                          <div className="h-2 w-2/3 bg-emerald-200 dark:bg-emerald-900/50 rounded" />
+                          <div className="h-4 w-full bg-emerald-600/20 dark:bg-emerald-400/20 rounded" />
+                        </motion.div>
                       </div>
                     </div>
                   </motion.div>
