@@ -17,7 +17,7 @@ export function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addItem } = useCart();
-  const { user } = useAuth();
+  const { user, isReseller } = useAuth();
   const { formatPrice } = useCurrency();
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const [product, setProduct] = useState<Product | null>(null);
@@ -174,7 +174,7 @@ export function ProductDetail() {
               </span>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 mb-6">
               <span className="text-3xl font-black text-indigo-600 dark:text-indigo-400">{formatPrice(currentPrice)}</span>
               {currentStock > 0 ? (
                 <Badge className="bg-emerald-100 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border-none rounded-full px-3">
@@ -185,6 +185,52 @@ export function ProductDetail() {
                   Out of Stock
                 </Badge>
               )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 my-6">
+              <Button 
+                size="lg" 
+                onClick={() => {
+                  if (product.variants && product.variants.length > 0 && !selectedVariant) {
+                    toast.error("Please select a variant first");
+                    return;
+                  }
+                  addItem(product, 1, selectedVariant || undefined);
+                  toast.success(`${product.title}${selectedVariant ? ` (${selectedVariant.name})` : ''} added to cart`);
+                }}
+                disabled={currentStock <= 0}
+                className="flex-grow h-14 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 dark:shadow-none"
+              >
+                <ShoppingCart className="w-5 h-5 mr-2" />
+                Add to Cart
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                onClick={() => isInWishlist(product.id) ? removeFromWishlist(product.id) : addToWishlist(product.id)}
+                className={`h-14 rounded-2xl border-slate-200 dark:border-slate-800 dark:bg-slate-900 font-bold px-8 ${isInWishlist(product.id) ? 'bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-450 border-rose-100 dark:border-rose-900/50' : 'dark:text-white'}`}
+              >
+                <Heart className={`w-5 h-5 mr-2 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
+                {isInWishlist(product.id) ? 'Saved' : 'Save for Later'}
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                onClick={() => {
+                  if (product.variants && product.variants.length > 0 && !selectedVariant) {
+                    toast.error("Please select a variant first");
+                    return;
+                  }
+                  addItem(product, 1, selectedVariant || undefined);
+                  toast.success(`${product.title}${selectedVariant ? ` (${selectedVariant.name})` : ''} added to cart`);
+                  navigate('/checkout');
+                }}
+                disabled={currentStock <= 0}
+                className="h-14 rounded-2xl border-slate-200 dark:border-slate-800 dark:bg-slate-900 dark:text-white font-bold px-8"
+              >
+                Buy Now
+              </Button>
             </div>
 
             {/* Variants Selection */}
@@ -215,59 +261,61 @@ export function ProductDetail() {
             )}
 
             {/* Reseller Tools */}
-            <div className="bg-indigo-50/50 dark:bg-indigo-950/20 p-6 rounded-3xl border border-indigo-100 dark:border-indigo-900/40 space-y-4 mt-6">
-              <div className="flex items-center justify-between">
-                <h3 className="font-bold text-indigo-900 dark:text-indigo-450">Reseller Tools</h3>
-                <div className="flex items-center gap-1 text-[10px] font-black text-indigo-600 dark:text-indigo-450 bg-white dark:bg-slate-900 px-2 py-1 rounded-full shadow-sm uppercase tracking-wider">
-                  <Sparkles className="w-3 h-3" />
-                  Profit Potential: {formatPrice(Math.round(product.price * 0.2))}
+            {isReseller && (
+              <div className="bg-indigo-50/50 dark:bg-indigo-950/20 p-6 rounded-3xl border border-indigo-100 dark:border-indigo-900/40 space-y-4 mt-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-indigo-900 dark:text-indigo-450">Reseller Tools</h3>
+                  <div className="flex items-center gap-1 text-[10px] font-black text-indigo-600 dark:text-indigo-450 bg-white dark:bg-slate-900 px-2 py-1 rounded-full shadow-sm uppercase tracking-wider">
+                    <Sparkles className="w-3 h-3" />
+                    Profit Potential: {formatPrice(Math.round(product.price * 0.2))}
+                  </div>
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <Button 
-                  variant="outline" 
-                  onClick={copyDetails}
-                  className="bg-white dark:bg-slate-900 border-indigo-100 dark:border-indigo-900/50 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 dark:hover:bg-indigo-650 hover:text-white rounded-xl font-bold h-12"
-                >
-                  <Copy className="w-4 h-4 mr-2" /> Copy Details
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={handleShare}
-                  className="bg-white dark:bg-slate-900 border-indigo-100 dark:border-indigo-900/50 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 dark:hover:bg-indigo-650 hover:text-white rounded-xl font-bold h-12"
-                >
-                  <Share2 className="w-4 h-4 mr-2" /> Share & Earn
-                </Button>
-              </div>
-              
-              <div className="flex items-center justify-center gap-4 pt-2">
-                <button 
-                  onClick={shareToFacebook}
-                  className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center text-[#1877F2] hover:bg-[#1877F2] hover:text-white transition-all shadow-sm"
-                  title="Share on Facebook"
-                >
-                  <Facebook className="w-5 h-5" />
-                </button>
-                <button 
-                  onClick={shareToTwitter}
-                  className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center text-[#1DA1F2] hover:bg-[#1DA1F2] hover:text-white transition-all shadow-sm"
-                  title="Share on Twitter"
-                >
-                  <Twitter className="w-5 h-5" />
-                </button>
-                <button 
-                  onClick={shareToWhatsApp}
-                  className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center text-[#25D366] hover:bg-[#25D366] hover:text-white transition-all shadow-sm"
-                  title="Share on WhatsApp"
-                >
-                  <MessageCircle className="w-5 h-5" />
-                </button>
-              </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button 
+                    variant="outline" 
+                    onClick={copyDetails}
+                    className="bg-white dark:bg-slate-900 border-indigo-100 dark:border-indigo-900/50 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 dark:hover:bg-indigo-650 hover:text-white rounded-xl font-bold h-12"
+                  >
+                    <Copy className="w-4 h-4 mr-2" /> Copy Details
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={handleShare}
+                    className="bg-white dark:bg-slate-900 border-indigo-100 dark:border-indigo-900/50 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 dark:hover:bg-indigo-650 hover:text-white rounded-xl font-bold h-12"
+                  >
+                    <Share2 className="w-4 h-4 mr-2" /> Share & Earn
+                  </Button>
+                </div>
+                
+                <div className="flex items-center justify-center gap-4 pt-2">
+                  <button 
+                    onClick={shareToFacebook}
+                    className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center text-[#1877F2] hover:bg-[#1877F2] hover:text-white transition-all shadow-sm"
+                    title="Share on Facebook"
+                  >
+                    <Facebook className="w-5 h-5" />
+                  </button>
+                  <button 
+                    onClick={shareToTwitter}
+                    className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center text-[#1DA1F2] hover:bg-[#1DA1F2] hover:text-white transition-all shadow-sm"
+                    title="Share on Twitter"
+                  >
+                    <Twitter className="w-5 h-5" />
+                  </button>
+                  <button 
+                    onClick={shareToWhatsApp}
+                    className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center text-[#25D366] hover:bg-[#25D366] hover:text-white transition-all shadow-sm"
+                    title="Share on WhatsApp"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                  </button>
+                </div>
 
-              <p className="text-[10px] text-indigo-400 dark:text-indigo-300 text-center font-medium">
-                Share this product with your profit margin and earn on every sale!
-              </p>
-            </div>
+                <p className="text-[10px] text-indigo-400 dark:text-indigo-300 text-center font-medium">
+                  Share this product with your profit margin and earn on every sale!
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="prose prose-slate dark:prose-invert max-w-none">
@@ -287,51 +335,6 @@ export function ProductDetail() {
               <ShieldCheck className="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-450" />
               Quality Assured
             </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <Button 
-              size="lg" 
-              onClick={() => {
-                if (product.variants && product.variants.length > 0 && !selectedVariant) {
-                  toast.error("Please select a variant first");
-                  return;
-                }
-                addItem(product, 1, selectedVariant || undefined);
-                toast.success(`${product.title}${selectedVariant ? ` (${selectedVariant.name})` : ''} added to cart`);
-              }}
-              disabled={currentStock <= 0}
-              className="flex-grow h-14 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 dark:shadow-none"
-            >
-              <ShoppingCart className="w-5 h-5 mr-2" />
-              Add to Cart
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              onClick={() => isInWishlist(product.id) ? removeFromWishlist(product.id) : addToWishlist(product.id)}
-              className={`h-14 rounded-2xl border-slate-200 dark:border-slate-800 dark:bg-slate-900 font-bold px-8 ${isInWishlist(product.id) ? 'bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-450 border-rose-100 dark:border-rose-900/50' : 'dark:text-white'}`}
-            >
-              <Heart className={`w-5 h-5 mr-2 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
-              {isInWishlist(product.id) ? 'Saved' : 'Save for Later'}
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              onClick={() => {
-                if (product.variants && product.variants.length > 0 && !selectedVariant) {
-                  toast.error("Please select a variant first");
-                  return;
-                }
-                addItem(product, 1, selectedVariant || undefined);
-                toast.success(`${product.title}${selectedVariant ? ` (${selectedVariant.name})` : ''} added to cart`);
-                navigate('/checkout');
-              }}
-              disabled={currentStock <= 0}
-              className="h-14 rounded-2xl border-slate-200 dark:border-slate-800 dark:bg-slate-900 dark:text-white font-bold px-8"
-            >
-              Buy Now
-            </Button>
           </div>
         </div>
       </div>
