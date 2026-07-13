@@ -308,7 +308,7 @@ export function Navbar() {
             ) : (
               <Link to="/auth">
                 <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full px-6 h-10 shadow-lg shadow-indigo-100">
-                  Download the App
+                  Login / Register
                 </Button>
               </Link>
             )}

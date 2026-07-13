@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { motion } from 'motion/react';
 
 export function Home() {
   const { user, profile, isAdmin } = useAuth();
@@ -59,7 +60,17 @@ export function Home() {
               <div className="relative flex justify-center lg:justify-end">
                 <div className="relative w-full max-w-lg">
                   {/* Mockup Placeholder */}
-                  <div className="relative z-10 bg-white dark:bg-slate-850 rounded-[3rem] p-4 shadow-2xl border-8 border-slate-900 dark:border-slate-800 overflow-hidden aspect-[9/19] w-64 mx-auto lg:mr-0 lg:ml-auto">
+                  <motion.div 
+                    animate={{
+                      y: [0, -15, 0],
+                    }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                    className="relative z-10 bg-white dark:bg-slate-850 rounded-[3rem] p-4 shadow-2xl border-8 border-slate-900 dark:border-slate-800 overflow-hidden aspect-[9/19] w-64 mx-auto lg:mr-0 lg:ml-auto"
+                  >
                     <div className="absolute top-0 left-0 w-full h-6 bg-slate-900 flex justify-center items-center">
                       <div className="w-12 h-1 bg-slate-800 rounded-full" />
                     </div>
@@ -73,10 +84,21 @@ export function Home() {
                       </div>
                       <div className="h-32 bg-slate-50 dark:bg-slate-900 rounded-2xl animate-pulse" />
                     </div>
-                  </div>
+                  </motion.div>
                   
                   {/* Secondary Mockup (Desktop style) */}
-                  <div className="absolute -bottom-10 -left-10 hidden md:block w-80 aspect-video bg-white dark:bg-slate-850 rounded-2xl shadow-2xl border-4 border-slate-100 dark:border-slate-800 overflow-hidden z-20">
+                  <motion.div 
+                    animate={{
+                      y: [0, 12, 0],
+                    }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: 0.5
+                    }}
+                    className="absolute -bottom-10 -left-10 hidden md:block w-80 aspect-video bg-white dark:bg-slate-850 rounded-2xl shadow-2xl border-4 border-slate-100 dark:border-slate-800 overflow-hidden z-20"
+                  >
                     <div className="h-4 bg-slate-100 dark:bg-slate-800 flex items-center px-2 gap-1">
                       <div className="w-1.5 h-1.5 bg-rose-400 rounded-full" />
                       <div className="w-1.5 h-1.5 bg-amber-400 rounded-full" />
@@ -90,7 +112,7 @@ export function Home() {
                         <div className="h-12 bg-slate-50 dark:bg-slate-900 rounded" />
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 </div>
               </div>
             </div>
