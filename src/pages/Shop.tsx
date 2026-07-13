@@ -4,10 +4,8 @@ import { db, handleFirestoreError, OperationType } from '@/lib/firebase';
 import { Product } from '@/types';
 import { ProductCard, ProductCardSkeleton } from '@/components/ProductCard';
 import { 
-  ShoppingBag, Search, Filter, ChevronRight, 
-  Sparkles, Heart, Package, Globe, Book, 
-  Palette, User, Users, Shirt, Watch, 
-  Home as HomeIcon, Baby, Utensils, Gem
+  ShoppingBag, Search, ChevronRight, 
+  Sparkles, Heart, Package, User, Users, Baby
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -19,19 +17,6 @@ const CATEGORIES = [
   { id: 'women', label: 'Women Corner', icon: User },
   { id: 'men', label: 'Men\'s Fashion', icon: Users },
   { id: 'kids', label: 'Kids & Mother', icon: Baby },
-];
-
-const CATEGORY_GRID = [
-  { label: 'Cosmetics', icon: Palette, color: 'bg-rose-50 text-rose-600' },
-  { label: 'Womens Unstitched', icon: Shirt, color: 'bg-indigo-50 text-indigo-600' },
-  { label: 'Womens Stitched', icon: Shirt, color: 'bg-purple-50 text-purple-600' },
-  { label: 'Mens Unstitched', icon: Shirt, color: 'bg-blue-50 text-blue-600' },
-  { id: 'kids', label: 'Kids Clothing', icon: Baby, color: 'bg-amber-50 text-amber-600' },
-  { label: 'Womens Handbags', icon: ShoppingBag, color: 'bg-emerald-50 text-emerald-600' },
-  { label: 'Mens Stitched', icon: Shirt, color: 'bg-sky-50 text-sky-600' },
-  { label: 'Jewellery', icon: Gem, color: 'bg-pink-50 text-pink-600' },
-  { label: 'Kitchenware', icon: Utensils, color: 'bg-orange-50 text-orange-600' },
-  { label: 'Home Essentials', icon: HomeIcon, color: 'bg-teal-50 text-teal-600' },
 ];
 
 export function Shop() {
@@ -230,35 +215,6 @@ export function Shop() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
-        {/* All Categories Grid */}
-        <section className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-black text-slate-900 dark:text-white">All Categories</h2>
-            <div className="flex bg-white dark:bg-slate-800 rounded-full p-1 border dark:border-slate-700 shadow-sm">
-              <button className="px-4 py-1 text-xs font-bold rounded-full bg-indigo-600 text-white shadow-sm">Pakistan</button>
-              <button className="px-4 py-1 text-xs font-bold rounded-full text-slate-500 dark:text-slate-400">China</button>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-10 gap-6">
-            {CATEGORY_GRID.map((cat, i) => (
-              <motion.button
-                key={i}
-                whileHover={{ y: -8 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex flex-col items-center space-y-4 group"
-                onClick={() => setActiveCategory(cat.id || cat.label.toLowerCase())}
-              >
-                <div className={`w-20 h-20 rounded-3xl ${cat.color} flex items-center justify-center shadow-sm group-hover:shadow-xl group-hover:scale-105 transition-all duration-500 border border-transparent group-hover:border-white/50`}>
-                  <cat.icon className="w-10 h-10" />
-                </div>
-                <span className="text-xs font-black text-slate-700 dark:text-slate-300 text-center leading-tight group-hover:text-indigo-600 transition-colors uppercase tracking-tighter">
-                  {cat.label}
-                </span>
-              </motion.button>
-            ))}
-          </div>
-        </section>
-
         {/* Products Section */}
         <section className="space-y-6">
           <div className="flex items-center justify-between">
@@ -267,9 +223,7 @@ export function Shop() {
               <h2 className="text-2xl font-black text-slate-900">
                 {activeCategory === 'all' 
                   ? settings.heroTitle 
-                  : `${CATEGORIES.find(c => c.id === activeCategory)?.label || 
-                     CATEGORY_GRID.find(c => (c.id || c.label.toLowerCase()) === activeCategory)?.label || 
-                     'Category'} Collection`}
+                  : `${CATEGORIES.find(c => c.id === activeCategory)?.label || 'Category'} Collection`}
               </h2>
             </div>
             <Button variant="ghost" className="text-indigo-600 font-bold hover:bg-indigo-50 rounded-xl">
