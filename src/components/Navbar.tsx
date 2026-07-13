@@ -131,7 +131,7 @@ export function Navbar() {
 
               <Link to={dashboardPath}>
                 <Button
-                  className="font-bold rounded-full px-5 h-10 flex items-center gap-2 shadow-lg shadow-indigo-100 text-white"
+                  className="font-bold rounded-full px-5 h-10 flex items-center gap-2 text-white"
                   style={{ background: `linear-gradient(to right, ${settings.primaryColor}, ${settings.primaryColor}cc)` }}
                 >
                   <LayoutDashboard className="w-4 h-4" />
