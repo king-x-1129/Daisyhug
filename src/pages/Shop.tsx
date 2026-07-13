@@ -16,14 +16,9 @@ import { motion } from 'motion/react';
 
 const CATEGORIES = [
   { id: 'all', label: 'All', icon: Package },
-  { id: 'china', label: 'China', icon: Globe },
-  { id: 'urdu-bazaar', label: 'Urdu Bazaar', icon: Book },
-  { id: 'beauty', label: 'Beauty & Care', icon: Palette },
   { id: 'women', label: 'Women Corner', icon: User },
   { id: 'men', label: 'Men\'s Fashion', icon: Users },
-  { id: 'home', label: 'Home & Living', icon: HomeIcon },
   { id: 'kids', label: 'Kids & Mother', icon: Baby },
-  { id: 'tech', label: 'Tech & Tools', icon: Watch },
 ];
 
 const CATEGORY_GRID = [
@@ -87,9 +82,9 @@ export function Shop() {
                           product.category.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = activeCategory === 'all' || 
                             product.category.toLowerCase() === activeCategory.toLowerCase() ||
-                            (activeCategory === 'beauty' && product.category.toLowerCase().includes('beauty')) ||
                             (activeCategory === 'women' && product.category.toLowerCase().includes('women')) ||
-                            (activeCategory === 'men' && product.category.toLowerCase().includes('men'));
+                            (activeCategory === 'men' && product.category.toLowerCase().includes('men')) ||
+                            (activeCategory === 'kids' && (product.category.toLowerCase().includes('kids') || product.category.toLowerCase().includes('mother')));
       
       const matchesMinPrice = !minPrice || product.price >= Number(minPrice);
       const matchesMaxPrice = !maxPrice || product.price <= Number(maxPrice);
