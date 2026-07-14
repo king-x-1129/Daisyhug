@@ -168,7 +168,7 @@ export function Navbar() {
               {([
                 { to: '/', label: 'Home' },
                 { to: '/shop', label: 'Shop' },
-                { to: '/become-reseller', label: 'Become a Reseller' },
+                { to: '/become-a-reseller', label: 'Become a Reseller' },
               ] as { to: string; label: string; icon?: any; color?: string }[]).map((link) => (
                 <Link
                   key={link.to}
@@ -307,7 +307,7 @@ export function Navbar() {
               </div>
             ) : (
               <Link to="/auth">
-                <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full px-6 h-10 shadow-lg shadow-indigo-100">
+                <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full px-6 h-10 shadow-md dark:shadow-none">
                   Login / Register
                 </Button>
               </Link>
@@ -365,7 +365,7 @@ export function Navbar() {
                     { to: '/', label: 'Home', icon: ShoppingBag },
                     { to: '/shop', label: 'Shop', icon: Package },
                     { to: '/wishlist', label: 'My Wishlist', icon: Heart },
-                    { to: '/become-reseller', label: 'Become a Reseller', icon: Users },
+                    { to: '/become-a-reseller', label: 'Become a Reseller', icon: Users },
                     { to: '/contact', label: 'Contact Us', icon: MessageCircle },
                   ] as { to: string; label: string; icon: any; color?: string }[]).map((link) => (
                     <Link
@@ -397,7 +397,7 @@ export function Navbar() {
                       )}
                     </div>
                   ) : (
-                    <Link to="/auth" className="flex items-center gap-4 p-4 rounded-2xl font-bold text-white bg-indigo-600 shadow-lg shadow-indigo-100" onClick={() => setIsOpen(false)}>
+                    <Link to="/auth" className="flex items-center gap-4 p-4 rounded-2xl font-bold text-white bg-indigo-600 shadow-md dark:shadow-none" onClick={() => setIsOpen(false)}>
                       <User className="w-5 h-5" /> Login / Register
                     </Link>
                   )}

@@ -17,7 +17,7 @@ export function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addItem } = useCart();
-  const { user, isReseller } = useAuth();
+  const { user, isReseller, isAdmin } = useAuth();
   const { formatPrice } = useCurrency();
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const [product, setProduct] = useState<Product | null>(null);
@@ -261,7 +261,7 @@ export function ProductDetail() {
             )}
 
             {/* Reseller Tools */}
-            {isReseller && (
+            {(isReseller || isAdmin) && (
               <div className="bg-indigo-50/50 dark:bg-indigo-950/20 p-6 rounded-3xl border border-indigo-100 dark:border-indigo-900/40 space-y-4 mt-6">
                 <div className="flex items-center justify-between">
                   <h3 className="font-bold text-indigo-900 dark:text-indigo-450">Reseller Tools</h3>

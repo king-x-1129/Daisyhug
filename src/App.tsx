@@ -11,6 +11,7 @@ import { AdminDashboard } from '@/pages/AdminDashboard';
 import { SuperAdminPanel } from '@/pages/admin/SuperAdminPanel';
 import { AuthPage } from '@/pages/AuthPage';
 import { BecomeReseller } from '@/pages/BecomeReseller';
+import { BecomeResellerLanding } from '@/pages/BecomeResellerLanding';
 import { CartPage } from '@/pages/CartPage';
 import { CheckoutPage } from '@/pages/CheckoutPage';
 import { Contact } from '@/pages/Contact';
@@ -47,6 +48,7 @@ export default function App() {
                       <Route path="/auth/admini" element={<AuthPage />} />
                       <Route path="/admin-login" element={<AuthPage />} />
                       <Route path="/become-reseller" element={<BecomeReseller />} />
+                      <Route path="/become-a-reseller" element={<BecomeResellerLanding />} />
                       <Route path="/contact" element={<Contact />} />
                       <Route path="/profile" element={<Profile />} />
                       <Route path="/shop" element={<Shop />} />

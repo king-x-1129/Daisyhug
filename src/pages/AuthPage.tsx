@@ -421,7 +421,7 @@ export function AuthPage() {
         </div>
 
         <Card className="border-none shadow-2xl rounded-3xl overflow-hidden bg-white dark:bg-slate-900 border dark:border-slate-800">
-          <Tabs defaultValue="login" className="w-full">
+          <Tabs defaultValue="login" className="w-full" onValueChange={(val) => { if (val === 'register') { navigate('/become-reseller'); } }}>
             {!isAdminRoute && (
               <TabsList className="grid w-full grid-cols-2 h-14 bg-slate-100 dark:bg-slate-800 p-1 rounded-none">
                 <TabsTrigger id="tab-login" value="login" className="rounded-none font-bold text-slate-600 dark:text-slate-400 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:shadow-sm data-[state=active]:text-slate-900 dark:data-[state=active]:text-white">
@@ -493,105 +493,6 @@ export function AuthPage() {
                 </CardFooter>
               </form>
             </TabsContent>
-
-            {/* REGISTER */}
-            {!isAdminRoute && (
-              <TabsContent value="register">
-                <CardHeader className="space-y-1 pt-8 pb-2">
-                  <CardTitle className="text-2xl font-black text-center text-slate-900 dark:text-white">Create Account</CardTitle>
-                  <CardDescription className="text-center text-slate-500 dark:text-slate-400">Join thousands of resellers and customers</CardDescription>
-                </CardHeader>
-                <form id="register-form" onSubmit={handleRegister} noValidate>
-                  <CardContent className="space-y-4 pt-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="reg-name" className="font-semibold text-slate-700 dark:text-slate-300">Full Name</Label>
-                      <Input
-                        id="reg-name"
-                        type="text"
-                        placeholder="Ahmed Khan"
-                        value={regName}
-                        onChange={e => { setRegName(e.target.value); setRegErrors(p => ({ ...p, name: undefined })); }}
-                        className="rounded-xl h-12 border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus-visible:ring-indigo-500"
-                        autoComplete="name"
-                      />
-                      {regErrors.name && <p className="text-xs text-rose-500 font-medium">{regErrors.name}</p>}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="reg-email" className="font-semibold text-slate-700 dark:text-slate-300">Email</Label>
-                      <Input
-                        id="reg-email"
-                        type="email"
-                        placeholder="you@example.com"
-                        value={regEmail}
-                        onChange={e => { setRegEmail(e.target.value); setRegErrors(p => ({ ...p, email: undefined })); }}
-                        className="rounded-xl h-12 border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus-visible:ring-indigo-500"
-                        autoComplete="email"
-                      />
-                      {regErrors.email && <p className="text-xs text-rose-500 font-medium">{regErrors.email}</p>}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="reg-password" className="font-semibold text-slate-700 dark:text-slate-300">Password</Label>
-                      <div className="relative">
-                        <Input
-                          id="reg-password"
-                          type={showRegPwd ? 'text' : 'password'}
-                          placeholder="••••••••"
-                          value={regPassword}
-                          onChange={e => { setRegPassword(e.target.value); setRegErrors(p => ({ ...p, password: undefined })); }}
-                          className="rounded-xl h-12 border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white pr-12 focus-visible:ring-indigo-500"
-                          autoComplete="new-password"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowRegPwd(v => !v)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1"
-                          tabIndex={-1}
-                        >
-                          {showRegPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
-                      </div>
-                      {regErrors.password && <p className="text-xs text-rose-500 font-medium">{regErrors.password}</p>}
-                    </div>
-                    <div className="space-y-3">
-                      <Label className="font-semibold text-slate-700 dark:text-slate-300">I want to…</Label>
-                      <div className="grid grid-cols-2 gap-3">
-                        <button
-                          id="role-customer"
-                          type="button"
-                          onClick={() => setRegRole('customer')}
-                          className={`flex flex-col items-center justify-center gap-2 h-20 rounded-2xl border-2 font-bold text-sm transition-all ${
-                            regRole === 'customer'
-                              ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-400 shadow-md shadow-indigo-100 dark:shadow-none'
-                              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600'
-                          }`}
-                        >
-                          <User className="w-5 h-5" />
-                          Shop & Buy
-                        </button>
-                        <button
-                          id="role-reseller"
-                          type="button"
-                          onClick={() => setRegRole('reseller')}
-                          className={`flex flex-col items-center justify-center gap-2 h-20 rounded-2xl border-2 font-bold text-sm transition-all ${
-                            regRole === 'reseller'
-                              ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-400 shadow-md shadow-indigo-100 dark:shadow-none'
-                              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600'
-                          }`}
-                        >
-                          <Store className="w-5 h-5" />
-                          Resell & Earn
-                        </button>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="pb-8 pt-2">
-                    <Button id="register-submit" type="submit" disabled={regLoading} className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md shadow-indigo-200 dark:shadow-none">
-                      {regLoading ? 'Creating Account…' : 'Create Account'}
-                    </Button>
-                  </CardFooter>
-                </form>
-              </TabsContent>
-            )}
           </Tabs>
         </Card>
 

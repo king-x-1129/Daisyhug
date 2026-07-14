@@ -3,14 +3,14 @@ import { useCart } from '@/context/CartContext';
 import { useCurrency } from '@/context/CurrencyContext';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, query, where, getDocs, onSnapshot, doc, updateDoc, increment } from 'firebase/firestore';
+import { collection, addDoc, setDoc, query, where, getDocs, onSnapshot, doc, updateDoc, increment } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingBag, CheckCircle2, Ticket, X, CreditCard, Wallet, ShieldCheck, Loader2, AlertCircle, Plus } from 'lucide-react';
+import { ShoppingBag, CheckCircle2, Ticket, X, CreditCard, Wallet, ShieldCheck, AlertCircle, Plus } from 'lucide-react';
 import { Coupon } from '@/types';
 
 export function CheckoutPage() {
@@ -36,6 +36,17 @@ export function CheckoutPage() {
   });
   const [saveCardCheckbox, setSaveCardCheckbox] = useState(true);
 
+  // Form states matching high conversion Pakistani ecommerce fields
+  const [customerInfo, setCustomerInfo] = useState({
+    email: '',
+    firstName: '',
+    lastName: '',
+    address: '',
+    city: '',
+    province: '',
+    phone: '',
+  });
+
   // Fetch saved cards
   React.useEffect(() => {
     if (!user) return;
@@ -50,26 +61,28 @@ export function CheckoutPage() {
     return () => unsubscribe();
   }, [user]);
 
+  // Pre-fill name and details from user profile if logged in
   React.useEffect(() => {
-    if (!authLoading && !user) {
-      toast.error("Please sign in or register to complete checkout.");
-      navigate('/auth?redirect=/checkout');
+    if (profile) {
+      setCustomerInfo(prev => ({
+        ...prev,
+        email: prev.email || profile.email || '',
+        firstName: prev.firstName || profile.fullName?.split(' ')[0] || '',
+        lastName: prev.lastName || profile.fullName?.split(' ').slice(1).join(' ') || '',
+        phone: prev.phone || profile.mobile || '',
+        city: prev.city || profile.city || '',
+        address: prev.address || profile.address || '',
+        province: prev.province || profile.province || '',
+      }));
+    } else if (user) {
+      setCustomerInfo(prev => ({
+        ...prev,
+        email: prev.email || user.email || '',
+        firstName: prev.firstName || user.displayName?.split(' ')[0] || '',
+        lastName: prev.lastName || user.displayName?.split(' ').slice(1).join(' ') || '',
+      }));
     }
-  }, [user, authLoading, navigate]);
-
-  // Pre-fill name from user profile
-  React.useEffect(() => {
-    if (user?.displayName) {
-      setCustomerInfo(prev => ({ ...prev, name: prev.name || user.displayName || '' }));
-    }
-  }, [user]);
-
-  const [customerInfo, setCustomerInfo] = useState({
-    name: '',
-    phone: '',
-    city: '',
-    address: ''
-  });
+  }, [profile, user]);
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return;
@@ -122,16 +135,15 @@ export function CheckoutPage() {
     : 0;
 
   const finalTotal = total - discountAmount;
+  const shippingCost = 250;
+  const orderTotal = finalTotal + shippingCost;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;
 
-    const shippingCost = 250;
-    const orderTotal = finalTotal + shippingCost;
-
     // Balance check for wallet payment
-    if (paymentMethod === 'wallet') {
+    if (paymentMethod === 'wallet' && user) {
       const walletBalance = profile?.walletBalance || 0;
       if (walletBalance < orderTotal) {
         toast.error("Insufficient wallet balance. Please top up your wallet or choose another payment method.");
@@ -142,10 +154,49 @@ export function CheckoutPage() {
     setLoading(true);
     try {
       const affiliateRef = localStorage.getItem('affiliate_ref');
+
+      // Background Registration & Account matching
+      let customerId = user?.uid || null;
+      if (!customerId) {
+        // Query users by email or phone to check existence
+        const emailQuery = query(collection(db, 'users'), where('email', '==', customerInfo.email));
+        const phoneQuery = query(collection(db, 'users'), where('mobile', '==', customerInfo.phone));
+        const [emailSnap, phoneSnap] = await Promise.all([getDocs(emailQuery), getDocs(phoneQuery)]);
+        
+        let existingUserDoc = null;
+        if (!emailSnap.empty) {
+          existingUserDoc = emailSnap.docs[0];
+        } else if (!phoneSnap.empty) {
+          existingUserDoc = phoneSnap.docs[0];
+        }
+
+        if (existingUserDoc) {
+          customerId = existingUserDoc.id;
+        } else {
+          // Generate a custom ID for the guest/background account
+          const guestUid = 'guest-' + Math.random().toString(36).substring(2, 11);
+          await setDoc(doc(db, 'users', guestUid), {
+            uid: guestUid,
+            fullName: `${customerInfo.firstName} ${customerInfo.lastName}`.trim(),
+            email: customerInfo.email,
+            mobile: customerInfo.phone,
+            city: customerInfo.city,
+            province: customerInfo.province,
+            address: customerInfo.address,
+            role: 'customer',
+            isVerified: false,
+            walletBalance: 0,
+            pendingProfit: 0,
+            totalWithdrawn: 0,
+            createdAt: new Date().toISOString()
+          });
+          customerId = guestUid;
+        }
+      }
       
       const orderData: any = {
-        customerId: user?.uid || null,
-        customerName: customerInfo.name,
+        customerId: customerId,
+        customerName: `${customerInfo.firstName} ${customerInfo.lastName}`.trim(),
         customerPhone: customerInfo.phone,
         customerCity: customerInfo.city,
         customerAddress: customerInfo.address,
@@ -160,7 +211,7 @@ export function CheckoutPage() {
         sellingPrice: finalTotal,
         companyPrice: items.reduce((acc, item) => acc + (item.companyPrice * item.quantity), 0),
         shippingCost,
-        profit: 0, // Customer orders don't have reseller profit
+        profit: 0, 
         status: 'Pending',
         paymentMethod: paymentMethod === 'cod' ? 'COD' : paymentMethod === 'card' ? 'Card' : 'Wallet',
         paymentStatus: paymentMethod === 'cod' ? 'Unpaid' : 'Paid',
@@ -168,13 +219,16 @@ export function CheckoutPage() {
         updatedAt: new Date().toISOString()
       };
 
+      if (affiliateRef) {
+        orderData.affiliateRef = affiliateRef;
+      }
+
       if (appliedCoupon) {
         orderData.couponCode = appliedCoupon.code;
         orderData.discount = discountAmount;
       }
 
       if (paymentMethod === 'card') {
-        // Validation for new card details if not using a saved card
         if (!selectedCardId) {
           const trimmedCard = newCard.cardNumber.replace(/\s+/g, '');
           if (trimmedCard.length < 16) {
@@ -193,15 +247,13 @@ export function CheckoutPage() {
             return;
           }
           
-          // Simulated card payment delay
           toast.info("Authorizing online card payment...");
           await new Promise(resolve => setTimeout(resolve, 1500));
 
-          // Save card if user checked the box
-          if (saveCardCheckbox && user) {
+          if (saveCardCheckbox && customerId) {
             const cardType = trimmedCard.startsWith('4') ? 'Visa' : trimmedCard.startsWith('5') ? 'Mastercard' : 'Card';
             const maskedNumber = `•••• •••• •••• ${trimmedCard.slice(-4)}`;
-            await addDoc(collection(db, 'users', user.uid, 'paymentMethods'), {
+            await addDoc(collection(db, 'users', customerId, 'paymentMethods'), {
               cardholderName: newCard.cardholderName,
               cardNumber: maskedNumber,
               expiryDate: newCard.expiryDate,
@@ -210,20 +262,17 @@ export function CheckoutPage() {
             });
           }
         } else {
-          // Simulated card payment delay for saved card
           toast.info("Processing transaction with saved card...");
           await new Promise(resolve => setTimeout(resolve, 1500));
         }
       }
 
-      if (paymentMethod === 'wallet') {
-        // Deduct from wallet balance
-        await updateDoc(doc(db, 'users', user!.uid), {
+      if (paymentMethod === 'wallet' && customerId) {
+        await updateDoc(doc(db, 'users', customerId), {
           walletBalance: increment(-orderTotal)
         });
 
-        // Write wallet transaction
-        await addDoc(collection(db, 'users', user!.uid, 'walletTransactions'), {
+        await addDoc(collection(db, 'users', customerId, 'walletTransactions'), {
           amount: orderTotal,
           type: 'payment',
           description: `Order Payment (COD-free online checkout)`,
@@ -248,8 +297,8 @@ export function CheckoutPage() {
   if (orderComplete) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-20 text-center">
-        <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-          <CheckCircle2 className="w-10 h-10 text-emerald-600" />
+        <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-950/20 rounded-full flex items-center justify-center mx-auto mb-6">
+          <CheckCircle2 className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
         </div>
         <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-2">Order Confirmed!</h2>
         <p className="text-slate-500 dark:text-slate-400 mb-8">Thank you for your purchase. We'll notify you when your order ships.</p>
@@ -267,9 +316,9 @@ export function CheckoutPage() {
               navigate('/');
             }
           }} 
-          className="bg-indigo-600 hover:bg-indigo-700 rounded-xl font-bold px-8 h-12"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold px-8 h-12"
         >
-          Back to Dashboard
+          Go Home
         </Button>
       </div>
     );
@@ -279,74 +328,113 @@ export function CheckoutPage() {
     return (
       <div className="max-w-7xl mx-auto px-4 py-20 text-center">
         <ShoppingBag className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold">Your cart is empty</h2>
-        <Button onClick={() => navigate('/shop')} className="mt-4">Go Shopping</Button>
+        <h2 className="text-2xl font-bold text-slate-700 dark:text-slate-300">Your cart is empty</h2>
+        <Button onClick={() => navigate('/')} className="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl px-6">Go Shopping</Button>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-black text-slate-900 mb-8">Checkout</h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-slate-900 dark:text-white">
+      <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-8">Checkout</h1>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-        <div className="lg:col-span-2 space-y-6">
-          <Card className="border-none shadow-sm rounded-2xl">
-            <CardHeader>
-              <CardTitle className="text-lg font-bold">Shipping Information</CardTitle>
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        {/* Left Column: Checkout details (7 cols) */}
+        <div className="lg:col-span-7 space-y-8">
+          <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border dark:border-slate-800">
+            <CardHeader className="bg-slate-50 dark:bg-slate-850 p-6 border-b dark:border-slate-800">
+              <CardTitle className="text-lg font-black text-slate-800 dark:text-white">Contact & Shipping Details</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Full Name</Label>
+            <CardContent className="p-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="space-y-2 md:col-span-2">
+                  <Label className="font-bold text-xs text-slate-600 dark:text-slate-400">Email Address</Label>
                   <Input 
                     required
-                    value={customerInfo.name}
-                    onChange={e => setCustomerInfo({...customerInfo, name: e.target.value})}
-                    placeholder="John Doe"
-                    className="rounded-xl h-12"
+                    type="email"
+                    value={customerInfo.email}
+                    onChange={e => setCustomerInfo({...customerInfo, email: e.target.value})}
+                    placeholder="john@example.com"
+                    className="rounded-xl h-12 dark:bg-slate-800 dark:border-slate-750 dark:text-white focus-visible:ring-indigo-500"
                   />
                 </div>
+                
                 <div className="space-y-2">
-                  <Label>Phone Number</Label>
+                  <Label className="font-bold text-xs text-slate-600 dark:text-slate-400">First Name</Label>
                   <Input 
                     required
-                    value={customerInfo.phone}
-                    onChange={e => setCustomerInfo({...customerInfo, phone: e.target.value})}
-                    placeholder="03001234567"
-                    className="rounded-xl h-12"
+                    value={customerInfo.firstName}
+                    onChange={e => setCustomerInfo({...customerInfo, firstName: e.target.value})}
+                    placeholder="John"
+                    className="rounded-xl h-12 dark:bg-slate-800 dark:border-slate-750 dark:text-white focus-visible:ring-indigo-500"
                   />
                 </div>
+                
                 <div className="space-y-2">
-                  <Label>City</Label>
+                  <Label className="font-bold text-xs text-slate-600 dark:text-slate-400">Last Name</Label>
+                  <Input 
+                    required
+                    value={customerInfo.lastName}
+                    onChange={e => setCustomerInfo({...customerInfo, lastName: e.target.value})}
+                    placeholder="Doe"
+                    className="rounded-xl h-12 dark:bg-slate-800 dark:border-slate-750 dark:text-white focus-visible:ring-indigo-500"
+                  />
+                </div>
+
+                <div className="space-y-2 md:col-span-2">
+                  <Label className="font-bold text-xs text-slate-600 dark:text-slate-400">Shipping Address</Label>
+                  <Input 
+                    required
+                    value={customerInfo.address}
+                    onChange={e => setCustomerInfo({...customerInfo, address: e.target.value})}
+                    placeholder="House #, Street name, Block / Area"
+                    className="rounded-xl h-12 dark:bg-slate-800 dark:border-slate-750 dark:text-white focus-visible:ring-indigo-500"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="font-bold text-xs text-slate-600 dark:text-slate-400">City</Label>
                   <Input 
                     required
                     value={customerInfo.city}
                     onChange={e => setCustomerInfo({...customerInfo, city: e.target.value})}
                     placeholder="Karachi"
-                    className="rounded-xl h-12"
+                    className="rounded-xl h-12 dark:bg-slate-800 dark:border-slate-750 dark:text-white focus-visible:ring-indigo-500"
                   />
                 </div>
-                <div className="md:col-span-2 space-y-2">
-                  <Label>Delivery Address</Label>
+
+                <div className="space-y-2">
+                  <Label className="font-bold text-xs text-slate-600 dark:text-slate-400">Province</Label>
                   <Input 
                     required
-                    value={customerInfo.address}
-                    onChange={e => setCustomerInfo({...customerInfo, address: e.target.value})}
-                    placeholder="House #, Street, Area"
-                    className="rounded-xl h-12"
+                    value={customerInfo.province}
+                    onChange={e => setCustomerInfo({...customerInfo, province: e.target.value})}
+                    placeholder="Sindh"
+                    className="rounded-xl h-12 dark:bg-slate-800 dark:border-slate-750 dark:text-white focus-visible:ring-indigo-500"
+                  />
+                </div>
+
+                <div className="space-y-2 md:col-span-2">
+                  <Label className="font-bold text-xs text-slate-600 dark:text-slate-400">Mobile Phone Number</Label>
+                  <Input 
+                    required
+                    type="tel"
+                    value={customerInfo.phone}
+                    onChange={e => setCustomerInfo({...customerInfo, phone: e.target.value})}
+                    placeholder="03001234567"
+                    className="rounded-xl h-12 dark:bg-slate-800 dark:border-slate-750 dark:text-white focus-visible:ring-indigo-500"
                   />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-none shadow-sm rounded-2xl bg-white p-6">
-            <h3 className="text-lg font-bold mb-4">Payment Method</h3>
-            <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-2">
+          <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border dark:border-slate-800 p-6">
+            <h3 className="text-lg font-black text-slate-800 dark:text-white mb-4">Payment Method</h3>
+            <div className="space-y-6">
+              <div className="grid grid-cols-3 gap-3">
                 {[
-                  { id: 'cod' as const, label: 'COD', icon: ShoppingBag },
+                  { id: 'cod' as const, label: 'Cash on Delivery', icon: ShoppingBag },
                   { id: 'card' as const, label: 'Pay Online', icon: CreditCard },
                   { id: 'wallet' as const, label: 'Wallet', icon: Wallet }
                 ].map(method => (
@@ -354,23 +442,23 @@ export function CheckoutPage() {
                     key={method.id}
                     type="button"
                     onClick={() => setPaymentMethod(method.id)}
-                    className={`flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all ${
+                    className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all ${
                       paymentMethod === method.id
-                        ? 'border-indigo-650 bg-indigo-50/10 text-indigo-650'
-                        : 'border-slate-100 hover:border-slate-200 text-slate-500'
+                        ? 'border-indigo-600 bg-indigo-50/10 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500'
+                        : 'border-slate-100 hover:border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-700'
                     }`}
                   >
-                    <method.icon className="w-5 h-5 mb-1.5" />
-                    <span className="text-xs font-bold">{method.label}</span>
+                    <method.icon className="w-5 h-5 mb-2" />
+                    <span className="text-xs font-bold text-center leading-tight">{method.label}</span>
                   </button>
                 ))}
               </div>
 
               {paymentMethod === 'cod' && (
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
+                <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-slate-900 block text-sm">Cash on Delivery (COD)</span>
-                    <span className="text-xs text-slate-500">Pay with cash upon delivery.</span>
+                    <span className="font-bold text-slate-900 dark:text-white block text-sm">Cash on Delivery (COD)</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">Pay with cash upon delivery.</span>
                   </div>
                   <div className="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center flex-shrink-0">
                     <div className="w-2 h-2 rounded-full bg-white" />
@@ -390,13 +478,13 @@ export function CheckoutPage() {
                             onClick={() => setSelectedCardId(card.id)}
                             className={`flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition-all ${
                               selectedCardId === card.id
-                                ? 'border-indigo-600 bg-indigo-50/10'
-                                : 'border-slate-150 hover:border-slate-300'
+                                ? 'border-indigo-600 bg-indigo-50/10 dark:border-indigo-500'
+                                : 'border-slate-150 dark:border-slate-800 hover:border-slate-350'
                             }`}
                           >
                             <div className="flex items-center gap-2.5">
                               <CreditCard className="w-4 h-4 text-indigo-550" />
-                              <span className="text-xs font-bold text-slate-800">
+                              <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                                 {card.cardType} {card.cardNumber}
                               </span>
                             </div>
@@ -409,12 +497,12 @@ export function CheckoutPage() {
                           onClick={() => setSelectedCardId('')}
                           className={`flex items-center gap-2.5 p-3 rounded-xl border-2 cursor-pointer transition-all ${
                             selectedCardId === ''
-                              ? 'border-indigo-600 bg-indigo-50/10'
-                              : 'border-slate-150 hover:border-slate-300'
+                              ? 'border-indigo-600 bg-indigo-50/10 dark:border-indigo-500'
+                              : 'border-slate-150 dark:border-slate-800 hover:border-slate-350'
                           }`}
                         >
                           <Plus className="w-4 h-4 text-slate-500" />
-                          <span className="text-xs font-bold text-slate-700">
+                          <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
                             Pay with a New Card
                           </span>
                         </div>
@@ -423,8 +511,8 @@ export function CheckoutPage() {
                   )}
 
                   {(!savedCards.length || selectedCardId === '') && (
-                    <div className="space-y-3 pt-2 border-t border-slate-50">
-                      <p className="text-xs font-black uppercase text-indigo-600 tracking-wider">New Card Details</p>
+                    <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+                      <p className="text-xs font-black uppercase text-indigo-600 dark:text-indigo-400 tracking-wider">New Card Details</p>
                       
                       <div className="space-y-1.5">
                         <Label className="text-xs text-slate-500">Cardholder Name</Label>
@@ -434,7 +522,7 @@ export function CheckoutPage() {
                           placeholder="John Doe"
                           value={newCard.cardholderName}
                           onChange={(e) => setNewCard({...newCard, cardholderName: e.target.value})}
-                          className="rounded-xl h-11 border-slate-200"
+                          className="rounded-xl h-11 border-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                         />
                       </div>
 
@@ -460,7 +548,7 @@ export function CheckoutPage() {
                               setNewCard({...newCard, cardNumber: v});
                             }
                           }}
-                          className="rounded-xl h-11 border-slate-200"
+                          className="rounded-xl h-11 border-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                         />
                       </div>
 
@@ -481,7 +569,7 @@ export function CheckoutPage() {
                                 setNewCard({...newCard, expiryDate: v});
                               }
                             }}
-                            className="rounded-xl h-11 text-center border-slate-200"
+                            className="rounded-xl h-11 text-center border-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                           />
                         </div>
                         <div className="space-y-1.5">
@@ -493,7 +581,7 @@ export function CheckoutPage() {
                             maxLength={3}
                             value={newCard.cvv}
                             onChange={(e) => setNewCard({...newCard, cvv: e.target.value.replace(/[^0-9]/g, '')})}
-                            className="rounded-xl h-11 text-center border-slate-200"
+                            className="rounded-xl h-11 text-center border-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                           />
                         </div>
                       </div>
@@ -506,7 +594,7 @@ export function CheckoutPage() {
                           onChange={(e) => setSaveCardCheckbox(e.target.checked)}
                           className="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4"
                         />
-                        <label htmlFor="save_checkout_card" className="text-xs font-medium text-slate-600 cursor-pointer">
+                        <label htmlFor="save_checkout_card" className="text-xs font-medium text-slate-650 dark:text-slate-400 cursor-pointer">
                           Save this card details for future payments
                         </label>
                       </div>
@@ -516,32 +604,32 @@ export function CheckoutPage() {
               )}
 
               {paymentMethod === 'wallet' && (
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-3">
+                <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="font-bold text-slate-900 block text-sm">Pay via Wallet</span>
-                      <span className="text-xs text-slate-500">Secure payment from your balance.</span>
+                      <span className="font-bold text-slate-900 dark:text-white block text-sm">Pay via Wallet</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">Secure payment from your balance.</span>
                     </div>
-                    <Wallet className="w-5 h-5 text-indigo-650" />
+                    <Wallet className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                   </div>
                   
                   <div className="pt-2 border-t border-slate-200/50 flex justify-between text-xs">
                     <span className="text-slate-500">Available Balance:</span>
-                    <span className="font-bold text-slate-900">{formatPrice(profile?.walletBalance || 0)}</span>
+                    <span className="font-bold text-slate-900 dark:text-white">{formatPrice(profile?.walletBalance || 0)}</span>
                   </div>
 
                   <div className="flex justify-between text-xs">
                     <span className="text-slate-500">Order Total:</span>
-                    <span className="font-bold text-slate-900">{formatPrice(finalTotal + 250)}</span>
+                    <span className="font-bold text-slate-900 dark:text-white">{formatPrice(orderTotal)}</span>
                   </div>
 
-                  {(profile?.walletBalance || 0) < finalTotal + 250 ? (
-                    <div className="flex items-start gap-1.5 p-2 bg-rose-50 border border-rose-100 rounded-lg text-[10px] text-rose-700 leading-relaxed font-bold">
+                  {(profile?.walletBalance || 0) < orderTotal ? (
+                    <div className="flex items-start gap-1.5 p-2 bg-rose-50 border border-rose-100 dark:bg-rose-950/20 dark:border-rose-900/30 rounded-lg text-[10px] text-rose-700 dark:text-rose-450 leading-relaxed font-bold">
                       <AlertCircle className="w-3.5 h-3.5 shrink-0 text-rose-600" />
                       <span>Insufficient wallet balance. Please top up your wallet or choose another payment method.</span>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-1.5 p-2 bg-emerald-50 border border-emerald-100 rounded-lg text-[10px] text-emerald-700 leading-relaxed font-bold">
+                    <div className="flex items-center gap-1.5 p-2 bg-emerald-50 border border-emerald-100 dark:bg-emerald-950/20 dark:border-emerald-900/30 rounded-lg text-[10px] text-emerald-700 dark:text-emerald-455 leading-relaxed font-bold">
                       <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-emerald-600" />
                       <span>Sufficient balance. Payment will be deducted on placing order.</span>
                     </div>
@@ -552,26 +640,27 @@ export function CheckoutPage() {
           </Card>
         </div>
 
-        <div className="space-y-6">
-          <Card className="border-none shadow-sm rounded-2xl bg-white p-6">
-            <h3 className="text-lg font-bold mb-4">Order Summary</h3>
+        {/* Right Column: Order Summary (5 cols) */}
+        <div className="lg:col-span-5 space-y-6">
+          <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border dark:border-slate-800 p-6">
+            <h3 className="text-lg font-black text-slate-800 dark:text-white mb-4">Order Summary</h3>
             <div className="space-y-4">
               {items.map(item => {
                 const cartItemId = item.selectedVariant ? `${item.id}-${item.selectedVariant.id}` : item.id;
                 return (
                   <div key={cartItemId} className="flex justify-between text-sm">
                     <div className="flex flex-col">
-                      <span className="text-slate-600 font-medium">{item.title} x {item.quantity}</span>
+                      <span className="text-slate-600 dark:text-slate-350 font-bold">{item.title} x {item.quantity}</span>
                       {item.selectedVariant && (
-                        <span className="text-[10px] text-indigo-600 font-bold">Variant: {item.selectedVariant.name}</span>
+                        <span className="text-[10px] text-indigo-650 dark:text-indigo-400 font-black">Variant: {item.selectedVariant.name}</span>
                       )}
                     </div>
-                    <span className="font-bold">{formatPrice(item.price * item.quantity)}</span>
+                    <span className="font-bold text-slate-900 dark:text-white">{formatPrice(item.price * item.quantity)}</span>
                   </div>
                 );
               })}
               
-              <div className="pt-4 border-t space-y-4">
+              <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-4">
                 {/* Coupon Input */}
                 {!appliedCoupon ? (
                   <div className="flex gap-2">
@@ -581,7 +670,7 @@ export function CheckoutPage() {
                         placeholder="Coupon Code" 
                         value={couponCode}
                         onChange={(e) => setCouponCode(e.target.value)}
-                        className="pl-10 rounded-xl h-11 border-slate-200"
+                        className="pl-10 rounded-xl h-11 border-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                       />
                     </div>
                     <Button 
@@ -594,48 +683,48 @@ export function CheckoutPage() {
                     </Button>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-between p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
+                  <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 rounded-xl">
                     <div className="flex items-center gap-2">
                       <Ticket className="w-4 h-4 text-emerald-600" />
-                      <span className="text-sm font-bold text-emerald-700">{appliedCoupon.code}</span>
+                      <span className="text-sm font-bold text-emerald-750">{appliedCoupon.code}</span>
                     </div>
                     <button 
                       type="button"
                       onClick={removeCoupon}
-                      className="p-1 hover:bg-emerald-100 rounded-full transition-colors"
+                      className="p-1 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-full transition-colors"
                     >
                       <X className="w-4 h-4 text-emerald-600" />
                     </button>
                   </div>
                 )}
 
-                <div className="space-y-2">
+                <div className="space-y-2 pt-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-500">Subtotal</span>
-                    <span className="font-bold">{formatPrice(total)}</span>
+                    <span className="font-bold text-slate-900 dark:text-white">{formatPrice(total)}</span>
                   </div>
                   {appliedCoupon && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-emerald-600 font-medium">Discount</span>
-                      <span className="font-bold text-emerald-600">-{formatPrice(discountAmount)}</span>
+                      <span className="text-emerald-650 font-bold">Discount</span>
+                      <span className="font-bold text-emerald-650">-{formatPrice(discountAmount)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Shipping</span>
-                    <span className="font-bold">{formatPrice(250)}</span>
+                    <span className="text-slate-500">Shipping (Flat Rate)</span>
+                    <span className="font-bold text-slate-900 dark:text-white">{formatPrice(shippingCost)}</span>
                   </div>
                 </div>
 
-                <div className="pt-4 mt-4 border-t flex justify-between items-center">
-                  <span className="text-lg font-bold">Total</span>
-                  <span className="text-2xl font-black text-indigo-600">{formatPrice(finalTotal + 250)}</span>
+                <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                  <span className="text-lg font-bold text-slate-950 dark:text-white">Total</span>
+                  <span className="text-2xl font-black text-indigo-650 dark:text-indigo-400">{formatPrice(orderTotal)}</span>
                 </div>
               </div>
             </div>
             <Button 
               type="submit"
               disabled={loading}
-              className="w-full mt-6 h-14 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100"
+              className="w-full mt-6 h-14 bg-indigo-650 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg border-none"
             >
               {loading ? "Processing..." : "Place Order"}
             </Button>
