@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, addDoc, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Product, OrderStatus } from '@/types';
 import { useAuth } from '@/context/AuthContext';
@@ -13,14 +13,31 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
 export function PlaceOrder() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { formatPrice } = useCurrency();
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [sellingPrice, setSellingPrice] = useState<number>(0);
   const [loading, setLoading] = useState(false);
-  const [selectedCarrier, setSelectedCarrier] = useState<string>('TCS');
+
+  // Upgrade Product Selection states
+  const [selectedSize, setSelectedSize] = useState<string>('Medium');
+  const [selectedColor, setSelectedColor] = useState<string>('Black');
+  const [selectedVariant, setSelectedVariant] = useState<string>('');
+
+  // Branding Preference states
+  const [brandingPreference, setBrandingPreference] = useState<'company' | 'local'>('company');
+  const [customBrandName, setCustomBrandName] = useState<string>('');
+
+  // Payment Method states
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'wallet' | 'card'>('cod');
+  const [cardDetails, setCardDetails] = useState({
+    cardholderName: '',
+    cardNumber: '',
+    expiryDate: '',
+    cvv: ''
+  });
 
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
@@ -37,15 +54,13 @@ export function PlaceOrder() {
     fetchProducts();
   }, []);
 
-  const carriers = [
-    { name: 'TCS', cost: 250 },
-    { name: 'Leopards', cost: 200 },
-    { name: 'M&P', cost: 180 },
-    { name: 'Post Office', cost: 150 }
-  ];
-
-  const shippingCost = carriers.find(c => c.name === selectedCarrier)?.cost || 250;
+  const shippingCost = 250; // Flat Shipping Cost
   const profit = selectedProduct ? sellingPrice - selectedProduct.companyPrice - shippingCost : 0;
+  
+  // Wallet payment calculation
+  const walletBalance = profile?.walletBalance || 0;
+  const requiredAmount = selectedProduct ? (selectedProduct.companyPrice + shippingCost) : 0;
+  const hasSufficientWalletBalance = walletBalance >= requiredAmount;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,9 +71,27 @@ export function PlaceOrder() {
       return;
     }
 
+    if (brandingPreference === 'local' && !customBrandName.trim()) {
+      toast.error("Please enter a custom brand name for local branding.");
+      return;
+    }
+
+    if (paymentMethod === 'wallet' && !hasSufficientWalletBalance) {
+      toast.error("Insufficient wallet balance for this order.");
+      return;
+    }
+
+    if (paymentMethod === 'card') {
+      const cleanCard = cardDetails.cardNumber.replace(/\s+/g, '');
+      if (cleanCard.length < 16 || !cardDetails.expiryDate || !cardDetails.cvv) {
+        toast.error("Please enter valid card payment details.");
+        return;
+      }
+    }
+
     setLoading(true);
     try {
-      await addDoc(collection(db, 'orders'), {
+      const orderPayload: any = {
         resellerId: user.uid,
         customerName: customerInfo.name,
         customerPhone: customerInfo.phone,
@@ -68,22 +101,30 @@ export function PlaceOrder() {
           productId: selectedProduct.id,
           title: selectedProduct.title,
           quantity: 1,
-          price: selectedProduct.price
+          price: selectedProduct.price,
+          size: selectedSize,
+          color: selectedColor,
+          variantId: selectedVariant || null
         }],
         sellingPrice,
         companyPrice: selectedProduct.companyPrice,
         shippingCost,
         profit,
-        carrier: selectedCarrier,
         status: 'Pending' as OrderStatus,
+        brandingPreference,
+        customBrandName: brandingPreference === 'local' ? customBrandName : null,
+        paymentMethod: paymentMethod === 'cod' ? 'COD' : paymentMethod === 'wallet' ? 'Wallet' : 'Card',
+        paymentStatus: paymentMethod === 'cod' ? 'Unpaid' : 'Paid',
         statusHistory: [{
           status: 'Pending',
           timestamp: new Date().toISOString(),
-          note: 'Order placed by reseller'
+          note: 'Order placed by reseller via Portal'
         }],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
-      });
+      };
+
+      await addDoc(collection(db, 'orders'), orderPayload);
       toast.success("Order placed successfully!");
       navigate('/reseller/orders');
     } catch (error: any) {
@@ -102,6 +143,7 @@ export function PlaceOrder() {
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
+          {/* Product Selection */}
           <Card className="border-none bg-white dark:bg-slate-900 shadow-sm rounded-2xl">
             <CardHeader>
               <CardTitle className="text-lg font-bold dark:text-white">Product Selection</CardTitle>
@@ -126,20 +168,79 @@ export function PlaceOrder() {
               </div>
 
               {selectedProduct && (
-                <div className="space-y-2">
-                  <Label className="text-slate-700 dark:text-slate-300 font-bold">Your Selling Price (Rs.)</Label>
-                  <Input 
-                    type="number" 
-                    value={sellingPrice} 
-                    onChange={(e) => setSellingPrice(Number(e.target.value))}
-                    className="rounded-xl h-12 border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-white"
-                  />
-                  <p className="text-xs text-slate-500 dark:text-slate-450 mt-1">Suggested: {formatPrice(selectedProduct.price)}</p>
+                <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                  {/* Customer Retail Price display */}
+                  <div className="p-3 bg-indigo-50/50 dark:bg-indigo-950/20 rounded-xl border border-indigo-100 dark:border-indigo-900/30">
+                    <span className="text-xs font-bold text-indigo-700 dark:text-indigo-400">
+                      Customer Retail Price: {formatPrice(selectedProduct.price)}
+                    </span>
+                  </div>
+
+                  {/* Size selection */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-slate-700 dark:text-slate-300 font-bold">Size</Label>
+                      <Select value={selectedSize} onValueChange={setSelectedSize}>
+                        <SelectTrigger className="rounded-xl h-11 border-slate-200 dark:border-slate-800 dark:bg-slate-800">
+                          <SelectValue placeholder="Select Size" />
+                        </SelectTrigger>
+                        <SelectContent className="dark:bg-slate-800">
+                          <SelectItem value="Small">Small</SelectItem>
+                          <SelectItem value="Medium">Medium</SelectItem>
+                          <SelectItem value="Large">Large</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Color selection */}
+                    <div className="space-y-2">
+                      <Label className="text-slate-700 dark:text-slate-300 font-bold">Color</Label>
+                      <Select value={selectedColor} onValueChange={setSelectedColor}>
+                        <SelectTrigger className="rounded-xl h-11 border-slate-200 dark:border-slate-800 dark:bg-slate-800">
+                          <SelectValue placeholder="Select Color" />
+                        </SelectTrigger>
+                        <SelectContent className="dark:bg-slate-800">
+                          <SelectItem value="Red">Red</SelectItem>
+                          <SelectItem value="Blue">Blue</SelectItem>
+                          <SelectItem value="Black">Black</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Variation selection */}
+                  {selectedProduct.variants && selectedProduct.variants.length > 0 && (
+                    <div className="space-y-2">
+                      <Label className="text-slate-700 dark:text-slate-300 font-bold">Variation</Label>
+                      <Select value={selectedVariant} onValueChange={setSelectedVariant}>
+                        <SelectTrigger className="rounded-xl h-11 border-slate-200 dark:border-slate-800 dark:bg-slate-800">
+                          <SelectValue placeholder="Select Variant" />
+                        </SelectTrigger>
+                        <SelectContent className="dark:bg-slate-800">
+                          {selectedProduct.variants.map((v) => (
+                            <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  <div className="space-y-2 pt-2">
+                    <Label className="text-slate-700 dark:text-slate-300 font-bold">Your Selling Price (Rs.)</Label>
+                    <Input 
+                      type="number" 
+                      value={sellingPrice} 
+                      onChange={(e) => setSellingPrice(Number(e.target.value))}
+                      className="rounded-xl h-12 border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-white"
+                    />
+                    <p className="text-xs text-slate-500 dark:text-slate-450 mt-1">Suggested: {formatPrice(selectedProduct.price)}</p>
+                  </div>
                 </div>
               )}
             </CardContent>
           </Card>
 
+          {/* Customer Details */}
           <Card className="border-none bg-white dark:bg-slate-900 shadow-sm rounded-2xl">
             <CardHeader>
               <CardTitle className="text-lg font-bold dark:text-white">Customer Details</CardTitle>
@@ -190,43 +291,162 @@ export function PlaceOrder() {
             </CardContent>
           </Card>
 
+          {/* Branding Preference Card */}
           <Card className="border-none bg-white dark:bg-slate-900 shadow-sm rounded-2xl">
             <CardHeader>
-              <CardTitle className="text-lg font-bold dark:text-white">Shipping Carrier</CardTitle>
+              <CardTitle className="text-lg font-bold dark:text-white">Branding Preference</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-slate-700 dark:text-slate-300 font-bold">Select Carrier</Label>
-                <Select value={selectedCarrier} onValueChange={setSelectedCarrier}>
-                  <SelectTrigger className="rounded-xl h-12 border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-white">
-                    <SelectValue placeholder="Choose a carrier" />
-                  </SelectTrigger>
-                  <SelectContent className="dark:bg-slate-800 dark:border-slate-750">
-                    {carriers.map(c => (
-                      <SelectItem key={c.name} value={c.name}>
-                        {c.name} ({formatPrice(c.cost)})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="flex gap-4">
+                <button
+                  type="button"
+                  onClick={() => setBrandingPreference('company')}
+                  className={`flex-1 py-3 px-4 rounded-xl border-2 transition-all font-bold text-sm ${
+                    brandingPreference === 'company'
+                      ? 'border-indigo-650 bg-indigo-50/10 text-indigo-650 dark:text-indigo-400 dark:border-indigo-500'
+                      : 'border-slate-100 dark:border-slate-800 hover:border-slate-200'
+                  }`}
+                >
+                  Company Branding
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBrandingPreference('local')}
+                  className={`flex-1 py-3 px-4 rounded-xl border-2 transition-all font-bold text-sm ${
+                    brandingPreference === 'local'
+                      ? 'border-indigo-650 bg-indigo-50/10 text-indigo-650 dark:text-indigo-400 dark:border-indigo-500'
+                      : 'border-slate-100 dark:border-slate-800 hover:border-slate-200'
+                  }`}
+                >
+                  Local Branding
+                </button>
               </div>
+
+              {brandingPreference === 'local' && (
+                <div className="space-y-2 pt-2">
+                  <Label className="text-slate-700 dark:text-slate-300 font-bold">Enter Custom Brand Name</Label>
+                  <Input 
+                    required
+                    value={customBrandName}
+                    onChange={(e) => setCustomBrandName(e.target.value)}
+                    placeholder="My Store Name"
+                    className="rounded-xl h-12 border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-white"
+                  />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Payment Method Card */}
+          <Card className="border-none bg-white dark:bg-slate-900 shadow-sm rounded-2xl">
+            <CardHeader>
+              <CardTitle className="text-lg font-bold dark:text-white">Payment Method</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex flex-col gap-3">
+                {/* Cash on Delivery */}
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('cod')}
+                  className={`w-full py-3 px-4 rounded-xl border-2 transition-all font-bold text-sm text-left flex justify-between items-center ${
+                    paymentMethod === 'cod'
+                      ? 'border-indigo-650 bg-indigo-50/10 text-indigo-650 dark:text-indigo-400 dark:border-indigo-500'
+                      : 'border-slate-100 dark:border-slate-800 hover:border-slate-200'
+                  }`}
+                >
+                  <span>Cash on Delivery (COD)</span>
+                  <span className="text-xs text-slate-400 font-normal">Customer pays at delivery</span>
+                </button>
+
+                {/* Deduct From Wallet */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    disabled={!hasSufficientWalletBalance}
+                    onClick={() => setPaymentMethod('wallet')}
+                    className={`w-full py-3 px-4 rounded-xl border-2 transition-all font-bold text-sm text-left flex justify-between items-center ${
+                      !hasSufficientWalletBalance
+                        ? 'opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-950 border-slate-100 dark:border-slate-900'
+                        : paymentMethod === 'wallet'
+                        ? 'border-indigo-650 bg-indigo-50/10 text-indigo-650 dark:text-indigo-400 dark:border-indigo-500'
+                        : 'border-slate-100 dark:border-slate-800 hover:border-slate-200'
+                    }`}
+                    title={!hasSufficientWalletBalance ? "Insufficient wallet balance" : ""}
+                  >
+                    <span>Deduct From Wallet</span>
+                    <span className="text-xs font-normal">
+                      {!hasSufficientWalletBalance ? "Insufficient wallet balance" : `Balance: ${formatPrice(walletBalance)}`}
+                    </span>
+                  </button>
+                </div>
+
+                {/* Pay via Credit/Debit Card */}
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('card')}
+                  className={`w-full py-3 px-4 rounded-xl border-2 transition-all font-bold text-sm text-left flex justify-between items-center ${
+                    paymentMethod === 'card'
+                      ? 'border-indigo-650 bg-indigo-50/10 text-indigo-650 dark:text-indigo-400 dark:border-indigo-500'
+                      : 'border-slate-100 dark:border-slate-800 hover:border-slate-200'
+                  }`}
+                >
+                  <span>Pay via Credit/Debit Card</span>
+                  <span className="text-xs text-slate-400 font-normal">Instant checkout</span>
+                </button>
+              </div>
+
+              {/* Card Inputs Placeholder */}
+              {paymentMethod === 'card' && (
+                <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3 mt-4">
+                  <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Card details</p>
+                  <div className="space-y-2">
+                    <Input 
+                      placeholder="Cardholder Name" 
+                      value={cardDetails.cardholderName}
+                      onChange={e => setCardDetails({...cardDetails, cardholderName: e.target.value})}
+                      className="h-10 dark:bg-slate-900"
+                    />
+                    <Input 
+                      placeholder="Card Number" 
+                      value={cardDetails.cardNumber}
+                      onChange={e => setCardDetails({...cardDetails, cardNumber: e.target.value})}
+                      className="h-10 dark:bg-slate-900"
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <Input 
+                        placeholder="MM/YY" 
+                        value={cardDetails.expiryDate}
+                        onChange={e => setCardDetails({...cardDetails, expiryDate: e.target.value})}
+                        className="h-10 dark:bg-slate-900 text-center"
+                      />
+                      <Input 
+                        placeholder="CVV" 
+                        value={cardDetails.cvv}
+                        onChange={e => setCardDetails({...cardDetails, cvv: e.target.value})}
+                        className="h-10 dark:bg-slate-900 text-center"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
 
+        {/* Right Column: Profit Summary */}
         <div className="space-y-6">
           <Card className="border-none shadow-sm rounded-2xl bg-indigo-50 dark:bg-indigo-950/20 border-2 border-indigo-100 dark:border-indigo-900/40">
             <CardHeader>
               <CardTitle className="text-lg font-bold text-indigo-900 dark:text-indigo-400">Profit Calculation</CardTitle>
             </CardHeader>
-             <CardContent className="space-y-4">
+            <CardContent className="space-y-4">
               <div className="flex justify-between text-sm">
                 <span className="text-slate-655 dark:text-slate-350">Selling Price:</span>
                 <span className="font-bold dark:text-white font-sans">{formatPrice(sellingPrice)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-655 dark:text-slate-350">Company Cost:</span>
-                <span className="font-bold text-rose-600 dark:text-rose-450 font-sans">- {formatPrice(selectedProduct?.companyPrice || 0)}</span>
+                <span className="font-bold text-rose-600 dark:text-rose-455 font-sans">- {formatPrice(selectedProduct?.companyPrice || 0)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-655 dark:text-slate-350">Shipping:</span>
@@ -247,7 +467,7 @@ export function PlaceOrder() {
           <Button 
             type="submit" 
             disabled={loading || !selectedProduct}
-            className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 dark:shadow-none border-none"
+            className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg border-none"
           >
             {loading ? "Placing Order..." : "Confirm & Place Order"}
           </Button>

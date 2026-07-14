@@ -169,7 +169,9 @@ export function Navbar() {
                 { to: '/', label: 'Home' },
                 { to: '/shop', label: 'Shop' },
                 { to: '/become-a-reseller', label: 'Become a Reseller' },
-              ] as { to: string; label: string; icon?: any; color?: string }[]).map((link) => (
+              ] as { to: string; label: string; icon?: any; color?: string }[])
+                .filter(link => user ? true : link.to === '/become-a-reseller')
+                .map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
@@ -305,13 +307,7 @@ export function Navbar() {
                   )}
                 </AnimatePresence>
               </div>
-            ) : (
-              <Link to="/auth">
-                <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full px-6 h-10 shadow-md dark:shadow-none">
-                  Login / Register
-                </Button>
-              </Link>
-            )}
+            ) : null}
           </div>
 
           {/* Mobile Buttons */}
@@ -367,7 +363,9 @@ export function Navbar() {
                     { to: '/wishlist', label: 'My Wishlist', icon: Heart },
                     { to: '/become-a-reseller', label: 'Become a Reseller', icon: Users },
                     { to: '/contact', label: 'Contact Us', icon: MessageCircle },
-                  ] as { to: string; label: string; icon: any; color?: string }[]).map((link) => (
+                  ] as { to: string; label: string; icon: any; color?: string }[])
+                    .filter(link => user ? true : link.to === '/become-a-reseller')
+                    .map((link) => (
                     <Link
                       key={link.to} to={link.to}
                       className={`flex items-center gap-4 p-3 rounded-2xl font-bold transition-all ${
@@ -396,11 +394,7 @@ export function Navbar() {
                         </Link>
                       )}
                     </div>
-                  ) : (
-                    <Link to="/auth" className="flex items-center gap-4 p-4 rounded-2xl font-bold text-white bg-indigo-600 shadow-md dark:shadow-none" onClick={() => setIsOpen(false)}>
-                      <User className="w-5 h-5" /> Login / Register
-                    </Link>
-                  )}
+                  ) : null}
                 </div>
 
                 {/* Dark mode toggle row */}
