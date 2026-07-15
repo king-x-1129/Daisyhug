@@ -48,7 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => unsubscribeProfile();
   }, [user]);
 
-  const isAdmin = profile?.role === 'admin' || user?.email === 'kingx1129@gmail.com' || user?.email === 'storeilia08@gmail.com';
+  const isAdmin = profile?.role === 'admin' || profile?.role === 'moderator' || user?.email === 'kingx1129@gmail.com' || user?.email === 'storeilia08@gmail.com';
   const isReseller = profile?.role === 'reseller';
   const isCustomer = profile?.role === 'customer';
 
