@@ -68,7 +68,8 @@ service cloud.firestore {
         (request.auth.token.email == "kingx1129@gmail.com" ||
          request.auth.token.email == "storeilia08@gmail.com" ||
          (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-          (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'super-admin' ||
+           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'moderator')));
     }
 
@@ -88,7 +89,7 @@ service cloud.firestore {
       return data.uid is string &&
              data.fullName is string && data.fullName.size() > 0 && data.fullName.size() < 100 &&
              isValidEmail(data.email) &&
-             data.role in ['customer', 'reseller', 'admin', 'moderator'] &&
+             data.role in ['customer', 'reseller', 'admin', 'moderator', 'super-admin'] &&
              data.walletBalance is number &&
              data.pendingProfit is number &&
              data.totalWithdrawn is number &&
