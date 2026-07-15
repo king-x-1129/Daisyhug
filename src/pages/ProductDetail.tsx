@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doc, getDoc, collection, query, where, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Product, Review, ProductVariant } from '@/types';
+import { Product, ProductVariant } from '@/types';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { useCurrency } from '@/context/CurrencyContext';
 import { useWishlist } from '@/context/WishlistContext';
-import { ShoppingCart, ArrowLeft, ShieldCheck, Truck, RotateCcw, Star, Share2, Copy, Sparkles, Heart, Facebook, Twitter, MessageCircle } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, ShieldCheck, Truck, RotateCcw, Share2, Copy, Sparkles, Heart, Facebook, Twitter, MessageCircle, Lock } from 'lucide-react';
 import { toast } from 'sonner';
-import { ProductReviews } from '@/components/ProductReviews';
 import { useAuth } from '@/context/AuthContext';
 import { Badge } from '@/components/ui/badge';
 
@@ -23,7 +22,6 @@ export function ProductDetail() {
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [loading, setLoading] = useState(true);
-  const [reviews, setReviews] = useState<Review[]>([]);
 
   // Quantity selection
   const [quantity, setQuantity] = useState(1);
@@ -80,16 +78,6 @@ export function ProductDetail() {
   };
 
   useEffect(() => {
-    if (!id) return;
-    const q = query(collection(db, 'reviews'), where('productId', '==', id));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Review));
-      setReviews(data);
-    });
-    return () => unsubscribe();
-  }, [id]);
-
-  useEffect(() => {
     async function fetchProduct() {
       if (!id) return;
       const docSnap = await getDoc(doc(db, 'products', id));
@@ -143,13 +131,13 @@ export function ProductDetail() {
           </div>
         </div>
 
-        {/* Right Column: Apricot-Style Details Layout */}
+        {/* Right Column: Details Layout */}
         <div className="space-y-6">
-          {/* 1. Category/Tag (Small uppercase muted text) */}
+          {/* 1. Category/Tag */}
           <div>
             <p className="text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-widest text-xs mb-1.5">{product.category}</p>
             
-            {/* 2. Product Title (Large, bold, prominent) */}
+            {/* 2. Product Title */}
             <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-2 leading-tight">
               {product.title}
             </h1>
@@ -163,31 +151,11 @@ export function ProductDetail() {
                 ))}
               </div>
             )}
-
-            {/* Ratings Summary */}
-            <div className="flex items-center gap-3">
-              <div className="flex items-center">
-                {[1, 2, 3, 4, 5].map((s) => {
-                  const avg = reviews.length > 0 ? reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length : 0;
-                  return (
-                    <Star 
-                      key={s} 
-                      className={`w-3.5 h-3.5 ${s <= Math.round(avg) ? 'text-amber-400 fill-amber-400' : 'text-slate-200 dark:text-slate-850'}`} 
-                    />
-                  );
-                })}
-              </div>
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-450">
-                {reviews.length > 0 
-                  ? `${(reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)} (${reviews.length} reviews)` 
-                  : 'No reviews yet'}
-              </span>
-            </div>
           </div>
 
           <div className="h-px bg-slate-100 dark:bg-slate-850" />
 
-          {/* 3. Price Display (Clean, bold font) */}
+          {/* 3. Price Display */}
           <div className="flex items-center justify-between">
             <span className="text-3xl font-black text-slate-900 dark:text-white font-sans">{formatPrice(currentPrice)}</span>
             {currentStock > 0 ? (
@@ -264,7 +232,7 @@ export function ProductDetail() {
                     onClick={() => setSelectedVariant(variant)}
                     className={`px-3.5 py-1.5 rounded-xl font-bold text-xs transition-all border ${
                       selectedVariant?.id === variant.id
-                        ? 'border-indigo-600 bg-indigo-50/10 text-indigo-650 dark:text-indigo-400'
+                        ? 'border-indigo-600 bg-indigo-50/10 text-indigo-655 dark:text-indigo-400'
                         : 'border-slate-200 dark:border-slate-800 bg-transparent text-slate-600 dark:text-slate-400 hover:border-slate-300'
                     }`}
                   >
@@ -286,7 +254,7 @@ export function ProductDetail() {
                 <button 
                   type="button" 
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-10 h-10 flex items-center justify-center font-bold text-slate-650 dark:text-slate-450 hover:bg-slate-50 dark:hover:bg-slate-805"
+                  className="w-10 h-10 flex items-center justify-center font-bold text-slate-650 dark:text-slate-455 hover:bg-slate-50 dark:hover:bg-slate-805"
                 >
                   -
                 </button>
@@ -294,7 +262,7 @@ export function ProductDetail() {
                 <button 
                   type="button" 
                   onClick={() => setQuantity(quantity + 1)}
-                  className="w-10 h-10 flex items-center justify-center font-bold text-slate-650 dark:text-slate-450 hover:bg-slate-50 dark:hover:bg-slate-805"
+                  className="w-10 h-10 flex items-center justify-center font-bold text-slate-655 dark:text-slate-455 hover:bg-slate-50 dark:hover:bg-slate-805"
                 >
                   +
                 </button>
@@ -406,24 +374,26 @@ export function ProductDetail() {
             </ul>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-4 border-y border-slate-100 dark:border-slate-850">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 py-4 border-y border-slate-100 dark:border-slate-850">
             <div className="flex items-center text-xs font-bold text-slate-500 dark:text-slate-400">
               <Truck className="w-4 h-4 mr-2 text-indigo-600 dark:text-indigo-400" />
               Fast Delivery
             </div>
             <div className="flex items-center text-xs font-bold text-slate-500 dark:text-slate-400">
               <RotateCcw className="w-4 h-4 mr-2 text-indigo-600 dark:text-indigo-400" />
-              7-Day Returns
+              14-Day Returns
             </div>
             <div className="flex items-center text-xs font-bold text-slate-500 dark:text-slate-400">
               <ShieldCheck className="w-4 h-4 mr-2 text-indigo-600 dark:text-indigo-400" />
               Quality Assured
             </div>
+            <div className="flex items-center text-xs font-bold text-slate-500 dark:text-slate-400">
+              <Lock className="w-4 h-4 mr-2 text-indigo-600 dark:text-indigo-400" />
+              Secure Payment
+            </div>
           </div>
         </div>
       </div>
-
-      <ProductReviews productId={product.id} />
     </div>
   );
 }
