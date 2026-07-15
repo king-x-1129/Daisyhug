@@ -1,13 +1,13 @@
-import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, PlusCircle, ShoppingBag, Wallet, ChevronRight, LogOut, Menu, X, TrendingUp, Settings, ShieldAlert, Clock } from 'lucide-react';
+import { Routes, Route, Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
+import { LayoutDashboard, PlusCircle, ShoppingBag, Wallet, ChevronRight, LogOut, Menu, X, TrendingUp, Settings, ShieldAlert, Clock, MessageSquare } from 'lucide-react';
 import { ResellerOverview } from './reseller/ResellerOverview';
 import { PlaceOrder } from './reseller/PlaceOrder';
 import { OrdersList } from './reseller/OrdersList';
 import { WalletPage } from './reseller/WalletPage';
 import { ProfitReport } from './reseller/ProfitReport';
 import { ResellerSettings } from './reseller/ResellerSettings';
+import { TicketsPage } from './reseller/TicketsPage';
 import { useAuth } from '@/context/AuthContext';
-import { Navigate } from 'react-router-dom';
 import { useState } from 'react';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
@@ -20,6 +20,7 @@ const navItems = [
   { icon: ShoppingBag,    label: 'My Orders',        path: '/reseller/orders',      color: 'from-amber-500 to-amber-600' },
   { icon: TrendingUp,     label: 'Profit Report',    path: '/reseller/profit-report', color: 'from-purple-500 to-purple-600' },
   { icon: Wallet,         label: 'Wallet & Withdraw',path: '/reseller/wallet',      color: 'from-rose-500 to-rose-600' },
+  { icon: MessageSquare,  label: 'Support Tickets',  path: '/reseller/tickets',     color: 'from-blue-500 to-blue-600' },
   { icon: Settings,       label: 'Settings',         path: '/reseller/settings',    color: 'from-slate-500 to-slate-600' },
 ];
 
@@ -241,6 +242,7 @@ export function ResellerDashboard() {
             <Route path="profit-report" element={<ProfitReport />} />
             <Route path="wallet" element={<WalletPage />} />
             <Route path="settings" element={<ResellerSettings />} />
+            <Route path="tickets" element={<TicketsPage />} />
           </Routes>
         </div>
       </main>

@@ -1,5 +1,5 @@
 import { Routes, Route, Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingCart, Users, CreditCard, ChevronRight, Sparkles, ShieldCheck, Palette, LogOut } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, CreditCard, ChevronRight, ShieldCheck, Palette, LogOut, MessageSquare } from 'lucide-react';
 import { PageHeader } from '@/components/PageHeader';
 import { AdminOverview } from './admin/AdminOverview';
 import { ProductManagement } from './admin/ProductManagement';
@@ -7,6 +7,7 @@ import { OrderManagement } from './admin/OrderManagement';
 import { ResellerManagement } from './admin/ResellerManagement';
 import { WithdrawalManagement } from './admin/WithdrawalManagement';
 import { ShopCustomization } from './admin/ShopCustomization';
+import { TicketManagement } from './admin/TicketManagement';
 import { useAuth } from '@/context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
@@ -37,6 +38,7 @@ export function AdminDashboard() {
     { icon: ShoppingCart, label: 'Orders', path: '/admin/orders' },
     { icon: Users, label: 'Resellers', path: '/admin/resellers' },
     { icon: CreditCard, label: 'Withdrawals', path: '/admin/withdrawals' },
+    { icon: MessageSquare, label: 'Support Tickets', path: '/admin/tickets' },
     { icon: Palette, label: 'Customize Shop', path: '/admin/customize' },
   ];
 
@@ -76,7 +78,7 @@ export function AdminDashboard() {
           <Button 
             onClick={handleLogout}
             variant="ghost" 
-            className="w-full flex items-center justify-start gap-3 text-rose-450 hover:text-rose-300 hover:bg-slate-800 rounded-xl py-3 px-4 h-auto font-bold border-none"
+            className="w-full flex items-center justify-start gap-3 text-rose-455 hover:text-rose-300 hover:bg-slate-800 rounded-xl py-3 px-4 h-auto font-bold border-none"
           >
             <LogOut className="w-5 h-5" />
             <span>Sign Out</span>
@@ -98,6 +100,7 @@ export function AdminDashboard() {
           <Route path="orders" element={<OrderManagement />} />
           <Route path="resellers" element={<ResellerManagement />} />
           <Route path="withdrawals" element={<WithdrawalManagement />} />
+          <Route path="tickets" element={<TicketManagement />} />
           <Route path="customize" element={<ShopCustomization />} />
         </Routes>
       </main>
