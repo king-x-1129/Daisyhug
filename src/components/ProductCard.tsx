@@ -367,14 +367,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </CardContent>
           </Link>
           <CardFooter className="p-4 pt-0">
-            <Button 
-              onClick={handleAddToCart}
-              disabled={(selectedVariant ? selectedVariant.stock : product.stock) <= 0}
-              className="w-full bg-slate-900 dark:bg-slate-800 dark:hover:bg-indigo-600 hover:bg-indigo-600 text-white font-bold rounded-xl h-10 transition-all active:scale-95 group/btn"
-            >
-              <ShoppingCart className="w-4 h-4 mr-2 group-hover/btn:scale-110 transition-transform" />
-              {selectedVariant ? 'Add to Cart' : 'Select Option'}
-            </Button>
+            <Link to={`/product/${product.id}`} className="w-full">
+              <Button 
+                disabled={(selectedVariant ? selectedVariant.stock : product.stock) <= 0}
+                className="w-full bg-slate-900 dark:bg-slate-800 dark:hover:bg-indigo-600 hover:bg-indigo-600 text-white font-bold rounded-xl h-10 transition-all active:scale-95 group/btn"
+              >
+                <ShoppingCart className="w-4 h-4 mr-2 group-hover/btn:scale-110 transition-transform" />
+                {selectedVariant ? 'Add to Cart' : 'Select Option'}
+              </Button>
+            </Link>
           </CardFooter>
         </div>
       </Card>

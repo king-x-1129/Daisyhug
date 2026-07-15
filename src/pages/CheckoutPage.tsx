@@ -724,7 +724,7 @@ export function CheckoutPage() {
             <Button 
               type="submit"
               disabled={loading}
-              className="w-full mt-6 h-14 bg-indigo-650 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg border-none"
+              className="w-full mt-6 py-5 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-500 dark:hover:bg-indigo-600 font-extrabold text-sm uppercase tracking-wider rounded-xl shadow-xl hover:shadow-2xl shadow-indigo-500/30 dark:shadow-none transition-all duration-200 transform hover:-translate-y-0.5 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 border-none h-auto"
             >
               {loading ? "Processing..." : "Place Order"}
             </Button>
