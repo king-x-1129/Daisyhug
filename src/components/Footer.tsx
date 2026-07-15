@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 export function Footer() {
   const location = useLocation();
@@ -29,9 +29,11 @@ export function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm">
-              <li><a href="/" className="hover:text-indigo-400 transition-colors">Home</a></li>
-              <li><a href="/become-reseller" className="hover:text-indigo-400 transition-colors">Become a Reseller</a></li>
-              <li><a href="/auth" className="hover:text-indigo-400 transition-colors">Login / Register</a></li>
+              <li><Link to="/" className="hover:text-indigo-400 transition-colors">Home</Link></li>
+              <li><Link to="/become-a-reseller" className="hover:text-indigo-400 transition-colors">Become a Reseller</Link></li>
+              {location.pathname === '/become-a-reseller' && (
+                <li><Link to="/auth" className="hover:text-indigo-400 transition-colors">Reseller Login</Link></li>
+              )}
             </ul>
           </div>
           <div>
