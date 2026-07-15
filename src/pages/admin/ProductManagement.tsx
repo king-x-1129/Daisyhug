@@ -56,6 +56,8 @@ export function ProductManagement() {
     stock: '',
     lowStockThreshold: '5',
     tags: '',
+    sizes: '',
+    colors: '',
     variants: [] as ProductVariant[]
   });
 
@@ -122,6 +124,8 @@ export function ProductManagement() {
         stock: Number(formData.stock),
         lowStockThreshold: Number(formData.lowStockThreshold),
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag !== ''),
+        sizes: formData.sizes.split(',').map(s => s.trim()).filter(s => s !== ''),
+        colors: formData.colors.split(',').map(c => c.trim()).filter(c => c !== ''),
         images: finalImageUrls,
         variants: formData.variants,
         createdAt: editingProduct ? editingProduct.createdAt : new Date().toISOString()
@@ -137,7 +141,7 @@ export function ProductManagement() {
       setIsDialogOpen(false);
       setEditingProduct(null);
       setImageItems([]);
-      setFormData({ title: '', description: '', category: '', price: '', companyPrice: '', stock: '', lowStockThreshold: '5', tags: '', variants: [] });
+      setFormData({ title: '', description: '', category: '', price: '', companyPrice: '', stock: '', lowStockThreshold: '5', tags: '', sizes: '', colors: '', variants: [] });
     } catch (error) {
       console.error("Error saving product:", error);
       toast.error("Operation failed");
@@ -471,6 +475,24 @@ export function ProductManagement() {
                         placeholder="e.g. electronics, gadget, new" 
                         value={formData.tags} 
                         onChange={e => setFormData({...formData, tags: e.target.value})} 
+                        className="rounded-xl" 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Sizes (comma separated)</Label>
+                      <Input 
+                        placeholder="e.g. S, M, L, XL" 
+                        value={formData.sizes} 
+                        onChange={e => setFormData({...formData, sizes: e.target.value})} 
+                        className="rounded-xl" 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Colors (comma separated)</Label>
+                      <Input 
+                        placeholder="e.g. Red, Blue, Black" 
+                        value={formData.colors} 
+                        onChange={e => setFormData({...formData, colors: e.target.value})} 
                         className="rounded-xl" 
                       />
                     </div>
@@ -909,6 +931,8 @@ export function ProductManagement() {
                         stock: p.stock.toString(),
                         lowStockThreshold: (p.lowStockThreshold || 5).toString(),
                         tags: (p.tags || []).join(', '),
+                        sizes: ((p as any).sizes || []).join(', '),
+                        colors: ((p as any).colors || []).join(', '),
                         variants: p.variants || []
                       });
                       setImageItems(p.images.map(url => ({ id: Math.random().toString(36).substr(2, 9), url })));
