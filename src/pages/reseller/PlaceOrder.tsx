@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Product, OrderStatus } from '@/types';
@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { Search, ChevronDown, Check } from 'lucide-react';
 
 export function PlaceOrder() {
   const { user, profile } = useAuth();
@@ -21,9 +22,14 @@ export function PlaceOrder() {
   const [sellingPrice, setSellingPrice] = useState<number>(0);
   const [loading, setLoading] = useState(false);
 
+  // Searchable combobox state
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
   // Upgrade Product Selection states
-  const [selectedSize, setSelectedSize] = useState<string>('Medium');
-  const [selectedColor, setSelectedColor] = useState<string>('Black');
+  const [selectedSize, setSelectedSize] = useState<string>('Default');
+  const [selectedColor, setSelectedColor] = useState<string>('Default');
   const [selectedVariant, setSelectedVariant] = useState<string>('');
 
   // Branding Preference states
@@ -46,6 +52,17 @@ export function PlaceOrder() {
     address: ''
   });
 
+  // Handle click outside to close product dropdown
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   useEffect(() => {
     async function fetchProducts() {
       const querySnapshot = await getDocs(collection(db, 'products'));
@@ -61,6 +78,23 @@ export function PlaceOrder() {
   const walletBalance = profile?.walletBalance || 0;
   const requiredAmount = selectedProduct ? (selectedProduct.companyPrice + shippingCost) : 0;
   const hasSufficientWalletBalance = walletBalance >= requiredAmount;
+
+  // Variations from DB
+  const availableSizes = (selectedProduct as any)?.sizes || [];
+  const availableColors = (selectedProduct as any)?.colors || [];
+
+  // Reset variation state on product change
+  useEffect(() => {
+    if (selectedProduct) {
+      setSelectedSize('Default');
+      setSelectedColor('Default');
+      setSelectedVariant('');
+    }
+  }, [selectedProduct]);
+
+  const filteredProducts = products.filter(p => 
+    p.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -135,7 +169,7 @@ export function PlaceOrder() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 text-slate-900 dark:text-white transition-colors duration-355">
+    <div className="max-w-4xl mx-auto space-y-8 text-slate-900 dark:text-white transition-colors duration-350">
       <div>
         <h1 className="text-3xl font-black text-slate-900 dark:text-white">Place New Order</h1>
         <p className="text-slate-500 dark:text-slate-400 mt-1">Enter customer details and set your profit</p>
@@ -149,22 +183,81 @@ export function PlaceOrder() {
               <CardTitle className="text-lg font-bold text-slate-900 dark:text-white">Product Selection</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
+              <div className="space-y-2 relative" ref={dropdownRef}>
                 <Label className="text-slate-700 dark:text-slate-300 font-bold">Select Product</Label>
-                <Select onValueChange={(id) => {
-                  const p = products.find(x => x.id === id);
-                  setSelectedProduct(p || null);
-                  if (p) setSellingPrice(p.price);
-                }}>
-                  <SelectTrigger className="rounded-xl h-12 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
-                    <SelectValue placeholder="Choose a product" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
-                    {products.map(p => (
-                      <SelectItem key={p.id} value={p.id} className="focus:bg-indigo-50 dark:focus:bg-indigo-950/40">{p.title} (Cost: {formatPrice(p.companyPrice)})</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                
+                {/* Custom Searchable Dropdown Button */}
+                <button
+                  type="button"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="w-full rounded-xl h-12 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-4 flex items-center justify-between shadow-sm hover:border-slate-300 dark:hover:border-slate-750 transition-colors"
+                >
+                  {selectedProduct ? (
+                    <div className="flex items-center gap-3">
+                      <img 
+                        src={selectedProduct.images[0] || 'https://via.placeholder.com/40'} 
+                        alt="" 
+                        className="w-8 h-8 rounded-lg object-cover bg-slate-50"
+                        referrerPolicy="no-referrer"
+                      />
+                      <span className="font-bold text-sm truncate">{selectedProduct.title}</span>
+                    </div>
+                  ) : (
+                    <span className="text-slate-400 text-sm">Choose a product</span>
+                  )}
+                  <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {/* Combobox Dropdown List */}
+                {isDropdownOpen && (
+                  <div className="absolute left-0 right-0 mt-1.5 bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-750 rounded-2xl shadow-2xl z-50 overflow-hidden max-h-72 flex flex-col">
+                    <div className="p-2 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2 bg-slate-50 dark:bg-slate-900">
+                      <Search className="w-4 h-4 text-slate-400 shrink-0 ml-2" />
+                      <input
+                        type="text"
+                        placeholder="Search product name..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full bg-transparent border-none text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-0 py-1.5"
+                      />
+                    </div>
+                    <div className="overflow-y-auto flex-1 divide-y divide-slate-100 dark:divide-slate-800">
+                      {filteredProducts.length > 0 ? (
+                        filteredProducts.map(p => (
+                          <button
+                            key={p.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedProduct(p);
+                              setSellingPrice(p.price);
+                              setIsDropdownOpen(false);
+                              setSearchQuery('');
+                            }}
+                            className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors"
+                          >
+                            <div className="flex items-center gap-3">
+                              <img
+                                src={p.images[0] || 'https://via.placeholder.com/40'}
+                                alt=""
+                                className="w-10 h-10 rounded-lg object-cover bg-slate-100"
+                                referrerPolicy="no-referrer"
+                              />
+                              <div>
+                                <p className="font-bold text-sm text-slate-900 dark:text-white truncate max-w-[200px] md:max-w-[300px]">{p.title}</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Cost: {formatPrice(p.companyPrice)}</p>
+                              </div>
+                            </div>
+                            {selectedProduct?.id === p.id && (
+                              <Check className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                            )}
+                          </button>
+                        ))
+                      ) : (
+                        <div className="p-4 text-center text-slate-400 text-sm">No products found</div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {selectedProduct && (
@@ -176,35 +269,60 @@ export function PlaceOrder() {
                     </span>
                   </div>
 
-                  {/* Size selection */}
+                  {/* Size and Color selection */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Size selector */}
                     <div className="space-y-2">
                       <Label className="text-slate-700 dark:text-slate-300 font-bold">Size</Label>
-                      <Select value={selectedSize} onValueChange={setSelectedSize}>
-                        <SelectTrigger className="rounded-xl h-11 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
-                          <SelectValue placeholder="Select Size" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
-                          <SelectItem value="Small" className="focus:bg-indigo-50 dark:focus:bg-indigo-950/40">Small</SelectItem>
-                          <SelectItem value="Medium" className="focus:bg-indigo-50 dark:focus:bg-indigo-950/40">Medium</SelectItem>
-                          <SelectItem value="Large" className="focus:bg-indigo-50 dark:focus:bg-indigo-950/40">Large</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      {availableSizes.length > 0 ? (
+                        <Select value={selectedSize} onValueChange={setSelectedSize}>
+                          <SelectTrigger className="rounded-xl h-11 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                            <SelectValue placeholder="Select Size" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                            <SelectItem value="Default" className="focus:bg-indigo-50 dark:focus:bg-indigo-950/40">Default</SelectItem>
+                            {availableSizes.map((sz: string) => (
+                              <SelectItem key={sz} value={sz} className="focus:bg-indigo-50 dark:focus:bg-indigo-950/40">{sz}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Select value="Default" disabled>
+                          <SelectTrigger className="rounded-xl h-11 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-400 cursor-not-allowed">
+                            <SelectValue placeholder="Default" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                            <SelectItem value="Default">Default</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
                     </div>
 
                     {/* Color selection */}
                     <div className="space-y-2">
                       <Label className="text-slate-700 dark:text-slate-300 font-bold">Color</Label>
-                      <Select value={selectedColor} onValueChange={setSelectedColor}>
-                        <SelectTrigger className="rounded-xl h-11 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
-                          <SelectValue placeholder="Select Color" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
-                          <SelectItem value="Red" className="focus:bg-indigo-50 dark:focus:bg-indigo-950/40">Red</SelectItem>
-                          <SelectItem value="Blue" className="focus:bg-indigo-50 dark:focus:bg-indigo-950/40">Blue</SelectItem>
-                          <SelectItem value="Black" className="focus:bg-indigo-50 dark:focus:bg-indigo-950/40">Black</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      {availableColors.length > 0 ? (
+                        <Select value={selectedColor} onValueChange={setSelectedColor}>
+                          <SelectTrigger className="rounded-xl h-11 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                            <SelectValue placeholder="Select Color" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                            <SelectItem value="Default" className="focus:bg-indigo-50 dark:focus:bg-indigo-950/40">Default</SelectItem>
+                            {availableColors.map((col: string) => (
+                              <SelectItem key={col} value={col} className="focus:bg-indigo-50 dark:focus:bg-indigo-950/40">{col}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Select value="Default" disabled>
+                          <SelectTrigger className="rounded-xl h-11 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-400 cursor-not-allowed">
+                            <SelectValue placeholder="Default" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                            <SelectItem value="Default">Default</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
                     </div>
                   </div>
 
@@ -274,7 +392,7 @@ export function PlaceOrder() {
                     value={customerInfo.city}
                     onChange={(e) => setCustomerInfo({...customerInfo, city: e.target.value})}
                     placeholder="City Name" 
-                    className="rounded-xl h-12 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus-visible:ring-indigo-500" 
+                    className="rounded-xl h-12 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus-visible:ring-indigo-500" 
                   />
                 </div>
                 <div className="md:col-span-2 space-y-2">
@@ -303,7 +421,7 @@ export function PlaceOrder() {
                   onClick={() => setBrandingPreference('company')}
                   className={`flex-1 py-3 px-4 rounded-xl border-2 transition-all font-bold text-sm ${
                     brandingPreference === 'company'
-                      ? 'border-indigo-650 bg-indigo-50/10 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500'
+                      ? 'border-indigo-650 bg-indigo-50/10 text-indigo-650 dark:text-indigo-400 dark:border-indigo-500'
                       : 'border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-700 hover:border-slate-300 dark:text-slate-400 dark:hover:text-slate-300'
                   }`}
                 >
@@ -314,7 +432,7 @@ export function PlaceOrder() {
                   onClick={() => setBrandingPreference('local')}
                   className={`flex-1 py-3 px-4 rounded-xl border-2 transition-all font-bold text-sm ${
                     brandingPreference === 'local'
-                      ? 'border-indigo-650 bg-indigo-50/10 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500'
+                      ? 'border-indigo-650 bg-indigo-50/10 text-indigo-650 dark:text-indigo-400 dark:border-indigo-500'
                       : 'border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-700 hover:border-slate-300 dark:text-slate-400 dark:hover:text-slate-300'
                   }`}
                 >
