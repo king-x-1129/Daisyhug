@@ -307,7 +307,15 @@ export function Navbar() {
                   )}
                 </AnimatePresence>
               </div>
-            ) : null}
+            ) : (
+              !user && location.pathname === '/become-a-reseller' ? (
+                <Link to="/auth">
+                  <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full px-6 h-10 shadow-md">
+                    Reseller Login
+                  </Button>
+                </Link>
+              ) : null
+            )}
           </div>
 
           {/* Mobile Buttons */}
@@ -394,7 +402,13 @@ export function Navbar() {
                         </Link>
                       )}
                     </div>
-                  ) : null}
+                  ) : (
+                    !user && location.pathname === '/become-a-reseller' ? (
+                      <Link to="/auth" className="flex items-center justify-center p-3 bg-indigo-650 hover:bg-indigo-700 text-white rounded-2xl font-bold shadow-md" onClick={() => setIsOpen(false)}>
+                        Reseller Login
+                      </Link>
+                    ) : null
+                  )}
                 </div>
 
                 {/* Dark mode toggle row */}

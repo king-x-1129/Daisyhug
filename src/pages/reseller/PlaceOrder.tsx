@@ -135,7 +135,7 @@ export function PlaceOrder() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 text-slate-900 dark:text-white">
+    <div className="max-w-4xl mx-auto space-y-8 text-slate-900 dark:text-white transition-colors duration-355">
       <div>
         <h1 className="text-3xl font-black text-slate-900 dark:text-white">Place New Order</h1>
         <p className="text-slate-500 dark:text-slate-400 mt-1">Enter customer details and set your profit</p>
@@ -144,9 +144,9 @@ export function PlaceOrder() {
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
           {/* Product Selection */}
-          <Card className="border-none bg-white dark:bg-slate-900 shadow-sm rounded-2xl">
+          <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm rounded-2xl">
             <CardHeader>
-              <CardTitle className="text-lg font-bold dark:text-white">Product Selection</CardTitle>
+              <CardTitle className="text-lg font-bold text-slate-900 dark:text-white">Product Selection</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -156,12 +156,12 @@ export function PlaceOrder() {
                   setSelectedProduct(p || null);
                   if (p) setSellingPrice(p.price);
                 }}>
-                  <SelectTrigger className="rounded-xl h-12 border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-white">
+                  <SelectTrigger className="rounded-xl h-12 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                     <SelectValue placeholder="Choose a product" />
                   </SelectTrigger>
-                  <SelectContent className="dark:bg-slate-800 dark:border-slate-750">
+                  <SelectContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
                     {products.map(p => (
-                      <SelectItem key={p.id} value={p.id}>{p.title} (Cost: {formatPrice(p.companyPrice)})</SelectItem>
+                      <SelectItem key={p.id} value={p.id} className="focus:bg-indigo-50 dark:focus:bg-indigo-950/40">{p.title} (Cost: {formatPrice(p.companyPrice)})</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -181,13 +181,13 @@ export function PlaceOrder() {
                     <div className="space-y-2">
                       <Label className="text-slate-700 dark:text-slate-300 font-bold">Size</Label>
                       <Select value={selectedSize} onValueChange={setSelectedSize}>
-                        <SelectTrigger className="rounded-xl h-11 border-slate-200 dark:border-slate-800 dark:bg-slate-800">
+                        <SelectTrigger className="rounded-xl h-11 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                           <SelectValue placeholder="Select Size" />
                         </SelectTrigger>
-                        <SelectContent className="dark:bg-slate-800">
-                          <SelectItem value="Small">Small</SelectItem>
-                          <SelectItem value="Medium">Medium</SelectItem>
-                          <SelectItem value="Large">Large</SelectItem>
+                        <SelectContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                          <SelectItem value="Small" className="focus:bg-indigo-50 dark:focus:bg-indigo-950/40">Small</SelectItem>
+                          <SelectItem value="Medium" className="focus:bg-indigo-50 dark:focus:bg-indigo-950/40">Medium</SelectItem>
+                          <SelectItem value="Large" className="focus:bg-indigo-50 dark:focus:bg-indigo-950/40">Large</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -196,13 +196,13 @@ export function PlaceOrder() {
                     <div className="space-y-2">
                       <Label className="text-slate-700 dark:text-slate-300 font-bold">Color</Label>
                       <Select value={selectedColor} onValueChange={setSelectedColor}>
-                        <SelectTrigger className="rounded-xl h-11 border-slate-200 dark:border-slate-800 dark:bg-slate-800">
+                        <SelectTrigger className="rounded-xl h-11 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                           <SelectValue placeholder="Select Color" />
                         </SelectTrigger>
-                        <SelectContent className="dark:bg-slate-800">
-                          <SelectItem value="Red">Red</SelectItem>
-                          <SelectItem value="Blue">Blue</SelectItem>
-                          <SelectItem value="Black">Black</SelectItem>
+                        <SelectContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                          <SelectItem value="Red" className="focus:bg-indigo-50 dark:focus:bg-indigo-950/40">Red</SelectItem>
+                          <SelectItem value="Blue" className="focus:bg-indigo-50 dark:focus:bg-indigo-950/40">Blue</SelectItem>
+                          <SelectItem value="Black" className="focus:bg-indigo-50 dark:focus:bg-indigo-950/40">Black</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -213,12 +213,12 @@ export function PlaceOrder() {
                     <div className="space-y-2">
                       <Label className="text-slate-700 dark:text-slate-300 font-bold">Variation</Label>
                       <Select value={selectedVariant} onValueChange={setSelectedVariant}>
-                        <SelectTrigger className="rounded-xl h-11 border-slate-200 dark:border-slate-800 dark:bg-slate-800">
+                        <SelectTrigger className="rounded-xl h-11 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                           <SelectValue placeholder="Select Variant" />
                         </SelectTrigger>
-                        <SelectContent className="dark:bg-slate-800">
+                        <SelectContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
                           {selectedProduct.variants.map((v) => (
-                            <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+                            <SelectItem key={v.id} value={v.id} className="focus:bg-indigo-50 dark:focus:bg-indigo-950/40">{v.name}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -231,9 +231,9 @@ export function PlaceOrder() {
                       type="number" 
                       value={sellingPrice} 
                       onChange={(e) => setSellingPrice(Number(e.target.value))}
-                      className="rounded-xl h-12 border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-white"
+                      className="rounded-xl h-12 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus-visible:ring-indigo-500"
                     />
-                    <p className="text-xs text-slate-500 dark:text-slate-450 mt-1">Suggested: {formatPrice(selectedProduct.price)}</p>
+                    <p className="text-xs text-slate-550 dark:text-slate-400 mt-1">Suggested: {formatPrice(selectedProduct.price)}</p>
                   </div>
                 </div>
               )}
@@ -241,9 +241,9 @@ export function PlaceOrder() {
           </Card>
 
           {/* Customer Details */}
-          <Card className="border-none bg-white dark:bg-slate-900 shadow-sm rounded-2xl">
+          <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm rounded-2xl">
             <CardHeader>
-              <CardTitle className="text-lg font-bold dark:text-white">Customer Details</CardTitle>
+              <CardTitle className="text-lg font-bold text-slate-900 dark:text-white">Customer Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -254,7 +254,7 @@ export function PlaceOrder() {
                     value={customerInfo.name}
                     onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
                     placeholder="Full Name" 
-                    className="rounded-xl h-12 border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-white" 
+                    className="rounded-xl h-12 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus-visible:ring-indigo-500" 
                   />
                 </div>
                 <div className="space-y-2">
@@ -264,7 +264,7 @@ export function PlaceOrder() {
                     value={customerInfo.phone}
                     onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
                     placeholder="03001234567" 
-                    className="rounded-xl h-12 border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-white" 
+                    className="rounded-xl h-12 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus-visible:ring-indigo-500" 
                   />
                 </div>
                 <div className="space-y-2">
@@ -274,7 +274,7 @@ export function PlaceOrder() {
                     value={customerInfo.city}
                     onChange={(e) => setCustomerInfo({...customerInfo, city: e.target.value})}
                     placeholder="City Name" 
-                    className="rounded-xl h-12 border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-white" 
+                    className="rounded-xl h-12 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus-visible:ring-indigo-500" 
                   />
                 </div>
                 <div className="md:col-span-2 space-y-2">
@@ -284,7 +284,7 @@ export function PlaceOrder() {
                     value={customerInfo.address}
                     onChange={(e) => setCustomerInfo({...customerInfo, address: e.target.value})}
                     placeholder="House #, Street, Area" 
-                    className="rounded-xl h-12 border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-white" 
+                    className="rounded-xl h-12 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus-visible:ring-indigo-500" 
                   />
                 </div>
               </div>
@@ -292,9 +292,9 @@ export function PlaceOrder() {
           </Card>
 
           {/* Branding Preference Card */}
-          <Card className="border-none bg-white dark:bg-slate-900 shadow-sm rounded-2xl">
+          <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm rounded-2xl">
             <CardHeader>
-              <CardTitle className="text-lg font-bold dark:text-white">Branding Preference</CardTitle>
+              <CardTitle className="text-lg font-bold text-slate-900 dark:text-white">Branding Preference</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex gap-4">
@@ -303,8 +303,8 @@ export function PlaceOrder() {
                   onClick={() => setBrandingPreference('company')}
                   className={`flex-1 py-3 px-4 rounded-xl border-2 transition-all font-bold text-sm ${
                     brandingPreference === 'company'
-                      ? 'border-indigo-650 bg-indigo-50/10 text-indigo-650 dark:text-indigo-400 dark:border-indigo-500'
-                      : 'border-slate-100 dark:border-slate-800 hover:border-slate-200'
+                      ? 'border-indigo-650 bg-indigo-50/10 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500'
+                      : 'border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-700 hover:border-slate-300 dark:text-slate-400 dark:hover:text-slate-300'
                   }`}
                 >
                   Company Branding
@@ -314,8 +314,8 @@ export function PlaceOrder() {
                   onClick={() => setBrandingPreference('local')}
                   className={`flex-1 py-3 px-4 rounded-xl border-2 transition-all font-bold text-sm ${
                     brandingPreference === 'local'
-                      ? 'border-indigo-650 bg-indigo-50/10 text-indigo-650 dark:text-indigo-400 dark:border-indigo-500'
-                      : 'border-slate-100 dark:border-slate-800 hover:border-slate-200'
+                      ? 'border-indigo-650 bg-indigo-50/10 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500'
+                      : 'border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-700 hover:border-slate-300 dark:text-slate-400 dark:hover:text-slate-300'
                   }`}
                 >
                   Local Branding
@@ -330,7 +330,7 @@ export function PlaceOrder() {
                     value={customBrandName}
                     onChange={(e) => setCustomBrandName(e.target.value)}
                     placeholder="My Store Name"
-                    className="rounded-xl h-12 border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-white"
+                    className="rounded-xl h-12 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus-visible:ring-indigo-500"
                   />
                 </div>
               )}
@@ -338,9 +338,9 @@ export function PlaceOrder() {
           </Card>
 
           {/* Payment Method Card */}
-          <Card className="border-none bg-white dark:bg-slate-900 shadow-sm rounded-2xl">
+          <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm rounded-2xl">
             <CardHeader>
-              <CardTitle className="text-lg font-bold dark:text-white">Payment Method</CardTitle>
+              <CardTitle className="text-lg font-bold text-slate-900 dark:text-white">Payment Method</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-col gap-3">
@@ -350,8 +350,8 @@ export function PlaceOrder() {
                   onClick={() => setPaymentMethod('cod')}
                   className={`w-full py-3 px-4 rounded-xl border-2 transition-all font-bold text-sm text-left flex justify-between items-center ${
                     paymentMethod === 'cod'
-                      ? 'border-indigo-650 bg-indigo-50/10 text-indigo-650 dark:text-indigo-400 dark:border-indigo-500'
-                      : 'border-slate-100 dark:border-slate-800 hover:border-slate-200'
+                      ? 'border-indigo-600 bg-indigo-50/10 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500'
+                      : 'border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-700 hover:border-slate-300 dark:text-slate-400 dark:hover:text-slate-300'
                   }`}
                 >
                   <span>Cash on Delivery (COD)</span>
@@ -366,10 +366,10 @@ export function PlaceOrder() {
                     onClick={() => setPaymentMethod('wallet')}
                     className={`w-full py-3 px-4 rounded-xl border-2 transition-all font-bold text-sm text-left flex justify-between items-center ${
                       !hasSufficientWalletBalance
-                        ? 'opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-950 border-slate-100 dark:border-slate-900'
+                        ? 'opacity-50 cursor-not-allowed bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-900 text-slate-400 dark:text-slate-600'
                         : paymentMethod === 'wallet'
-                        ? 'border-indigo-650 bg-indigo-50/10 text-indigo-650 dark:text-indigo-400 dark:border-indigo-500'
-                        : 'border-slate-100 dark:border-slate-800 hover:border-slate-200'
+                        ? 'border-indigo-605 bg-indigo-50/10 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500'
+                        : 'border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-700 hover:border-slate-300 dark:text-slate-400 dark:hover:text-slate-300'
                     }`}
                     title={!hasSufficientWalletBalance ? "Insufficient wallet balance" : ""}
                   >
@@ -386,8 +386,8 @@ export function PlaceOrder() {
                   onClick={() => setPaymentMethod('card')}
                   className={`w-full py-3 px-4 rounded-xl border-2 transition-all font-bold text-sm text-left flex justify-between items-center ${
                     paymentMethod === 'card'
-                      ? 'border-indigo-650 bg-indigo-50/10 text-indigo-650 dark:text-indigo-400 dark:border-indigo-500'
-                      : 'border-slate-100 dark:border-slate-800 hover:border-slate-200'
+                      ? 'border-indigo-600 bg-indigo-50/10 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500'
+                      : 'border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-700 hover:border-slate-300 dark:text-slate-400 dark:hover:text-slate-300'
                   }`}
                 >
                   <span>Pay via Credit/Debit Card</span>
@@ -397,33 +397,33 @@ export function PlaceOrder() {
 
               {/* Card Inputs Placeholder */}
               {paymentMethod === 'card' && (
-                <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3 mt-4">
+                <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-250 dark:border-slate-800 space-y-3 mt-4">
                   <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Card details</p>
                   <div className="space-y-2">
                     <Input 
                       placeholder="Cardholder Name" 
                       value={cardDetails.cardholderName}
                       onChange={e => setCardDetails({...cardDetails, cardholderName: e.target.value})}
-                      className="h-10 dark:bg-slate-900"
+                      className="h-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
                     />
                     <Input 
                       placeholder="Card Number" 
                       value={cardDetails.cardNumber}
                       onChange={e => setCardDetails({...cardDetails, cardNumber: e.target.value})}
-                      className="h-10 dark:bg-slate-900"
+                      className="h-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
                     />
                     <div className="grid grid-cols-2 gap-2">
                       <Input 
                         placeholder="MM/YY" 
                         value={cardDetails.expiryDate}
                         onChange={e => setCardDetails({...cardDetails, expiryDate: e.target.value})}
-                        className="h-10 dark:bg-slate-900 text-center"
+                        className="h-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-center"
                       />
                       <Input 
                         placeholder="CVV" 
                         value={cardDetails.cvv}
                         onChange={e => setCardDetails({...cardDetails, cvv: e.target.value})}
-                        className="h-10 dark:bg-slate-900 text-center"
+                        className="h-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-center"
                       />
                     </div>
                   </div>
@@ -435,22 +435,22 @@ export function PlaceOrder() {
 
         {/* Right Column: Profit Summary */}
         <div className="space-y-6">
-          <Card className="border-none shadow-sm rounded-2xl bg-indigo-50 dark:bg-indigo-950/20 border-2 border-indigo-100 dark:border-indigo-900/40">
+          <Card className="border border-indigo-150 dark:border-indigo-900 bg-indigo-50 dark:bg-indigo-950/20 shadow-sm rounded-2xl">
             <CardHeader>
               <CardTitle className="text-lg font-bold text-indigo-900 dark:text-indigo-400">Profit Calculation</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between text-sm">
-                <span className="text-slate-655 dark:text-slate-350">Selling Price:</span>
-                <span className="font-bold dark:text-white font-sans">{formatPrice(sellingPrice)}</span>
+                <span className="text-slate-600 dark:text-slate-300">Selling Price:</span>
+                <span className="font-bold text-slate-900 dark:text-white font-sans">{formatPrice(sellingPrice)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-slate-655 dark:text-slate-350">Company Cost:</span>
-                <span className="font-bold text-rose-600 dark:text-rose-455 font-sans">- {formatPrice(selectedProduct?.companyPrice || 0)}</span>
+                <span className="text-slate-600 dark:text-slate-300">Company Cost:</span>
+                <span className="font-bold text-rose-600 dark:text-rose-400 font-sans">- {formatPrice(selectedProduct?.companyPrice || 0)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-slate-655 dark:text-slate-350">Shipping:</span>
-                <span className="font-bold text-rose-600 dark:text-rose-455 font-sans">- {formatPrice(shippingCost)}</span>
+                <span className="text-slate-600 dark:text-slate-300">Shipping:</span>
+                <span className="font-bold text-rose-600 dark:text-rose-450 font-sans">- {formatPrice(shippingCost)}</span>
               </div>
               <div className="pt-4 border-t border-indigo-200 dark:border-indigo-900/40 flex justify-between items-center">
                 <span className="font-bold text-indigo-900 dark:text-indigo-400">Your Profit:</span>
