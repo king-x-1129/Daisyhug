@@ -77,6 +77,8 @@ export interface Order {
     title: string;
     quantity: number;
     price: number;
+    variation?: string;
+    sku?: string;
   }[];
   sellingPrice: number;
   companyPrice: number;
