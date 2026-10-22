@@ -134,3 +134,28 @@ export interface Coupon {
   expiryDate?: string;
   isActive: boolean;
 }
+
+export interface BannerSlide {
+  id: string;
+  image: string;
+  badge?: string;
+  title: string;
+  subtitle: string;
+  primaryCtaText: string;
+  primaryCtaLink: string;
+  secondaryCtaText?: string;
+  secondaryCtaLink?: string;
+  order: number;
+  isActive: boolean;
+  createdAt?: string;
+}
+
+export interface AnnouncementItem {
+  id: string;
+  text: string;
+  highlight?: string;
+  link?: string;
+  order: number;
+  isActive: boolean;
+  createdAt?: string;
+}

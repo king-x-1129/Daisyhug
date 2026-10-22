@@ -239,6 +239,16 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    match /banners/{bannerId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /announcements/{announcementId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /tickets/{ticketId} {
       allow read: if isAuthenticated() && (request.auth.uid == resource.data.resellerId || isAdmin());
       allow create: if isAuthenticated() && request.resource.data.resellerId == request.auth.uid;

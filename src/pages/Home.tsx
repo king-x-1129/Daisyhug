@@ -3,6 +3,7 @@ import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '@/lib/firebase';
 import { Product } from '@/types';
 import { ProductCard, ProductCardSkeleton } from '@/components/ProductCard';
+import { HeroBannerSlider } from '@/components/HeroBannerSlider';
 import { 
   ShoppingBag, Search, ChevronRight, 
   Sparkles, Heart, Package, User, Users, Baby
@@ -107,6 +108,9 @@ export function Home() {
 
   return (
     <div className="bg-slate-50 dark:bg-slate-950 min-h-screen pb-20 text-slate-900 dark:text-white transition-colors duration-300">
+      {/* Apricot-inspired Hero Banner Slider */}
+      <HeroBannerSlider />
+
       {/* Top Search Bar Area */}
       <div className="bg-white/80 dark:bg-slate-900/85 backdrop-blur-xl border-b dark:border-slate-800 sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

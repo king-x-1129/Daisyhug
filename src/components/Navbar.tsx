@@ -1,6 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ShoppingCart, User, LogOut, Menu, X, LayoutDashboard, ShieldCheck, Sparkles, ShoppingBag, Zap, Heart, ChevronDown, Settings, Package, MessageCircle, Users, Sun, Moon } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
@@ -108,7 +109,9 @@ export function Navbar() {
   // ─── PORTAL NAV (reseller / customer) ────────────────────────────────────────
   if ((isReseller || isCustomer) && !isAdmin) {
     return (
-      <nav className="bg-white dark:bg-slate-900 border-b dark:border-slate-700 sticky top-0 z-50 shadow-sm">
+      <header className="sticky top-0 z-50">
+        <AnnouncementBar />
+        <nav className="bg-white dark:bg-slate-900 border-b dark:border-slate-700 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <LogoBlock />
@@ -150,12 +153,15 @@ export function Navbar() {
           </div>
         </div>
       </nav>
+    </header>
     );
   }
 
   // ─── FULL PUBLIC NAV (guests, admin) ─────────────────────────────────────────
   return (
-    <nav className="bg-white dark:bg-slate-900 border-b dark:border-slate-700 sticky top-0 z-50">
+    <header className="sticky top-0 z-50">
+      <AnnouncementBar />
+      <nav className="bg-white dark:bg-slate-900 border-b dark:border-slate-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center gap-10">
@@ -452,5 +458,6 @@ export function Navbar() {
         )}
       </AnimatePresence>
     </nav>
+    </header>
   );
 }
