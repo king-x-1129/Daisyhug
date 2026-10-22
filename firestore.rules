@@ -67,6 +67,7 @@ service cloud.firestore {
       return isAuthenticated() &&
         (request.auth.token.email == "kingx1129@gmail.com" ||
          request.auth.token.email == "storeilia08@gmail.com" ||
+         request.auth.token.email == "harrybryan010@gmail.com" ||
          (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
           (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'super-admin' ||
            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
@@ -166,6 +167,7 @@ service cloud.firestore {
 
     match /products/{productId} {
       allow read: if true;
+      // Only admins can manage products
       allow write: if isAdmin();
     }
 
@@ -230,6 +232,7 @@ service cloud.firestore {
 
     match /coupons/{couponId} {
       allow read: if true;
+      // Only admins can create/modify/delete coupons
       allow write: if isAdmin();
     }
 
@@ -241,12 +244,14 @@ service cloud.firestore {
 
     match /banners/{bannerId} {
       allow read: if true;
-      allow write: if isAdmin();
+      // Only admins can create/modify/delete banner slides
+      allow create, update, delete: if isAdmin();
     }
 
     match /announcements/{announcementId} {
       allow read: if true;
-      allow write: if isAdmin();
+      // Only admins can create/modify/delete announcements
+      allow create, update, delete: if isAdmin();
     }
 
     match /tickets/{ticketId} {

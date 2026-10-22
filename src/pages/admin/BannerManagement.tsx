@@ -208,7 +208,14 @@ export function BannerManagement() {
       resetBannerForm();
     } catch (err: any) {
       console.error(err);
-      toast.error(err.message || 'Failed to save banner');
+      if (err?.code === 'permission-denied') {
+        toast.error(
+          '🔒 Permission denied. Your Firestore rules need updating. Go to Firebase Console → Firestore → Rules tab and publish the updated rules from firestore.rules in your project.',
+          { duration: 8000 }
+        );
+      } else {
+        toast.error(err.message || 'Failed to save banner');
+      }
     } finally {
       setSaving(false);
     }
@@ -226,7 +233,11 @@ export function BannerManagement() {
       await deleteDoc(doc(db, 'banners', id));
       toast.success('Banner deleted');
     } catch (err: any) {
-      toast.error(err.message || 'Failed to delete banner');
+      if (err?.code === 'permission-denied') {
+        toast.error('🔒 Permission denied. Update Firestore rules in Firebase Console.', { duration: 8000 });
+      } else {
+        toast.error(err.message || 'Failed to delete banner');
+      }
     }
   };
 
@@ -237,7 +248,11 @@ export function BannerManagement() {
       });
       toast.success(`Banner ${!banner.isActive ? 'enabled' : 'disabled'}`);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to update status');
+      if (err?.code === 'permission-denied') {
+        toast.error('🔒 Permission denied. Update Firestore rules in Firebase Console.', { duration: 8000 });
+      } else {
+        toast.error(err.message || 'Failed to update status');
+      }
     }
   };
 
@@ -253,7 +268,14 @@ export function BannerManagement() {
       }
       toast.success('Default banners added to database!');
     } catch (err: any) {
-      toast.error(err.message || 'Failed to seed banners');
+      if (err?.code === 'permission-denied') {
+        toast.error(
+          '🔒 Permission denied. Your Firestore rules need updating. Go to Firebase Console → Firestore → Rules tab and publish the updated rules.',
+          { duration: 8000 }
+        );
+      } else {
+        toast.error(err.message || 'Failed to seed banners');
+      }
     } finally {
       setSaving(false);
     }
@@ -308,7 +330,14 @@ export function BannerManagement() {
       resetAnnouncementForm();
     } catch (err: any) {
       console.error(err);
-      toast.error(err.message || 'Failed to save announcement');
+      if (err?.code === 'permission-denied') {
+        toast.error(
+          '🔒 Permission denied. Your Firestore rules need updating. Go to Firebase Console → Firestore → Rules tab and publish the updated rules from firestore.rules in your project.',
+          { duration: 8000 }
+        );
+      } else {
+        toast.error(err.message || 'Failed to save announcement');
+      }
     } finally {
       setSaving(false);
     }
@@ -326,7 +355,11 @@ export function BannerManagement() {
       await deleteDoc(doc(db, 'announcements', id));
       toast.success('Announcement removed');
     } catch (err: any) {
-      toast.error(err.message || 'Failed to delete');
+      if (err?.code === 'permission-denied') {
+        toast.error('🔒 Permission denied. Update Firestore rules in Firebase Console.', { duration: 8000 });
+      } else {
+        toast.error(err.message || 'Failed to delete');
+      }
     }
   };
 
@@ -337,7 +370,11 @@ export function BannerManagement() {
       });
       toast.success(`Announcement ${!item.isActive ? 'activated' : 'paused'}`);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to toggle status');
+      if (err?.code === 'permission-denied') {
+        toast.error('🔒 Permission denied. Update Firestore rules in Firebase Console.', { duration: 8000 });
+      } else {
+        toast.error(err.message || 'Failed to toggle status');
+      }
     }
   };
 
@@ -353,7 +390,14 @@ export function BannerManagement() {
       }
       toast.success('Default announcements added to database!');
     } catch (err: any) {
-      toast.error(err.message || 'Failed to seed announcements');
+      if (err?.code === 'permission-denied') {
+        toast.error(
+          '🔒 Permission denied. Your Firestore rules need updating. Go to Firebase Console → Firestore → Rules tab and publish the updated rules.',
+          { duration: 8000 }
+        );
+      } else {
+        toast.error(err.message || 'Failed to seed announcements');
+      }
     } finally {
       setSaving(false);
     }
