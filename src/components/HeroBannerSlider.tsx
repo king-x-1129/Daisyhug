@@ -7,57 +7,19 @@ import { db } from '@/lib/firebase';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { BannerSlide } from '@/types';
 
-const DEFAULT_SLIDES: BannerSlide[] = [
-  {
-    id: 'default-slide-1',
-    image: 'https://apricot.com.pk/cdn/shop/files/Apricot_Winter_Collection.png?v=1791809609&width=2000',
-    badge: 'NEW WINTER ARRIVALS',
-    title: 'Luxury Home & Lifestyle Collection',
-    subtitle: 'From cozy bed linen and comforters to contemporary home essentials, experience unmatched elegance.',
-    primaryCtaText: 'Shop New Arrivals',
-    primaryCtaLink: '/shop',
-    secondaryCtaText: 'Become a Reseller',
-    secondaryCtaLink: '/become-a-reseller',
-    order: 1,
-    isActive: true,
-  },
-  {
-    id: 'default-slide-2',
-    image: 'https://apricot.com.pk/cdn/shop/files/ChatGPT_Image_Sep_10_2026_11_50_24_PM.png?v=1789066260&width=2000',
-    badge: 'WHOLESALE & DROPSHIPPING',
-    title: "Pakistan's Leading Reseller Network",
-    subtitle: 'Start your zero-investment online store today. Set custom profit margins, with automated nationwide COD delivery.',
-    primaryCtaText: 'Start Selling Today',
-    primaryCtaLink: '/become-a-reseller',
-    secondaryCtaText: 'Browse Catalog',
-    secondaryCtaLink: '/shop',
-    order: 2,
-    isActive: true,
-  },
-  {
-    id: 'default-slide-3',
-    image: 'https://apricot.com.pk/cdn/shop/files/ChatGPT_Image_Aug_20_2026_04_01_09_PM.png?v=1787224815&width=2000',
-    badge: 'FLAT 20% OFF — CODE: DAISY20',
-    title: 'Curated Trends For Every Room',
-    subtitle: 'Premium craftsmanship delivered to your doorstep across 100+ cities in Pakistan with Cash on Delivery.',
-    primaryCtaText: 'Explore Best Sellers',
-    primaryCtaLink: '/shop',
-    secondaryCtaText: 'View All Deals',
-    secondaryCtaLink: '/shop',
-    order: 3,
-    isActive: true,
-  },
-];
-
 export function HeroBannerSlider({ slides: propSlides }: { slides?: BannerSlide[] }) {
   const [dbSlides, setDbSlides] = useState<BannerSlide[]>([]);
+  const [loading, setLoading] = useState(!propSlides || propSlides.length === 0);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [direction, setDirection] = useState<number>(1);
 
   // Subscribe to Firestore banners if slides not passed via props
   useEffect(() => {
-    if (propSlides && propSlides.length > 0) return;
+    if (propSlides && propSlides.length > 0) {
+      setLoading(false);
+      return;
+    }
 
     let unsubscribe: () => void = () => {};
 
@@ -81,14 +43,18 @@ export function HeroBannerSlider({ slides: propSlides }: { slides?: BannerSlide[
           } else {
             setDbSlides([]);
           }
+          setLoading(false);
         },
         (error) => {
-          console.warn('Banner slides fetch fallback:', error);
+          console.warn('Banner slides fetch error:', error);
           setDbSlides([]);
+          setLoading(false);
         }
       );
     } catch (err) {
-      console.warn('Banner slides listener error, using fallback:', err);
+      console.warn('Banner slides listener error:', err);
+      setDbSlides([]);
+      setLoading(false);
     }
 
     return () => unsubscribe();
@@ -96,20 +62,19 @@ export function HeroBannerSlider({ slides: propSlides }: { slides?: BannerSlide[
 
   const slides = useMemo(() => {
     if (propSlides && propSlides.length > 0) return propSlides;
-    if (dbSlides.length > 0) return dbSlides;
-    return DEFAULT_SLIDES;
+    return dbSlides;
   }, [propSlides, dbSlides]);
 
   const totalSlides = slides.length;
 
   const nextSlide = useCallback(() => {
     setDirection(1);
-    setCurrentIndex((prev) => (prev + 1) % totalSlides);
+    setCurrentIndex((prev) => (prev + 1) % (totalSlides || 1));
   }, [totalSlides]);
 
   const prevSlide = useCallback(() => {
     setDirection(-1);
-    setCurrentIndex((prev) => (prev - 1 + totalSlides) % totalSlides);
+    setCurrentIndex((prev) => (prev - 1 + totalSlides) % (totalSlides || 1));
   }, [totalSlides]);
 
   const goToSlide = (index: number) => {
@@ -130,7 +95,30 @@ export function HeroBannerSlider({ slides: propSlides }: { slides?: BannerSlide[
     }
   }, [currentIndex, totalSlides]);
 
-  if (totalSlides === 0) return null;
+  // While loading Firestore data, render a clean neutral DaisyHug skeleton instead of competitor fallback
+  if (loading) {
+    return (
+      <div className="relative w-full overflow-hidden bg-slate-900 h-[360px] sm:h-[440px] md:h-[500px] lg:h-[560px] animate-pulse">
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 opacity-90" />
+        <div className="relative z-10 max-w-7xl mx-auto h-full px-6 sm:px-10 lg:px-12 flex flex-col justify-center">
+          <div className="max-w-xl sm:max-w-2xl space-y-4 sm:space-y-5">
+            <div className="h-6 w-32 rounded-full bg-slate-800/80" />
+            <div className="h-10 sm:h-14 w-3/4 rounded-2xl bg-slate-800/80" />
+            <div className="h-5 sm:h-6 w-full max-w-md rounded-xl bg-slate-800/60" />
+            <div className="flex gap-3 pt-2">
+              <div className="h-11 sm:h-12 w-36 rounded-full bg-slate-800" />
+              <div className="h-11 sm:h-12 w-32 rounded-full bg-slate-800/60" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // If no banners are published in Firestore, do not render or flash anything
+  if (totalSlides === 0) {
+    return null;
+  }
 
   const current = slides[currentIndex] || slides[0];
 
@@ -189,7 +177,7 @@ export function HeroBannerSlider({ slides: propSlides }: { slides?: BannerSlide[
                 (e.currentTarget as HTMLElement).style.display = 'none';
               }}
             />
-            {/* Apricot-inspired dark gradient overlays for maximum legibility */}
+            {/* Elegant dark gradient overlays for maximum contrast and legibility */}
             <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/50 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-black/20" />
           </div>
@@ -218,14 +206,16 @@ export function HeroBannerSlider({ slides: propSlides }: { slides?: BannerSlide[
                 {current.title}
               </motion.h1>
 
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.5 }}
-                className="text-sm sm:text-base md:text-lg text-slate-200/90 font-medium line-clamp-3 leading-relaxed max-w-lg"
-              >
-                {current.subtitle}
-              </motion.p>
+              {current.subtitle && (
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4, duration: 0.5 }}
+                  className="text-sm sm:text-base md:text-lg text-slate-200/90 font-medium line-clamp-3 leading-relaxed max-w-lg"
+                >
+                  {current.subtitle}
+                </motion.p>
+              )}
 
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -263,45 +253,51 @@ export function HeroBannerSlider({ slides: propSlides }: { slides?: BannerSlide[
         </motion.div>
       </AnimatePresence>
 
-      {/* Apricot-style Counter Badge */}
-      <div className="absolute bottom-6 right-6 z-20 hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-950/60 backdrop-blur-md border border-white/10 text-white text-xs font-bold tracking-wider">
-        <span className="text-white">{currentIndex + 1}</span>
-        <span className="text-slate-400">/</span>
-        <span className="text-slate-400">{totalSlides}</span>
-      </div>
+      {/* Slide Counter Badge */}
+      {totalSlides > 1 && (
+        <div className="absolute bottom-6 right-6 z-20 hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-950/60 backdrop-blur-md border border-white/10 text-white text-xs font-bold tracking-wider">
+          <span className="text-white">{currentIndex + 1}</span>
+          <span className="text-slate-400">/</span>
+          <span className="text-slate-400">{totalSlides}</span>
+        </div>
+      )}
 
-      {/* Navigation Arrows */}
-      <button
-        onClick={prevSlide}
-        aria-label="Previous slide"
-        className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-950/50 hover:bg-slate-950/80 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all opacity-80 group-hover:opacity-100 hover:scale-105 active:scale-95 cursor-pointer"
-      >
-        <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
-      </button>
-
-      <button
-        onClick={nextSlide}
-        aria-label="Next slide"
-        className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-950/50 hover:bg-slate-950/80 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all opacity-80 group-hover:opacity-100 hover:scale-105 active:scale-95 cursor-pointer"
-      >
-        <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
-      </button>
-
-      {/* Pagination Dots */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
-        {slides.map((slide, idx) => (
+      {/* Navigation Arrows (rendered only if multiple slides exist) */}
+      {totalSlides > 1 && (
+        <>
           <button
-            key={slide.id || idx}
-            onClick={() => goToSlide(idx)}
-            aria-label={`Go to slide ${idx + 1}`}
-            className={`transition-all rounded-full cursor-pointer ${
-              currentIndex === idx
-                ? 'w-8 h-2.5 bg-white shadow-md'
-                : 'w-2.5 h-2.5 bg-white/40 hover:bg-white/70'
-            }`}
-          />
-        ))}
-      </div>
+            onClick={prevSlide}
+            aria-label="Previous slide"
+            className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-950/50 hover:bg-slate-950/80 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all opacity-80 group-hover:opacity-100 hover:scale-105 active:scale-95 cursor-pointer"
+          >
+            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+          </button>
+
+          <button
+            onClick={nextSlide}
+            aria-label="Next slide"
+            className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-950/50 hover:bg-slate-950/80 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all opacity-80 group-hover:opacity-100 hover:scale-105 active:scale-95 cursor-pointer"
+          >
+            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+          </button>
+
+          {/* Pagination Dots */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+            {slides.map((slide, idx) => (
+              <button
+                key={slide.id || idx}
+                onClick={() => goToSlide(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+                className={`transition-all rounded-full cursor-pointer ${
+                  currentIndex === idx
+                    ? 'w-8 h-2.5 bg-white shadow-md'
+                    : 'w-2.5 h-2.5 bg-white/40 hover:bg-white/70'
+                }`}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

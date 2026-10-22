@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
@@ -6,33 +6,9 @@ import { db } from '@/lib/firebase';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { AnnouncementItem } from '@/types';
 
-const DEFAULT_ANNOUNCEMENTS: AnnouncementItem[] = [
-  {
-    id: 'default-1',
-    text: '✨ Exclusive Sale is LIVE! Use code ',
-    highlight: 'DAISY10',
-    link: '/shop',
-    order: 1,
-    isActive: true,
-  },
-  {
-    id: 'default-2',
-    text: '🚚 Free Delivery Across Pakistan on Orders Over Rs. 2,500',
-    link: '/shop',
-    order: 2,
-    isActive: true,
-  },
-  {
-    id: 'default-3',
-    text: '💳 Cash on Delivery (COD) & Online Debit/Credit Cards Accepted',
-    link: '/shop',
-    order: 3,
-    isActive: true,
-  },
-];
-
 export function AnnouncementBar() {
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -60,31 +36,29 @@ export function AnnouncementBar() {
           } else {
             setAnnouncements([]);
           }
+          setLoading(false);
         },
         (error) => {
-          console.warn('Announcements fetch fallback:', error);
+          console.warn('Announcements fetch error:', error);
           setAnnouncements([]);
+          setLoading(false);
         }
       );
     } catch (err) {
-      console.warn('Announcements listener error, using fallback:', err);
+      console.warn('Announcements listener error:', err);
+      setAnnouncements([]);
+      setLoading(false);
     }
 
     return () => unsubscribe();
   }, []);
 
-  // Use dynamic list if populated with active items, otherwise fallback to defaults
-  const displayItems = useMemo(() => {
-    if (announcements.length > 0) return announcements;
-    return DEFAULT_ANNOUNCEMENTS;
-  }, [announcements]);
-
-  const totalItems = displayItems.length;
+  const totalItems = announcements.length;
 
   useEffect(() => {
     if (isPaused || totalItems <= 1) return;
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % totalItems);
+      setCurrentIndex((prev) => (prev + 1) % (totalItems || 1));
     }, 4500);
     return () => clearInterval(interval);
   }, [isPaused, totalItems]);
@@ -108,9 +82,12 @@ export function AnnouncementBar() {
     setCurrentIndex((prev) => (prev + 1) % totalItems);
   };
 
-  if (totalItems === 0) return null;
+  // While loading or if there are no announcements configured, do not render or flash anything
+  if (loading || totalItems === 0) {
+    return null;
+  }
 
-  const current = displayItems[currentIndex] || displayItems[0];
+  const current = announcements[currentIndex] || announcements[0];
 
   return (
     <div
@@ -119,14 +96,18 @@ export function AnnouncementBar() {
       onMouseLeave={() => setIsPaused(false)}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Left Arrow */}
-        <button
-          onClick={handlePrev}
-          aria-label="Previous announcement"
-          className="p-1 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white transition-colors focus:outline-none"
-        >
-          <ChevronLeft className="w-3.5 h-3.5" />
-        </button>
+        {/* Left Arrow (only if multiple items exist) */}
+        {totalItems > 1 ? (
+          <button
+            onClick={handlePrev}
+            aria-label="Previous announcement"
+            className="p-1 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white transition-colors focus:outline-none cursor-pointer"
+          >
+            <ChevronLeft className="w-3.5 h-3.5" />
+          </button>
+        ) : (
+          <div className="w-6" />
+        )}
 
         {/* Center Animated Announcement */}
         <div className="flex-1 flex items-center justify-center min-h-[22px] px-2 text-center">
@@ -167,14 +148,18 @@ export function AnnouncementBar() {
           </AnimatePresence>
         </div>
 
-        {/* Right Arrow */}
-        <button
-          onClick={handleNext}
-          aria-label="Next announcement"
-          className="p-1 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white transition-colors focus:outline-none"
-        >
-          <ChevronRight className="w-3.5 h-3.5" />
-        </button>
+        {/* Right Arrow (only if multiple items exist) */}
+        {totalItems > 1 ? (
+          <button
+            onClick={handleNext}
+            aria-label="Next announcement"
+            className="p-1 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white transition-colors focus:outline-none cursor-pointer"
+          >
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        ) : (
+          <div className="w-6" />
+        )}
       </div>
     </div>
   );
