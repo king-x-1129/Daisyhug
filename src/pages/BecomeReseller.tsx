@@ -130,7 +130,7 @@ export function BecomeReseller() {
       <Card className="border-none shadow-xl rounded-3xl overflow-hidden bg-white dark:bg-slate-900 border dark:border-slate-800">
         <CardHeader className="bg-indigo-600 text-white p-8">
           <CardTitle className="text-2xl font-bold text-white font-sans">Reseller Application</CardTitle>
-          <CardDescription className="text-indigo-150 dark:text-indigo-200 mt-1">Please provide accurate information for verification and payments.</CardDescription>
+          <CardDescription className="text-indigo-200 dark:text-indigo-200 mt-1">Please provide accurate information for verification and payments.</CardDescription>
         </CardHeader>
         <CardContent className="p-8">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -214,7 +214,7 @@ export function BecomeReseller() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-3">
                   <Label className="dark:text-slate-300 font-bold">CNIC Front Side</Label>
-                  <div className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-4 text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-850 transition-all relative">
+                  <div className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-4 text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-all relative">
                     <input 
                       type="file" 
                       accept="image/*" 
@@ -234,7 +234,7 @@ export function BecomeReseller() {
 
                 <div className="space-y-3">
                   <Label className="dark:text-slate-300 font-bold">CNIC Back Side</Label>
-                  <div className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-4 text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-850 transition-all relative">
+                  <div className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-4 text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-all relative">
                     <input 
                       type="file" 
                       accept="image/*" 

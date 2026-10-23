@@ -74,6 +74,17 @@ service cloud.firestore {
            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'moderator')));
     }
 
+    function isReseller() {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'reseller';
+    }
+
+    function isVerifiedReseller() {
+      return isReseller() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isVerified == true;
+    }
+
     function hasOnlyAllowedFields(fields) {
       return request.resource.data.keys().hasOnly(fields);
     }
@@ -90,7 +101,7 @@ service cloud.firestore {
       return data.uid is string &&
              data.fullName is string && data.fullName.size() > 0 && data.fullName.size() < 100 &&
              isValidEmail(data.email) &&
-             data.role in ['customer', 'reseller', 'admin', 'moderator', 'super-admin'] &&
+             data.role in ['customer', 'reseller', 'admin', 'moderator', 'super-admin', 'creator'] &&
              data.walletBalance is number &&
              data.pendingProfit is number &&
              data.totalWithdrawn is number &&
@@ -178,7 +189,13 @@ service cloud.firestore {
                      request.auth.uid == resource.data.customerId ||
                      isAdmin());
       
-      allow create: if isValidOrder(request.resource.data);
+      // Any authenticated user OR the storefront (via server-verified guest flow) can create
+      // orders. We validate the order shape. Unauthenticated guests use the client-generated
+      // guestUid path, which is protected by shape validation below.
+      allow create: if isValidOrder(request.resource.data) &&
+                      (isAuthenticated() ||
+                       (request.resource.data.customerId is string &&
+                        request.resource.data.customerId.matches('^guest-.*')));
       
       allow update: if isAuthenticated() && 
                       (
@@ -255,9 +272,23 @@ service cloud.firestore {
     }
 
     match /tickets/{ticketId} {
+      // Resellers can only read their own tickets; admins can read all
       allow read: if isAuthenticated() && (request.auth.uid == resource.data.resellerId || isAdmin());
-      allow create: if isAuthenticated() && request.resource.data.resellerId == request.auth.uid;
+      // Only verified resellers (or admins) can open tickets
+      allow create: if isAuthenticated() && request.resource.data.resellerId == request.auth.uid &&
+                      (isVerifiedReseller() || isAdmin());
+      // Only admins can update (reply / close) tickets
       allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Alias: support_tickets mirrors the tickets collection rules
+    match /support_tickets/{ticketId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.resellerId || isAdmin());
+      allow create: if isAuthenticated() && request.resource.data.resellerId == request.auth.uid &&
+                      (isVerifiedReseller() || isAdmin());
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
 
   }

@@ -451,9 +451,10 @@ export function ProductDetail() {
               <span className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white font-sans tracking-tight">
                 {formatPrice(currentPrice)}
               </span>
-              {product.companyPrice && product.price > product.companyPrice && (
+              {/* Show strikethrough only when the product has an explicit compareAtPrice field */}
+              {(product as any).compareAtPrice && (product as any).compareAtPrice > currentPrice && (
                 <span className="text-sm font-semibold text-slate-400 dark:text-slate-500 line-through">
-                  {formatPrice(Math.round(currentPrice * 1.25))}
+                  {formatPrice((product as any).compareAtPrice)}
                 </span>
               )}
             </div>

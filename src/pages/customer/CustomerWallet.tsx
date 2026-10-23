@@ -234,7 +234,7 @@ export function CustomerWallet() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <Wallet className="w-8 h-8 text-indigo-650 dark:text-indigo-400" />
+            <Wallet className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
             Secure Wallet
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1">Manage saved cards, deposit money, and pay online securely</p>
@@ -244,7 +244,7 @@ export function CustomerWallet() {
             setIsDepositOpen(true);
             setDepositStep('form');
           }}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-11 px-5 font-bold shadow-lg shadow-indigo-150 border-none"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-11 px-5 font-bold shadow-lg shadow-indigo-200 border-none"
         >
           <Plus className="w-4 h-4 mr-2" /> Deposit Funds
         </Button>
@@ -263,7 +263,7 @@ export function CustomerWallet() {
 
             <CardContent className="p-8 space-y-6 relative z-10">
               <div className="flex justify-between items-center">
-                <span className="text-indigo-250 text-xs font-bold uppercase tracking-widest flex items-center gap-1.5">
+                <span className="text-indigo-300 text-xs font-bold uppercase tracking-widest flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4 text-emerald-400" /> Secure Balance
                 </span>
                 <Sparkles className="w-5 h-5 text-amber-300" />
@@ -294,7 +294,7 @@ export function CustomerWallet() {
                 variant="ghost" 
                 size="sm"
                 onClick={() => setIsAddCardOpen(true)}
-                className="h-8 px-2.5 text-xs text-indigo-650 dark:text-indigo-400 font-bold hover:bg-indigo-50 dark:hover:bg-indigo-950/30 rounded-lg flex items-center gap-1"
+                className="h-8 px-2.5 text-xs text-indigo-600 dark:text-indigo-400 font-bold hover:bg-indigo-50 dark:hover:bg-indigo-950/30 rounded-lg flex items-center gap-1"
               >
                 <Plus className="w-3.5 h-3.5" /> Add New
               </Button>
@@ -367,12 +367,12 @@ export function CustomerWallet() {
             <CardContent className="p-0">
               {loadingTx ? (
                 <div className="flex py-20 items-center justify-center">
-                  <Loader2 className="w-8 h-8 animate-spin text-slate-350" />
+                  <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
                 </div>
               ) : transactions.length === 0 ? (
                 <div className="text-center py-20 text-slate-400 dark:text-slate-500">
-                  <History className="w-12 h-12 text-slate-200 dark:text-slate-850 mx-auto mb-3" />
-                  <p className="font-bold text-slate-500 dark:text-slate-405">No transaction logs available.</p>
+                  <History className="w-12 h-12 text-slate-200 dark:text-slate-800 mx-auto mb-3" />
+                  <p className="font-bold text-slate-500 dark:text-slate-400">No transaction logs available.</p>
                   <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Deposits or order spend records will appear here.</p>
                 </div>
               ) : (
@@ -387,8 +387,8 @@ export function CustomerWallet() {
                   </TableHeader>
                   <TableBody>
                     {transactions.map((tx) => (
-                      <TableRow key={tx.id} className="hover:bg-slate-50/30 dark:hover:bg-slate-850/30 border-b border-slate-100 dark:border-slate-800/80 transition-colors">
-                        <TableCell className="pl-6 text-slate-500 dark:text-slate-450">
+                      <TableRow key={tx.id} className="hover:bg-slate-50/30 dark:hover:bg-slate-800/30 border-b border-slate-100 dark:border-slate-800/80 transition-colors">
+                        <TableCell className="pl-6 text-slate-500 dark:text-slate-400">
                           {format(parseISO(tx.createdAt), 'MMM dd, yyyy')}
                         </TableCell>
                         <TableCell>
@@ -398,12 +398,12 @@ export function CustomerWallet() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge className="bg-emerald-100 dark:bg-emerald-950/20 text-emerald-705 dark:text-emerald-450 border-none rounded-full px-2.5 py-0.5 text-[10px] font-bold">
+                          <Badge className="bg-emerald-100 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border-none rounded-full px-2.5 py-0.5 text-[10px] font-bold">
                             {tx.status}
                           </Badge>
                         </TableCell>
                         <TableCell className={`text-right pr-6 font-black font-sans text-sm ${
-                          tx.type === 'deposit' ? 'text-emerald-600 dark:text-emerald-450' : 'text-rose-600 dark:text-rose-450'
+                          tx.type === 'deposit' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
                         }`}>
                           {tx.type === 'deposit' ? '+' : '-'} {formatPrice(tx.amount)}
                         </TableCell>
@@ -428,9 +428,9 @@ export function CustomerWallet() {
               className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-lg shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden"
             >
               {/* Modal Header */}
-              <div className="p-6 border-b border-slate-150 dark:border-slate-800 flex items-center justify-between">
+              <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                 <h3 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-                  <ArrowDownLeft className="w-5 h-5 text-indigo-650 dark:text-indigo-400" />
+                  <ArrowDownLeft className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                   Deposit Funds
                 </h3>
                 <button 
@@ -461,7 +461,7 @@ export function CustomerWallet() {
                           type="button"
                           key={amt}
                           onClick={() => setDepositAmount(amt.toString())}
-                          className="flex-1 py-2 text-xs font-bold rounded-lg border border-slate-200 dark:border-slate-800 dark:text-slate-350 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 hover:border-indigo-300 dark:hover:border-indigo-800 hover:text-indigo-650 dark:hover:text-indigo-400 transition-all"
+                          className="flex-1 py-2 text-xs font-bold rounded-lg border border-slate-200 dark:border-slate-800 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 hover:border-indigo-300 dark:hover:border-indigo-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all"
                         >
                           +{amt}
                         </button>
@@ -480,8 +480,8 @@ export function CustomerWallet() {
                             onClick={() => setSelectedCardId(card.id)}
                             className={`flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition-all ${
                               selectedCardId === card.id
-                                ? 'border-indigo-650 bg-indigo-50/20 dark:bg-indigo-950/20'
-                                : 'border-slate-150 dark:border-slate-800 hover:border-slate-300'
+                                ? 'border-indigo-600 bg-indigo-50/20 dark:bg-indigo-950/20'
+                                : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'
                             }`}
                           >
                             <div className="flex items-center gap-3">
@@ -499,8 +499,8 @@ export function CustomerWallet() {
                           onClick={() => setSelectedCardId('')}
                           className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
                             selectedCardId === ''
-                              ? 'border-indigo-650 bg-indigo-50/20 dark:bg-indigo-950/20'
-                              : 'border-slate-150 dark:border-slate-800 hover:border-slate-300'
+                              ? 'border-indigo-600 bg-indigo-50/20 dark:bg-indigo-950/20'
+                              : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'
                           }`}
                         >
                           <Plus className="w-5 h-5 text-slate-500 dark:text-slate-400" />
@@ -599,14 +599,14 @@ export function CustomerWallet() {
                           onChange={(e) => setSaveCardCheckbox(e.target.checked)}
                           className="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4"
                         />
-                        <label htmlFor="save_card" className="text-xs font-medium text-slate-650 dark:text-slate-400 cursor-pointer">
+                        <label htmlFor="save_card" className="text-xs font-medium text-slate-600 dark:text-slate-400 cursor-pointer">
                           Save this card details for future payments
                         </label>
                       </div>
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-450 text-xs">
+                  <div className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs">
                     <ShieldCheck className="w-4 h-4 text-emerald-500 flex-shrink-0" />
                     <span>Your transactions are secured with industry-grade encryption.</span>
                   </div>
@@ -622,7 +622,7 @@ export function CustomerWallet() {
 
               {depositStep === 'processing' && (
                 <div className="p-12 flex flex-col items-center justify-center text-center space-y-4">
-                  <Loader2 className="w-12 h-12 text-indigo-650 animate-spin" />
+                  <Loader2 className="w-12 h-12 text-indigo-600 animate-spin" />
                   <p className="font-bold text-slate-800 dark:text-white">Connecting to secure network...</p>
                   <p className="text-xs text-slate-400 dark:text-slate-500">Please do not refresh the page or close this modal.</p>
                 </div>
@@ -662,7 +662,7 @@ export function CustomerWallet() {
               exit={{ scale: 0.95, opacity: 0 }}
               className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden"
             >
-              <div className="p-6 border-b border-slate-150 dark:border-slate-800 flex items-center justify-between">
+              <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                 <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
                   <CreditCard className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                   Add Payment Method
@@ -748,8 +748,8 @@ export function CustomerWallet() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 p-3.5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800 text-[10px] text-slate-500 dark:text-slate-450 mt-2">
-                  <ShieldCheck className="w-4 h-4 text-indigo-550 flex-shrink-0" />
+                <div className="flex items-center gap-2 p-3.5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800 text-[10px] text-slate-500 dark:text-slate-400 mt-2">
+                  <ShieldCheck className="w-4 h-4 text-indigo-500 flex-shrink-0" />
                   <span>Your card CVV is never saved. Card numbers are stored in a masked format.</span>
                 </div>
 

@@ -30,7 +30,8 @@ export function AdminDashboard() {
     }
   };
 
-  if (loading) return <div className="flex h-screen items-center justify-center">Loading...</div>;
+  if (loading) return <div className="flex h-screen items-center justify-center text-slate-500">Loading admin panel...</div>;
+  // Route-level guard in App.tsx handles unauthorized redirect; this is a fallback.
   if (!isAdmin) return <Navigate to="/admin-login" replace />;
 
   const navItems = [
@@ -80,7 +81,7 @@ export function AdminDashboard() {
           <Button 
             onClick={handleLogout}
             variant="ghost" 
-            className="w-full flex items-center justify-start gap-3 text-rose-455 hover:text-rose-300 hover:bg-slate-800 rounded-xl py-3 px-4 h-auto font-bold border-none"
+            className="w-full flex items-center justify-start gap-3 text-rose-400 hover:text-rose-300 hover:bg-slate-800 rounded-xl py-3 px-4 h-auto font-bold border-none"
           >
             <LogOut className="w-5 h-5" />
             <span>Sign Out</span>

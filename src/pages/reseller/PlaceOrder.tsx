@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, addDoc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, doc, runTransaction, increment } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Product, OrderStatus } from '@/types';
 import { useAuth } from '@/context/AuthContext';
@@ -166,6 +166,31 @@ export function PlaceOrder() {
         updatedAt: new Date().toISOString()
       };
 
+      if (paymentMethod === 'wallet') {
+        await runTransaction(db, async (txn) => {
+          const userRef = doc(db, 'users', user.uid);
+          const userSnap = await txn.get(userRef);
+          if (!userSnap.exists()) throw new Error('Reseller account not found');
+
+          const currentBalance = (userSnap.data().walletBalance as number) || 0;
+          if (currentBalance < requiredAmount) {
+            throw new Error("Insufficient wallet balance. Available: Rs. " + currentBalance.toLocaleString() + ", Required: Rs. " + requiredAmount.toLocaleString());
+          }
+
+          txn.update(userRef, {
+            walletBalance: increment(-requiredAmount),
+          });
+        });
+
+        await addDoc(collection(db, 'users', user.uid, 'walletTransactions'), {
+          amount: requiredAmount,
+          type: 'payment',
+          description: "Order Payment: " + selectedProduct.title,
+          status: 'Completed',
+          createdAt: new Date().toISOString(),
+        });
+      }
+
       await addDoc(collection(db, 'orders'), orderPayload);
       toast.success("Order placed successfully!");
       navigate('/reseller/orders');
@@ -177,7 +202,7 @@ export function PlaceOrder() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 text-slate-900 dark:text-white transition-colors duration-350">
+    <div className="max-w-4xl mx-auto space-y-8 text-slate-900 dark:text-white transition-colors duration-300">
       <div>
         <h1 className="text-3xl font-black text-slate-900 dark:text-white">Place New Order</h1>
         <p className="text-slate-500 dark:text-slate-400 mt-1">Enter customer details and set your profit</p>
@@ -207,7 +232,7 @@ export function PlaceOrder() {
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                           Size: <span className="font-semibold text-slate-800 dark:text-slate-200">{selectedSize}</span> | Color: <span className="font-semibold text-slate-800 dark:text-slate-200">{selectedColor}</span>
                         </p>
-                        <p className="text-xs font-bold text-indigo-650 dark:text-indigo-400 mt-1">
+                        <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 mt-1">
                           Retail Price: {formatPrice(selectedProduct.price)} | Cost: {formatPrice(selectedProduct.companyPrice)}
                         </p>
                       </div>
@@ -222,7 +247,7 @@ export function PlaceOrder() {
                         setTempVariant(selectedVariant);
                         setIsDrawerOpen(true);
                       }}
-                      className="rounded-xl border-slate-200 dark:border-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-white font-bold"
+                      className="rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-white font-bold"
                     >
                       Change
                     </Button>
@@ -236,7 +261,7 @@ export function PlaceOrder() {
                       onChange={(e) => setSellingPrice(Number(e.target.value))}
                       className="rounded-xl h-12 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus-visible:ring-indigo-500 font-sans"
                     />
-                    <p className="text-xs text-slate-550 dark:text-slate-400 mt-1">Suggested: {formatPrice(selectedProduct.price)}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Suggested: {formatPrice(selectedProduct.price)}</p>
                   </div>
                 </div>
               ) : (
@@ -379,7 +404,7 @@ export function PlaceOrder() {
                     onClick={() => setPaymentMethod('wallet')}
                     className={`w-full py-3 px-4 rounded-xl border-2 transition-all font-bold text-sm text-left flex justify-between items-center ${
                       !hasSufficientWalletBalance
-                        ? 'opacity-50 cursor-not-allowed bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-900 text-slate-400 dark:text-slate-605'
+                        ? 'opacity-50 cursor-not-allowed bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-900 text-slate-400 dark:text-slate-600'
                         : paymentMethod === 'wallet'
                         ? 'border-indigo-600 bg-indigo-50/10 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500'
                         : 'border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-700 hover:border-slate-300 dark:text-slate-400 dark:hover:text-slate-300 bg-transparent'
@@ -410,7 +435,7 @@ export function PlaceOrder() {
 
               {/* Card Inputs Placeholder */}
               {paymentMethod === 'card' && (
-                <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-250 dark:border-slate-800 space-y-3 mt-4">
+                <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-300 dark:border-slate-800 space-y-3 mt-4">
                   <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Card details</p>
                   <div className="space-y-2">
                     <Input 
@@ -448,7 +473,7 @@ export function PlaceOrder() {
 
         {/* Right Column: Profit Summary */}
         <div className="space-y-6">
-          <Card className="border border-indigo-150 dark:border-indigo-900 bg-indigo-50 dark:bg-indigo-950/20 shadow-sm rounded-2xl">
+          <Card className="border border-indigo-200 dark:border-indigo-900 bg-indigo-50 dark:bg-indigo-950/20 shadow-sm rounded-2xl">
             <CardHeader>
               <CardTitle className="text-lg font-bold text-indigo-900 dark:text-indigo-400">Profit Calculation</CardTitle>
             </CardHeader>
@@ -459,19 +484,19 @@ export function PlaceOrder() {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-600 dark:text-slate-300">Company Cost:</span>
-                <span className="font-bold text-rose-600 dark:text-rose-455 font-sans">- {formatPrice(selectedProduct?.companyPrice || 0)}</span>
+                <span className="font-bold text-rose-600 dark:text-rose-400 font-sans">- {formatPrice(selectedProduct?.companyPrice || 0)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-600 dark:text-slate-300">Shipping:</span>
-                <span className="font-bold text-rose-600 dark:text-rose-455 font-sans">- {formatPrice(shippingCost)}</span>
+                <span className="font-bold text-rose-600 dark:text-rose-400 font-sans">- {formatPrice(shippingCost)}</span>
               </div>
               <div className="pt-4 border-t border-indigo-200 dark:border-indigo-900/45 flex justify-between items-center">
                 <span className="font-bold text-indigo-900 dark:text-indigo-400">Your Profit:</span>
-                <span className={`text-2xl font-black font-sans ${profit >= 0 ? 'text-emerald-600 dark:text-emerald-450' : 'text-rose-600 dark:text-rose-455'}`}>
+                <span className={`text-2xl font-black font-sans ${profit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                   {formatPrice(profit)}
                 </span>
               </div>
-              <p className="text-[10px] text-slate-550 dark:text-slate-450 italic mt-2">
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 italic mt-2">
                 * Profit will be available 15 days after delivery.
               </p>
             </CardContent>
@@ -480,7 +505,7 @@ export function PlaceOrder() {
           <Button 
             type="submit" 
             disabled={loading || !selectedProduct}
-            className="w-full h-14 bg-indigo-650 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg border-none"
+            className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg border-none"
           >
             {loading ? "Placing Order..." : "Confirm & Place Order"}
           </Button>
@@ -545,7 +570,7 @@ export function PlaceOrder() {
                       />
                       <div>
                         <p className="font-bold text-xs text-slate-900 dark:text-white truncate max-w-[180px]">{p.title}</p>
-                        <p className="text-[10px] text-slate-550 dark:text-slate-400 mt-0.5">Reseller Cost: {formatPrice(p.companyPrice)}</p>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Reseller Cost: {formatPrice(p.companyPrice)}</p>
                       </div>
                     </div>
                     {tempProduct?.id === p.id && (
@@ -583,7 +608,7 @@ export function PlaceOrder() {
                     </Select>
                   ) : (
                     <Select value="Default" disabled>
-                      <SelectTrigger className="w-full rounded-xl h-10 border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-850 text-slate-400 cursor-not-allowed">
+                      <SelectTrigger className="w-full rounded-xl h-10 border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed">
                         <SelectValue placeholder="Default" />
                       </SelectTrigger>
                       <SelectContent className="bg-white dark:bg-slate-900">
@@ -610,7 +635,7 @@ export function PlaceOrder() {
                     </Select>
                   ) : (
                     <Select value="Default" disabled>
-                      <SelectTrigger className="w-full rounded-xl h-10 border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-850 text-slate-400 cursor-not-allowed">
+                      <SelectTrigger className="w-full rounded-xl h-10 border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed">
                         <SelectValue placeholder="Default" />
                       </SelectTrigger>
                       <SelectContent className="bg-white dark:bg-slate-900">

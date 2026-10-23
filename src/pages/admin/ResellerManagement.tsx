@@ -124,7 +124,7 @@ export function ResellerManagement() {
   });
 
   return (
-    <div className="space-y-8 text-slate-900 dark:text-white transition-colors duration-350">
+    <div className="space-y-8 text-slate-900 dark:text-white transition-colors duration-300">
       {selectedReseller ? (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
           {/* Top Bar with Back Navigation & Action Buttons */}
@@ -132,7 +132,7 @@ export function ResellerManagement() {
             <Button
               variant="ghost"
               onClick={() => { setSelectedReseller(null); setCustomerSearchQuery(''); }}
-              className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-amber-600 dark:text-slate-350 dark:hover:text-amber-400 transition-colors bg-transparent border-none pl-0 hover:bg-transparent"
+              className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400 transition-colors bg-transparent border-none pl-0 hover:bg-transparent"
             >
               <span className="text-lg">←</span> Back to Resellers
             </Button>
@@ -181,7 +181,7 @@ export function ResellerManagement() {
             </div>
             <div className="flex flex-col md:items-end gap-1 bg-white dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800/50 min-w-[200px]">
               <span className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-black tracking-wider">Wallet Balance</span>
-              <span className="text-2xl sm:text-3xl font-black text-amber-600 dark:text-amber-450 font-sans">{formatPrice(selectedReseller.walletBalance || 0)}</span>
+              <span className="text-2xl sm:text-3xl font-black text-amber-600 dark:text-amber-400 font-sans">{formatPrice(selectedReseller.walletBalance || 0)}</span>
             </div>
           </div>
 
@@ -192,7 +192,7 @@ export function ResellerManagement() {
                 <ShoppingBag className="w-5 h-5 text-amber-500" />
                 <span className="text-[10px] uppercase font-black tracking-wider">Total Orders</span>
               </div>
-              <p className="text-2xl font-black text-slate-850 dark:text-white font-sans">{totalOrders}</p>
+              <p className="text-2xl font-black text-slate-800 dark:text-white font-sans">{totalOrders}</p>
             </div>
 
             <div className="p-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
@@ -208,7 +208,7 @@ export function ResellerManagement() {
                 <DollarSign className="w-5 h-5 text-indigo-500" />
                 <span className="text-[10px] uppercase font-black tracking-wider">Net Revenue</span>
               </div>
-              <p className="text-2xl font-black text-indigo-650 dark:text-indigo-400 font-sans">{formatPrice(totalRevenue)}</p>
+              <p className="text-2xl font-black text-indigo-600 dark:text-indigo-400 font-sans">{formatPrice(totalRevenue)}</p>
             </div>
 
             <div className="p-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
@@ -216,7 +216,7 @@ export function ResellerManagement() {
                 <CheckCircle className="w-5 h-5 text-teal-500" />
                 <span className="text-[10px] uppercase font-black tracking-wider">Completed</span>
               </div>
-              <p className="text-2xl font-black text-slate-850 dark:text-white font-sans">{completedOrders}</p>
+              <p className="text-2xl font-black text-slate-800 dark:text-white font-sans">{completedOrders}</p>
             </div>
 
             <div className="p-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
@@ -224,7 +224,7 @@ export function ResellerManagement() {
                 <RefreshCw className="w-5 h-5 text-rose-500" />
                 <span className="text-[10px] uppercase font-black tracking-wider">Returned</span>
               </div>
-              <p className="text-2xl font-black text-slate-850 dark:text-white font-sans">{returnedOrders}</p>
+              <p className="text-2xl font-black text-slate-800 dark:text-white font-sans">{returnedOrders}</p>
             </div>
           </div>
 
@@ -301,7 +301,7 @@ export function ResellerManagement() {
                           className="h-full w-full object-contain p-2 group-hover:scale-105 transition-transform duration-300" 
                         />
                       ) : (
-                        <span className="text-slate-400 dark:text-slate-650 text-xs font-medium">No Document Uploaded</span>
+                        <span className="text-slate-400 dark:text-slate-600 text-xs font-medium">No Document Uploaded</span>
                       )}
                     </div>
                   </div>
@@ -319,14 +319,14 @@ export function ResellerManagement() {
                           className="h-full w-full object-contain p-2 group-hover:scale-105 transition-transform duration-300" 
                         />
                       ) : (
-                        <span className="text-slate-400 dark:text-slate-650 text-xs font-medium">No Document Uploaded</span>
+                        <span className="text-slate-400 dark:text-slate-600 text-xs font-medium">No Document Uploaded</span>
                       )}
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="bg-amber-50/50 dark:bg-slate-950 border border-amber-100/50 dark:border-slate-800 p-4 rounded-2xl text-xs text-slate-650 dark:text-slate-400 mt-6 leading-relaxed">
-                <span className="font-bold text-amber-800 dark:text-amber-450 block mb-1">Verification Instructions:</span>
+              <div className="bg-amber-50/50 dark:bg-slate-950 border border-amber-100/50 dark:border-slate-800 p-4 rounded-2xl text-xs text-slate-600 dark:text-slate-400 mt-6 leading-relaxed">
+                <span className="font-bold text-amber-800 dark:text-amber-400 block mb-1">Verification Instructions:</span>
                 Please cross-reference the uploaded document images with the CNIC number and full name provided on the left. Ensure credentials are valid and legible before approving.
               </div>
             </div>
@@ -374,13 +374,13 @@ export function ResellerManagement() {
                     ) : (
                       filteredCustomers.map((c, i) => (
                         <TableRow key={i} className="text-xs hover:bg-slate-50/50 dark:hover:bg-slate-800/30 border-b border-slate-100 dark:border-slate-800/50 last:border-0 transition-colors">
-                          <TableCell className="font-bold py-4 text-slate-850 dark:text-slate-200">{c.firstName}</TableCell>
-                          <TableCell className="font-bold py-4 text-slate-850 dark:text-slate-200">{c.lastName}</TableCell>
-                          <TableCell className="py-4 text-slate-700 dark:text-slate-350">{c.phone}</TableCell>
-                          <TableCell className="py-4 text-slate-700 dark:text-slate-350">{c.city}</TableCell>
-                          <TableCell className="max-w-[200px] truncate py-4 text-slate-750 dark:text-slate-350">{c.address}</TableCell>
-                          <TableCell className="text-center font-bold py-4 text-slate-850 dark:text-white">{c.totalOrders}</TableCell>
-                          <TableCell className="text-right font-bold text-amber-600 dark:text-amber-450 font-sans py-4">{formatPrice(c.totalSpent)}</TableCell>
+                          <TableCell className="font-bold py-4 text-slate-800 dark:text-slate-200">{c.firstName}</TableCell>
+                          <TableCell className="font-bold py-4 text-slate-800 dark:text-slate-200">{c.lastName}</TableCell>
+                          <TableCell className="py-4 text-slate-700 dark:text-slate-400">{c.phone}</TableCell>
+                          <TableCell className="py-4 text-slate-700 dark:text-slate-400">{c.city}</TableCell>
+                          <TableCell className="max-w-[200px] truncate py-4 text-slate-750 dark:text-slate-400">{c.address}</TableCell>
+                          <TableCell className="text-center font-bold py-4 text-slate-800 dark:text-white">{c.totalOrders}</TableCell>
+                          <TableCell className="text-right font-bold text-amber-600 dark:text-amber-400 font-sans py-4">{formatPrice(c.totalSpent)}</TableCell>
                         </TableRow>
                       ))
                     )}
@@ -435,24 +435,24 @@ export function ResellerManagement() {
                         <TableCell className="font-bold text-slate-900 dark:text-white">
                           <div className="flex items-center gap-2">
                             {r.fullName}
-                            <Badge className={`${r.isVerified ? 'bg-emerald-100 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-450' : 'bg-slate-105 dark:bg-slate-800 text-slate-500 dark:text-slate-400'} border-none rounded-full px-2 py-0 text-[10px] font-bold`}>
+                            <Badge className={`${r.isVerified ? 'bg-emerald-100 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'} border-none rounded-full px-2 py-0 text-[10px] font-bold`}>
                               {r.isVerified ? 'Verified' : 'Unverified'}
                             </Badge>
                           </div>
                         </TableCell>
                         <TableCell>
                           <p className="text-sm dark:text-white">{r.email}</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-450 mt-0.5">{r.mobile}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{r.mobile}</p>
                         </TableCell>
                         <TableCell className="text-slate-700 dark:text-slate-300">{r.city || '-'}</TableCell>
-                        <TableCell className="font-bold text-indigo-650 dark:text-indigo-400 font-sans">{formatPrice(r.walletBalance || 0)}</TableCell>
+                        <TableCell className="font-bold text-indigo-600 dark:text-indigo-400 font-sans">{formatPrice(r.walletBalance || 0)}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end space-x-2">
                             <Button 
                               variant="ghost" 
                               size="icon" 
                               onClick={() => toggleVerification(r.uid, r.isVerified)}
-                              className={r.isVerified ? 'text-rose-600 dark:text-rose-455 hover:bg-rose-50 dark:hover:bg-rose-950/20 bg-transparent' : 'text-emerald-600 dark:text-emerald-455 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 bg-transparent'}
+                              className={r.isVerified ? 'text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/20 bg-transparent' : 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 bg-transparent'}
                             >
                               {r.isVerified ? <XCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
                             </Button>

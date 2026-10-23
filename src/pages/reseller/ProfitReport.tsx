@@ -58,7 +58,7 @@ export function ProfitReport() {
     <div className="space-y-8 text-slate-900 dark:text-white">
       <div>
         <h1 className="text-3xl font-black text-slate-900 dark:text-white">Profit Report</h1>
-        <p className="text-slate-505 dark:text-slate-400 mt-1">Detailed breakdown of your earnings and payouts</p>
+        <p className="text-slate-500 dark:text-slate-400 mt-1">Detailed breakdown of your earnings and payouts</p>
       </div>
 
       {/* Summary Stats */}
@@ -66,7 +66,7 @@ export function ProfitReport() {
         <Card className="border-none bg-white dark:bg-slate-900 shadow-sm rounded-2xl overflow-hidden">
           <CardContent className="p-6 flex items-center space-x-4">
             <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-950/20 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-emerald-600 dark:text-emerald-450" />
+              <TrendingUp className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div>
               <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Available Balance</p>
@@ -78,7 +78,7 @@ export function ProfitReport() {
         <Card className="border-none bg-white dark:bg-slate-900 shadow-sm rounded-2xl overflow-hidden">
           <CardContent className="p-6 flex items-center space-x-4">
             <div className="w-12 h-12 bg-amber-100 dark:bg-amber-950/20 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-amber-600 dark:text-amber-450" />
+              <TrendingUp className="w-6 h-6 text-amber-600 dark:text-amber-400" />
             </div>
             <div>
               <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Pending Profit</p>
@@ -90,7 +90,7 @@ export function ProfitReport() {
         <Card className="border-none bg-white dark:bg-slate-900 shadow-sm rounded-2xl overflow-hidden">
           <CardContent className="p-6 flex items-center space-x-4">
             <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-950/20 rounded-xl flex items-center justify-center">
-              <Wallet className="w-6 h-6 text-indigo-600 dark:text-indigo-450" />
+              <Wallet className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
             </div>
             <div>
               <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Total Withdrawn</p>
@@ -138,12 +138,12 @@ export function ProfitReport() {
                       const companyCost = order.companyPrice || (order.sellingPrice - order.shippingCost - order.profit);
                       return (
                         <TableRow key={order.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 transition-colors">
-                          <TableCell className="pl-6 font-mono text-xs text-slate-550 dark:text-slate-400 font-sans">#{order.id.slice(0, 8)}</TableCell>
-                          <TableCell className="text-slate-505 dark:text-slate-450">{format(parseISO(order.createdAt), 'MMM dd, yyyy')}</TableCell>
+                          <TableCell className="pl-6 font-mono text-xs text-slate-500 dark:text-slate-400 font-sans">#{order.id.slice(0, 8)}</TableCell>
+                          <TableCell className="text-slate-500 dark:text-slate-400">{format(parseISO(order.createdAt), 'MMM dd, yyyy')}</TableCell>
                           <TableCell className="text-right font-medium dark:text-white font-sans">{formatPrice(order.sellingPrice)}</TableCell>
-                          <TableCell className="text-right text-rose-600 dark:text-rose-450 font-sans">-{formatPrice(companyCost)}</TableCell>
-                          <TableCell className="text-right text-rose-600 dark:text-rose-455 font-sans">-{formatPrice(order.shippingCost)}</TableCell>
-                          <TableCell className="text-right pr-6 font-black text-emerald-600 dark:text-emerald-450 font-sans">
+                          <TableCell className="text-right text-rose-600 dark:text-rose-400 font-sans">-{formatPrice(companyCost)}</TableCell>
+                          <TableCell className="text-right text-rose-600 dark:text-rose-400 font-sans">-{formatPrice(order.shippingCost)}</TableCell>
+                          <TableCell className="text-right pr-6 font-black text-emerald-600 dark:text-emerald-400 font-sans">
                             + {formatPrice(order.profit)}
                           </TableCell>
                         </TableRow>
@@ -184,18 +184,18 @@ export function ProfitReport() {
                   ) : (
                     sortedWithdrawals.map((w) => (
                       <TableRow key={w.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 transition-colors">
-                        <TableCell className="pl-6 text-slate-505 dark:text-slate-450">{format(parseISO(w.createdAt), 'MMM dd, yyyy')}</TableCell>
+                        <TableCell className="pl-6 text-slate-500 dark:text-slate-400">{format(parseISO(w.createdAt), 'MMM dd, yyyy')}</TableCell>
                         <TableCell className="dark:text-slate-300">{w.method}</TableCell>
                         <TableCell>
                           <Badge className={`${
                             w.status === 'Approved' ? 'bg-emerald-100 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400' :
-                            w.status === 'Rejected' ? 'bg-rose-100 dark:bg-rose-950/20 text-rose-700 dark:text-rose-455' :
+                            w.status === 'Rejected' ? 'bg-rose-100 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400' :
                             'bg-amber-100 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400'
                           } border-none rounded-full px-3 py-0.5 text-[10px] font-bold`}>
                             {w.status}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-right pr-6 font-black text-rose-600 dark:text-rose-450 font-sans">
+                        <TableCell className="text-right pr-6 font-black text-rose-600 dark:text-rose-400 font-sans">
                           - {formatPrice(w.amount)}
                         </TableCell>
                       </TableRow>

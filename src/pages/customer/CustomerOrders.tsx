@@ -19,7 +19,7 @@ const statusConfig: Record<string, { color: string; bg: string; border: string; 
   Delivered: { color: 'text-emerald-700 dark:text-emerald-400',bg: 'bg-emerald-100 dark:bg-emerald-950/20', border: 'border-emerald-300 dark:border-emerald-900/50', icon: CheckCircle, label: 'Delivered' },
   Returned:  { color: 'text-rose-700 dark:text-rose-400',    bg: 'bg-rose-100 dark:bg-rose-950/20',    border: 'border-rose-300 dark:border-rose-900/50',    icon: RotateCcw,   label: 'Returned' },
   Refused:   { color: 'text-rose-700 dark:text-rose-400',    bg: 'bg-rose-100 dark:bg-rose-950/20',    border: 'border-rose-300 dark:border-rose-900/50',    icon: XCircle,     label: 'Refused' },
-  Cancelled: { color: 'text-slate-550 dark:text-slate-400',  bg: 'bg-slate-100 dark:bg-slate-800/50',   border: 'border-slate-300 dark:border-slate-700/50',   icon: XCircle,     label: 'Cancelled' },
+  Cancelled: { color: 'text-slate-500 dark:text-slate-400',  bg: 'bg-slate-100 dark:bg-slate-800/50',   border: 'border-slate-300 dark:border-slate-700/50',   icon: XCircle,     label: 'Cancelled' },
 };
 
 const filters: FilterType[] = ['All', 'Pending', 'Confirmed', 'Packed', 'Shipped', 'Delivered', 'Returned', 'Cancelled'];
@@ -59,7 +59,7 @@ function OrderTimeline({ order }: { order: Order }) {
                     ? 'bg-indigo-600 border-indigo-600 shadow-lg shadow-indigo-200 dark:shadow-none'
                     : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'
                 } ${isCurrent ? 'ring-4 ring-indigo-100 dark:ring-indigo-950/50' : ''}`}>
-                  <Icon className={`w-4 h-4 ${isCompleted ? 'text-white' : 'text-slate-350 dark:text-slate-500'}`} />
+                  <Icon className={`w-4 h-4 ${isCompleted ? 'text-white' : 'text-slate-400 dark:text-slate-500'}`} />
                 </div>
                 <p className={`text-[10px] font-bold mt-1.5 whitespace-nowrap ${
                   isCompleted ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500'
@@ -85,7 +85,7 @@ function OrderTimeline({ order }: { order: Order }) {
                 <div className="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-indigo-400" />
                 <div>
                   <p className={`text-xs font-bold ${cfg.color}`}>{update.status}</p>
-                  <p className="text-[11px] text-slate-450 dark:text-slate-500">
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500">
                     {format(parseISO(update.timestamp), 'MMM dd, yyyy • hh:mm a')}
                   </p>
                   {update.note && <p className="text-[11px] text-slate-500 dark:text-slate-400 italic mt-0.5">{update.note}</p>}
@@ -98,7 +98,7 @@ function OrderTimeline({ order }: { order: Order }) {
 
       {/* Tracking Number */}
       {order.trackingNumber && (
-        <div className="mt-3 flex items-center gap-2 text-sm text-slate-650 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 rounded-xl px-4 py-2.5 border border-slate-100 dark:border-slate-800/80">
+        <div className="mt-3 flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 rounded-xl px-4 py-2.5 border border-slate-100 dark:border-slate-800/80">
           <Truck className="w-4 h-4 text-indigo-500" />
           <span className="font-medium">Tracking:</span>
           <span className="font-black text-indigo-600 dark:text-indigo-400">{order.trackingNumber}</span>
@@ -150,7 +150,7 @@ function OrderCard({ order }: { order: Order }) {
         </div>
         <div className="flex items-center gap-3 flex-shrink-0">
           <div className="text-right">
-            <p className="font-black text-indigo-650 dark:text-indigo-400 font-sans">Rs. {order.sellingPrice.toLocaleString()}</p>
+            <p className="font-black text-indigo-600 dark:text-indigo-400 font-sans">Rs. {order.sellingPrice.toLocaleString()}</p>
           </div>
           {expanded ? <ChevronUp className="w-5 h-5 text-slate-400 dark:text-slate-500" /> : <ChevronDown className="w-5 h-5 text-slate-400 dark:text-slate-500" />}
         </div>
@@ -184,8 +184,8 @@ function OrderCard({ order }: { order: Order }) {
                     </div>
                   ))}
                   <div className="flex justify-between items-center text-sm pt-2 border-t border-slate-200 dark:border-slate-800 mt-2">
-                    <span className="font-bold text-slate-650 dark:text-slate-400">Total Paid</span>
-                    <span className="font-black text-indigo-650 dark:text-indigo-400 text-base font-sans">Rs. {order.sellingPrice.toLocaleString()}</span>
+                    <span className="font-bold text-slate-600 dark:text-slate-400">Total Paid</span>
+                    <span className="font-black text-indigo-600 dark:text-indigo-400 text-base font-sans">Rs. {order.sellingPrice.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -195,17 +195,17 @@ function OrderCard({ order }: { order: Order }) {
                 <p className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Delivery Details</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-3">
-                    <p className="text-[10px] font-bold text-slate-450 dark:text-slate-500 uppercase mb-1">Name</p>
+                    <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase mb-1">Name</p>
                     <p className="font-bold text-slate-900 dark:text-white text-sm">{order.customerName}</p>
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-3">
-                    <p className="text-[10px] font-bold text-slate-450 dark:text-slate-500 uppercase mb-1">Phone</p>
+                    <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase mb-1">Phone</p>
                     <p className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-1">
                       <Phone className="w-3 h-3 text-slate-400 dark:text-slate-500" /> {order.customerPhone}
                     </p>
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-3 sm:col-span-2">
-                    <p className="text-[10px] font-bold text-slate-455 dark:text-slate-500 uppercase mb-1">Address</p>
+                    <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase mb-1">Address</p>
                     <p className="font-medium text-slate-700 dark:text-slate-300 text-sm flex items-start gap-1">
                       <MapPin className="w-3 h-3 text-slate-400 dark:text-slate-500 mt-0.5 flex-shrink-0" />
                       {order.customerAddress}, {order.customerCity}
@@ -247,7 +247,7 @@ export function CustomerOrders() {
     <div className="space-y-6 text-slate-900 dark:text-white">
       <div>
         <h1 className="text-3xl font-black text-slate-900 dark:text-white">My Orders</h1>
-        <p className="text-slate-505 dark:text-slate-400 mt-1 font-medium">Track the status of all your purchases.</p>
+        <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">Track the status of all your purchases.</p>
       </div>
 
       {/* Filter Pills */}
@@ -259,7 +259,7 @@ export function CustomerOrders() {
             className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
               filter === f
                 ? 'bg-indigo-600 text-white shadow-lg dark:shadow-none'
-                : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-650 hover:text-indigo-600 dark:hover:text-indigo-400'
+                : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-600 hover:text-indigo-600 dark:hover:text-indigo-400'
             }`}
           >
             {f} {f !== 'All' && orders.filter(o => o.status === f).length > 0 && (

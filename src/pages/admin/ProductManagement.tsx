@@ -53,6 +53,7 @@ export function ProductManagement() {
     category: '',
     price: '',
     companyPrice: '',
+    compareAtPrice: '', // Retail strikethrough price displayed to customers
     stock: '',
     lowStockThreshold: '5',
     tags: '',
@@ -121,6 +122,7 @@ export function ProductManagement() {
         category: formData.category,
         price: Number(formData.price),
         companyPrice: Number(formData.companyPrice),
+        ...(formData.compareAtPrice ? { compareAtPrice: Number(formData.compareAtPrice) } : {}),
         stock: Number(formData.stock),
         lowStockThreshold: Number(formData.lowStockThreshold),
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag !== ''),
@@ -141,7 +143,7 @@ export function ProductManagement() {
       setIsDialogOpen(false);
       setEditingProduct(null);
       setImageItems([]);
-      setFormData({ title: '', description: '', category: '', price: '', companyPrice: '', stock: '', lowStockThreshold: '5', tags: '', sizes: '', colors: '', variants: [] });
+      setFormData({ title: '', description: '', category: '', price: '', companyPrice: '', compareAtPrice: '', stock: '', lowStockThreshold: '5', tags: '', sizes: '', colors: '', variants: [] });
     } catch (error) {
       console.error("Error saving product:", error);
       toast.error("Operation failed");
@@ -439,8 +441,12 @@ export function ProductManagement() {
                       <Input required type="number" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="rounded-xl" />
                     </div>
                     <div className="space-y-2">
-                      <Label>Company Cost (Rs.)</Label>
+                      <Label>Company Cost / Wholesale (Rs.) <span className="text-[10px] text-slate-400 font-normal">(hidden from customers)</span></Label>
                       <Input required type="number" value={formData.companyPrice} onChange={e => setFormData({...formData, companyPrice: e.target.value})} className="rounded-xl" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Compare-At / MSRP Price (Rs.) <span className="text-[10px] text-slate-400 font-normal">(strikethrough shown to customers)</span></Label>
+                      <Input type="number" value={formData.compareAtPrice} onChange={e => setFormData({...formData, compareAtPrice: e.target.value})} className="rounded-xl" placeholder="Leave blank to hide strikethrough" />
                     </div>
                     <div className="space-y-2">
                       <Label>Base Stock</Label>
@@ -933,6 +939,7 @@ export function ProductManagement() {
                         tags: (p.tags || []).join(', '),
                         sizes: ((p as any).sizes || []).join(', '),
                         colors: ((p as any).colors || []).join(', '),
+                        compareAtPrice: (p as any).compareAtPrice ? String((p as any).compareAtPrice) : '',
                         variants: p.variants || []
                       });
                       setImageItems(p.images.map(url => ({ id: Math.random().toString(36).substr(2, 9), url })));

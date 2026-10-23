@@ -156,7 +156,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             className={`absolute top-3 right-3 z-10 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
               isInWishlist(product.id) 
                 ? 'bg-rose-500 text-white' 
-                : 'bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm text-slate-400 dark:text-slate-350 hover:text-rose-500'
+                : 'bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm text-slate-400 dark:text-slate-400 hover:text-rose-500'
             }`}
           >
             <Heart className={`w-5 h-5 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
@@ -244,7 +244,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                     <div className="space-y-6 flex-grow">
                       <div className="flex items-baseline gap-3">
                         <span className="text-4xl font-black text-slate-900 dark:text-white">{formatPrice(displayPrice)}</span>
-                        <span className="text-slate-400 dark:text-slate-500 line-through text-sm font-medium">{formatPrice(displayPrice * 1.2)}</span>
+                        {product.compareAtPrice && product.compareAtPrice > displayPrice && (<span className="text-slate-400 dark:text-slate-500 line-through text-sm font-medium">{formatPrice(product.compareAtPrice)}</span>)}
                       </div>
 
                       {/* Variant Selection in Quick View */}
@@ -277,7 +277,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                             {selectedVariant ? selectedVariant.stock : product.stock} Units in Stock
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2 px-3 py-1.5 bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-450 rounded-full text-xs font-bold border border-rose-100 dark:border-rose-900/30">
+                          <div className="flex items-center gap-2 px-3 py-1.5 bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 rounded-full text-xs font-bold border border-rose-100 dark:border-rose-900/30">
                             <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
                             Out of Stock
                           </div>
@@ -287,7 +287,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                       <div className="space-y-2">
                         <h4 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Description</h4>
                         <div className="max-h-[150px] overflow-y-auto pr-2 custom-scrollbar">
-                          <p className="text-slate-600 dark:text-slate-350 leading-relaxed text-sm font-medium">
+                          <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm font-medium">
                             {product.description || "Experience premium quality with our latest collection. This product is designed for those who value both style and functionality."}
                           </p>
                         </div>
@@ -359,7 +359,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                     In Stock
                   </span>
                 ) : (
-                  <span className="text-[10px] font-bold text-rose-600 bg-rose-50 dark:bg-rose-950/20 dark:text-rose-450 px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] font-bold text-rose-600 bg-rose-50 dark:bg-rose-950/20 dark:text-rose-400 px-2 py-0.5 rounded-full">
                     Sold Out
                   </span>
                 )}

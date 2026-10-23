@@ -332,7 +332,7 @@ export function OrdersList() {
           }`}
         >
           Returned & Refused Orders
-          <span className="bg-rose-100 dark:bg-rose-950/20 text-rose-750 dark:text-rose-455 text-[10px] font-black px-2 py-0.5 rounded-full">
+          <span className="bg-rose-100 dark:bg-rose-950/20 text-rose-750 dark:text-rose-400 text-[10px] font-black px-2 py-0.5 rounded-full">
             {orders.filter(o => ['Returned', 'Refused'].includes(o.status)).length}
           </span>
         </button>
@@ -410,7 +410,7 @@ export function OrdersList() {
             <Button 
               variant="outline" 
               onClick={clearFilters}
-              className="flex-grow rounded-xl border-slate-200 dark:border-slate-850 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-900"
+              className="flex-grow rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-900"
             >
               <X className="w-4 h-4 mr-2" /> Clear
             </Button>
@@ -442,14 +442,14 @@ export function OrdersList() {
             ) : (
               filteredOrders.map((order) => (
                 <TableRow key={order.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 transition-colors">
-                  <TableCell className="font-mono text-xs text-slate-505 dark:text-slate-400">#{order.id.slice(0, 8)}</TableCell>
-                  <TableCell className="text-xs text-slate-505 dark:text-slate-450">
+                  <TableCell className="font-mono text-xs text-slate-500 dark:text-slate-400">#{order.id.slice(0, 8)}</TableCell>
+                  <TableCell className="text-xs text-slate-500 dark:text-slate-400">
                     {format(parseISO(order.createdAt), 'MMM dd, yyyy')}
                   </TableCell>
                   <TableCell className="font-bold text-slate-900 dark:text-white">{order.customerName}</TableCell>
                   <TableCell className="text-slate-700 dark:text-slate-300">{order.customerCity}</TableCell>
                   <TableCell className="font-bold text-slate-900 dark:text-white font-sans">{formatPrice(order.sellingPrice)}</TableCell>
-                  <TableCell className="font-bold text-emerald-600 dark:text-emerald-450 font-sans">{formatPrice(order.profit)}</TableCell>
+                  <TableCell className="font-bold text-emerald-600 dark:text-emerald-400 font-sans">{formatPrice(order.profit)}</TableCell>
                   <TableCell>
                     <div className="flex flex-col">
                       {getStatusBadge(order.status)}
@@ -784,7 +784,7 @@ export function OrdersList() {
                   
                   {['Returned', 'Refused', 'Cancelled'].includes(selectedOrder.status) && (
                     <div className="mt-6 flex justify-center">
-                      <Badge className="bg-rose-100 dark:bg-rose-950/20 text-rose-750 dark:text-rose-455 border-none rounded-full px-4 py-1 flex items-center gap-2 font-bold">
+                      <Badge className="bg-rose-100 dark:bg-rose-950/20 text-rose-750 dark:text-rose-400 border-none rounded-full px-4 py-1 flex items-center gap-2 font-bold">
                         <AlertCircle className="w-4 h-4" />
                         Order is {selectedOrder.status}
                       </Badge>
@@ -798,15 +798,15 @@ export function OrdersList() {
                     <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center">
                       <User className="w-4 h-4 mr-2" /> Customer Info
                     </h3>
-                    <div className="bg-slate-50 dark:bg-slate-850 p-4 rounded-2xl space-y-3 border border-slate-100/50 dark:border-slate-800">
+                    <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl space-y-3 border border-slate-100/50 dark:border-slate-800">
                       <div className="flex items-center text-slate-900 dark:text-white">
                         <span className="font-bold mr-2">{selectedOrder.customerName}</span>
                       </div>
-                      <div className="flex items-center text-slate-600 dark:text-slate-350 text-sm">
+                      <div className="flex items-center text-slate-600 dark:text-slate-400 text-sm">
                         <Phone className="w-3 h-3 mr-2 text-slate-400 dark:text-slate-500" />
                         {selectedOrder.customerPhone}
                       </div>
-                      <div className="flex items-start text-slate-600 dark:text-slate-350 text-sm">
+                      <div className="flex items-start text-slate-600 dark:text-slate-400 text-sm">
                         <MapPin className="w-3 h-3 mr-2 mt-1 text-slate-400 dark:text-slate-500" />
                         <span>
                           {selectedOrder.customerAddress}<br />
@@ -820,7 +820,7 @@ export function OrdersList() {
                     <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center">
                       <Calendar className="w-4 h-4 mr-2" /> Order Timeline
                     </h3>
-                    <div className="bg-slate-50 dark:bg-slate-850 p-4 rounded-2xl space-y-3 text-sm border border-slate-100/50 dark:border-slate-800">
+                    <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl space-y-3 text-sm border border-slate-100/50 dark:border-slate-800">
                       <div className="flex justify-between">
                         <span className="text-slate-500 dark:text-slate-400">Placed On:</span>
                         <span className="font-medium dark:text-white">{format(parseISO(selectedOrder.createdAt), 'MMM dd, yyyy HH:mm')}</span>
@@ -835,8 +835,8 @@ export function OrdersList() {
 
                 {/* Map Tracking Visualizer (ONLY for Shipped or Delivered status) */}
                 {['Shipped', 'Delivered'].includes(selectedOrder.status) && selectedOrder.trackingNumber && (
-                  <div className="bg-white dark:bg-slate-850 p-5 rounded-2xl border border-slate-100 dark:border-slate-850/80 shadow-sm space-y-4">
-                    <h3 className="text-sm font-bold text-slate-400 dark:text-slate-550 uppercase tracking-widest flex items-center">
+                  <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-800/80 shadow-sm space-y-4">
+                    <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center">
                       <Truck className="w-4 h-4 mr-2" /> Live Parcel Tracking
                     </h3>
                     <OrderTracker
@@ -849,7 +849,7 @@ export function OrdersList() {
 
                 {/* Status History */}
                 <div className="space-y-4">
-                  <h3 className="text-sm font-bold text-slate-400 dark:text-slate-550 uppercase tracking-widest flex items-center">
+                  <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center">
                     <History className="w-4 h-4 mr-2" /> Status History
                   </h3>
                   <div className="space-y-0">
@@ -867,13 +867,13 @@ export function OrdersList() {
                         </div>
                         <div className={`flex-1 pb-8`}>
                           <div className={`p-4 rounded-2xl border transition-all ${
-                            i === 0 ? 'bg-white dark:bg-slate-800 border-indigo-100 dark:border-indigo-900 shadow-sm ring-1 ring-indigo-50 dark:ring-indigo-950/40' : 'bg-slate-50/50 dark:bg-slate-850/50 border-slate-100 dark:border-slate-800'
+                            i === 0 ? 'bg-white dark:bg-slate-800 border-indigo-100 dark:border-indigo-900 shadow-sm ring-1 ring-indigo-50 dark:ring-indigo-950/40' : 'bg-slate-50/50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-800'
                           }`}>
                             <div className="flex justify-between items-center mb-1">
                               <span className={`font-bold text-sm ${i === 0 ? 'text-indigo-900 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300'}`}>
                                 {history.status}
                               </span>
-                              <span className="text-[10px] text-slate-400 dark:text-slate-550 font-bold uppercase tracking-wider">
+                              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">
                                 {format(parseISO(history.timestamp), 'MMM dd, HH:mm')}
                               </span>
                             </div>

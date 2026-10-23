@@ -436,7 +436,7 @@ export function OrderManagement() {
   };
 
   return (
-    <div className="space-y-8 text-slate-900 dark:text-white transition-colors duration-350">
+    <div className="space-y-8 text-slate-900 dark:text-white transition-colors duration-300">
       {/* Stylesheet injected for handling print media queries cleanly */}
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
@@ -484,7 +484,7 @@ export function OrderManagement() {
             <Button
               variant="ghost"
               onClick={() => setSelectedOrder(null)}
-              className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-amber-600 dark:text-slate-350 dark:hover:text-amber-400 transition-colors bg-transparent border-none pl-0 hover:bg-transparent"
+              className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400 transition-colors bg-transparent border-none pl-0 hover:bg-transparent"
             >
               <span className="text-lg">←</span> Back to Orders
             </Button>
@@ -571,7 +571,7 @@ export function OrderManagement() {
                   Reseller Order (Reseller: {resellers.find(r => r.uid === selectedOrder.resellerId)?.fullName || selectedOrder.resellerId})
                 </Badge>
               ) : (
-                <Badge className="bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-455 border border-emerald-200 dark:border-emerald-900/40 rounded-full px-3 py-1 font-bold text-xs uppercase tracking-wider self-start md:self-auto">
+                <Badge className="bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/40 rounded-full px-3 py-1 font-bold text-xs uppercase tracking-wider self-start md:self-auto">
                   Direct Customer Order
                 </Badge>
               )}
@@ -626,7 +626,7 @@ export function OrderManagement() {
                 </div>
                 <div className="flex justify-between py-1 border-b border-slate-50 dark:border-slate-800/30 bg-amber-500/10 dark:bg-amber-500/20 px-2 rounded-lg print-bg-gray">
                   <span className="text-amber-800 dark:text-amber-400 font-bold uppercase tracking-wider text-xs">Total COD to Collect</span>
-                  <span className="font-black text-amber-600 dark:text-amber-450 text-base">{formatPrice(selectedOrder.sellingPrice)}</span>
+                  <span className="font-black text-amber-600 dark:text-amber-400 text-base">{formatPrice(selectedOrder.sellingPrice)}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-slate-50 dark:border-slate-800/30">
                   <span className="text-slate-400 dark:text-slate-500">Order Date</span>
@@ -647,7 +647,7 @@ export function OrderManagement() {
               <span className="text-xs text-slate-400 no-print">Packer verification checklist</span>
             </div>
 
-            <div className="border border-slate-100 dark:border-slate-850 rounded-xl overflow-hidden">
+            <div className="border border-slate-100 dark:border-slate-800 rounded-xl overflow-hidden">
               <Table>
                 <TableHeader className="bg-slate-50/50 dark:bg-slate-950/40 border-b">
                   <TableRow>
@@ -671,7 +671,7 @@ export function OrderManagement() {
                           className="h-5 w-5 rounded border-slate-300 focus:ring-amber-500 text-amber-600"
                         />
                       </TableCell>
-                      <TableCell className="font-mono text-xs font-black text-amber-600 dark:text-amber-455">{generateSmartSKU(item, i)}</TableCell>
+                      <TableCell className="font-mono text-xs font-black text-amber-600 dark:text-amber-400">{generateSmartSKU(item, i)}</TableCell>
                       <TableCell>
                         <p className="font-bold text-slate-900 dark:text-white text-sm">{item.title}</p>
                         {item.variation && (
@@ -740,7 +740,7 @@ export function OrderManagement() {
                       {isLatest ? (
                         <CheckCircle2 className="w-4 h-4 text-white" />
                       ) : (
-                        <div className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-650" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-600" />
                       )}
                     </div>
                     
@@ -752,11 +752,11 @@ export function OrderManagement() {
                       <div className="flex justify-between items-start mb-1">
                         <div>
                           <span className={`inline-block px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider mb-1 ${
-                            isLatest ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' : 'bg-slate-105 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
+                            isLatest ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
                           }`}>
                             {history.status}
                           </span>
-                          <h4 className="font-bold text-sm text-slate-800 dark:text-slate-250">
+                          <h4 className="font-bold text-sm text-slate-800 dark:text-slate-300">
                             {history.note || `Order moved to ${history.status}`}
                           </h4>
                         </div>
@@ -774,10 +774,10 @@ export function OrderManagement() {
           {/* Cancellation Note Details */}
           {selectedOrder.status === 'Cancelled' && selectedOrder.cancellationNote && (
             <div className="bg-rose-50 dark:bg-rose-950/15 p-6 rounded-2xl border border-rose-100 dark:border-rose-900/30">
-              <h3 className="text-sm font-bold text-rose-600 dark:text-rose-455 uppercase tracking-widest flex items-center mb-2">
+              <h3 className="text-sm font-bold text-rose-600 dark:text-rose-400 uppercase tracking-widest flex items-center mb-2">
                 <AlertCircle className="w-4 h-4 mr-2" /> Cancellation Reason
               </h3>
-              <p className="text-rose-700 dark:text-rose-350 text-sm italic">"{selectedOrder.cancellationNote}"</p>
+              <p className="text-rose-700 dark:text-rose-400 text-sm italic">"{selectedOrder.cancellationNote}"</p>
             </div>
           )}
 
@@ -931,22 +931,22 @@ export function OrderManagement() {
                             <span className="font-bold text-slate-900 dark:text-white">
                               {resellers.find(r => r.uid === order.resellerId)?.fullName || 'Loading...'}
                             </span>
-                            <span className="text-[10px] font-mono text-slate-450 dark:text-slate-500 mt-0.5">
+                            <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 mt-0.5">
                               ID: {order.resellerId.slice(0, 8)}
                             </span>
                           </div>
                         ) : (
-                          <span className="text-slate-400 dark:text-slate-550 italic">Direct Customer</span>
+                          <span className="text-slate-400 dark:text-slate-500 italic">Direct Customer</span>
                         )}
                       </TableCell>
-                      <TableCell className="font-bold text-slate-855 dark:text-slate-205">{formatPrice(order.sellingPrice)}</TableCell>
+                      <TableCell className="font-bold text-slate-855 dark:text-slate-200">{formatPrice(order.sellingPrice)}</TableCell>
                       <TableCell>
                         <div className="flex flex-col">
                           {getStatusBadge(order.status)}
                           {order.trackingNumber && (
                             <div className="flex items-center gap-1 mt-1">
                               <Truck className="w-3 h-3 text-indigo-500" />
-                              <span className="text-[10px] font-bold text-indigo-650 dark:text-indigo-400 truncate max-w-[100px]">
+                              <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 truncate max-w-[100px]">
                                 {order.trackingNumber}
                               </span>
                             </div>
@@ -966,7 +966,7 @@ export function OrderManagement() {
                             onClick={() => {
                               setSelectedOrder(order);
                             }}
-                            className="text-slate-400 hover:text-amber-500 hover:bg-slate-105 dark:hover:bg-slate-800"
+                            className="text-slate-400 hover:text-amber-500 hover:bg-slate-100 dark:hover:bg-slate-800"
                           >
                             <Eye className="w-4 h-4" />
                           </Button>
@@ -1007,7 +1007,7 @@ export function OrderManagement() {
                                 setCarrier(order.carrier || 'TCS');
                                 setIsTrackingDialogOpen(true);
                               }}
-                              className="bg-indigo-650 hover:bg-indigo-755 text-white rounded-xl h-9 px-3 text-xs font-bold"
+                              className="bg-indigo-600 hover:bg-indigo-755 text-white rounded-xl h-9 px-3 text-xs font-bold"
                             >
                               <Truck className="w-3 h-3 mr-1" /> Ship
                             </Button>
@@ -1083,7 +1083,7 @@ export function OrderManagement() {
           </DialogHeader>
           <div className="py-4 space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700 dark:text-slate-305">Cancellation Reason</label>
+              <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Cancellation Reason</label>
               <textarea
                 className="w-full min-h-[100px] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all text-sm"
                 placeholder="e.g., Out of stock, Invalid address, etc."
@@ -1154,7 +1154,7 @@ export function OrderManagement() {
           </DialogHeader>
           <div className="py-6 space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="carrier" className="font-bold text-slate-700 dark:text-slate-305">Courier Service / Carrier</Label>
+              <Label htmlFor="carrier" className="font-bold text-slate-700 dark:text-slate-300">Courier Service / Carrier</Label>
               <Select value={carrier} onValueChange={setCarrier}>
                 <SelectTrigger className="rounded-xl h-11 border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40">
                   <SelectValue placeholder="Select Carrier" />
@@ -1167,7 +1167,7 @@ export function OrderManagement() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="tracking" className="font-bold text-slate-700 dark:text-slate-305">Tracking Number</Label>
+              <Label htmlFor="tracking" className="font-bold text-slate-700 dark:text-slate-300">Tracking Number</Label>
               <Input 
                 id="tracking"
                 placeholder="Enter tracking number"

@@ -80,7 +80,7 @@ export function BecomeResellerLanding() {
                       {/* App Header (Sticky-like at top) */}
                       <div className="flex items-center justify-between pb-2 border-b dark:border-slate-800 bg-white dark:bg-slate-900 z-10">
                         <span className="font-black text-indigo-600 dark:text-indigo-400">Resellx.pk</span>
-                        <div className="w-4 h-4 rounded-full bg-slate-100 dark:bg-slate-850 flex items-center justify-center">
+                        <div className="w-4 h-4 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                           <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
                         </div>
                       </div>
@@ -102,12 +102,12 @@ export function BecomeResellerLanding() {
                           <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 p-3 rounded-2xl space-y-1 shadow-sm">
                             <div className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider">Live Profit Counter</div>
                             <div className="flex justify-between items-baseline">
-                              <span className="text-lg font-black text-emerald-700 dark:text-emerald-450">Rs. 18,450</span>
+                              <span className="text-lg font-black text-emerald-700 dark:text-emerald-400">Rs. 18,450</span>
                               <span className="text-[9px] font-black text-emerald-600">+15% today</span>
                             </div>
                           </div>
 
-                          <div className="bg-slate-50 dark:bg-slate-950 p-2 rounded-xl border dark:border-slate-850 flex justify-between items-center h-10 shadow-sm">
+                          <div className="bg-slate-50 dark:bg-slate-950 p-2 rounded-xl border dark:border-slate-800 flex justify-between items-center h-10 shadow-sm">
                             <div>
                               <p className="font-bold text-slate-800 dark:text-slate-200">Stitched Kurti</p>
                               <p className="text-[8px] text-slate-400">Order #8423</p>
@@ -115,7 +115,7 @@ export function BecomeResellerLanding() {
                             <span className="font-black text-indigo-600 dark:text-indigo-400">+Rs. 650</span>
                           </div>
 
-                          <div className="bg-slate-50 dark:bg-slate-950 p-2 rounded-xl border dark:border-slate-850 flex justify-between items-center h-10 shadow-sm">
+                          <div className="bg-slate-50 dark:bg-slate-950 p-2 rounded-xl border dark:border-slate-800 flex justify-between items-center h-10 shadow-sm">
                             <div>
                               <p className="font-bold text-slate-800 dark:text-slate-200">Oxford Shoes</p>
                               <p className="text-[8px] text-slate-400">Order #8424</p>
@@ -123,7 +123,7 @@ export function BecomeResellerLanding() {
                             <span className="font-black text-indigo-600 dark:text-indigo-400">+Rs. 1,200</span>
                           </div>
 
-                          <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border dark:border-slate-850 space-y-2 shadow-sm">
+                          <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border dark:border-slate-800 space-y-2 shadow-sm">
                             <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Active Order Dispatch</div>
                             <div className="space-y-2">
                               <div className="flex items-center gap-2">
@@ -140,12 +140,12 @@ export function BecomeResellerLanding() {
                           <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 p-3 rounded-2xl space-y-1 shadow-sm">
                             <div className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider">Live Profit Counter</div>
                             <div className="flex justify-between items-baseline">
-                              <span className="text-lg font-black text-emerald-700 dark:text-emerald-450">Rs. 18,450</span>
+                              <span className="text-lg font-black text-emerald-700 dark:text-emerald-400">Rs. 18,450</span>
                               <span className="text-[9px] font-black text-emerald-600">+15% today</span>
                             </div>
                           </div>
 
-                          <div className="bg-slate-50 dark:bg-slate-950 p-2 rounded-xl border dark:border-slate-850 flex justify-between items-center h-10 shadow-sm">
+                          <div className="bg-slate-50 dark:bg-slate-950 p-2 rounded-xl border dark:border-slate-800 flex justify-between items-center h-10 shadow-sm">
                             <div>
                               <p className="font-bold text-slate-800 dark:text-slate-200">Stitched Kurti</p>
                               <p className="text-[8px] text-slate-400">Order #8423</p>
@@ -153,7 +153,7 @@ export function BecomeResellerLanding() {
                             <span className="font-black text-indigo-600 dark:text-indigo-400">+Rs. 650</span>
                           </div>
 
-                          <div className="bg-slate-50 dark:bg-slate-950 p-2 rounded-xl border dark:border-slate-850 flex justify-between items-center h-10 shadow-sm">
+                          <div className="bg-slate-50 dark:bg-slate-950 p-2 rounded-xl border dark:border-slate-800 flex justify-between items-center h-10 shadow-sm">
                             <div>
                               <p className="font-bold text-slate-800 dark:text-slate-200">Oxford Shoes</p>
                               <p className="text-[8px] text-slate-400">Order #8424</p>
@@ -161,7 +161,7 @@ export function BecomeResellerLanding() {
                             <span className="font-black text-indigo-600 dark:text-indigo-400">+Rs. 1,200</span>
                           </div>
 
-                          <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border dark:border-slate-850 space-y-2 shadow-sm">
+                          <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border dark:border-slate-800 space-y-2 shadow-sm">
                             <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Active Order Dispatch</div>
                             <div className="space-y-2">
                               <div className="flex items-center gap-2">
@@ -199,7 +199,7 @@ export function BecomeResellerLanding() {
                     <div className="p-4 space-y-3">
                       {/* Window title placeholder with synchronized pulse */}
                       <div className="flex items-center justify-between">
-                        <div className="h-4 w-1/3 bg-slate-200 dark:bg-slate-850 rounded animate-pulse" />
+                        <div className="h-4 w-1/3 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
                         <div className="h-3 w-1/5 bg-indigo-100 dark:bg-indigo-950/40 rounded animate-pulse" style={{ animationDelay: '0.2s' }} />
                       </div>
                       

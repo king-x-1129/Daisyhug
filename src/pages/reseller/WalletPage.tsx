@@ -212,7 +212,7 @@ export function WalletPage() {
                 </div>
                 <span className="text-2xl font-black text-amber-900 dark:text-white">{formatPrice(profile?.pendingProfit || 0)}</span>
               </div>
-              <div className="flex items-start gap-2 text-amber-700 dark:text-amber-350">
+              <div className="flex items-start gap-2 text-amber-700 dark:text-amber-400">
                 <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                 <p className="text-[11px] leading-relaxed">
                   This amount is subject to a <span className="font-bold">15-day holding period</span> after delivery to account for potential returns.
@@ -233,8 +233,9 @@ export function WalletPage() {
                 <div className="space-y-2">
                   <Label className="text-xs font-bold uppercase text-slate-400 dark:text-slate-500">Amount (Rs.)</Label>
                   <Input 
-                    type="number" 
-                    value={amount} 
+                    type="number"
+                    min="500"
+                    step="1"
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="Min 500" 
                     className="rounded-xl h-12 border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-white" 
@@ -272,13 +273,13 @@ export function WalletPage() {
         <div className="lg:col-span-2">
           <Tabs defaultValue="transactions" className="w-full">
             <TabsList className="grid w-full grid-cols-3 h-14 bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl">
-              <TabsTrigger value="transactions" className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-850 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 font-bold flex items-center text-slate-500 dark:text-slate-400">
+              <TabsTrigger value="transactions" className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 font-bold flex items-center text-slate-500 dark:text-slate-400">
                 <History className="w-4 h-4 mr-2" /> History
               </TabsTrigger>
-              <TabsTrigger value="payouts" className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-850 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 font-bold flex items-center text-slate-500 dark:text-slate-400">
+              <TabsTrigger value="payouts" className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 font-bold flex items-center text-slate-500 dark:text-slate-400">
                 <Hourglass className="w-4 h-4 mr-2" /> Pending
               </TabsTrigger>
-              <TabsTrigger value="withdrawals" className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-850 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 font-bold flex items-center text-slate-500 dark:text-slate-400">
+              <TabsTrigger value="withdrawals" className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 font-bold flex items-center text-slate-500 dark:text-slate-400">
                 <ArrowUpRight className="w-4 h-4 mr-2" /> Withdrawals
               </TabsTrigger>
             </TabsList>
@@ -308,7 +309,7 @@ export function WalletPage() {
                       ) : (
                         transactionHistory.map((t) => (
                           <TableRow key={t.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 transition-colors">
-                            <TableCell className="pl-6 text-slate-500 dark:text-slate-450">{format(parseISO(t.date), 'MMM dd, yyyy')}</TableCell>
+                            <TableCell className="pl-6 text-slate-500 dark:text-slate-400">{format(parseISO(t.date), 'MMM dd, yyyy')}</TableCell>
                             <TableCell>
                               <div className="flex flex-col">
                                 <span className="font-bold text-slate-900 dark:text-white">{t.description}</span>
@@ -318,13 +319,13 @@ export function WalletPage() {
                             <TableCell>
                               <Badge className={`border-none rounded-full px-3 py-0.5 text-[10px] font-bold ${
                                 t.status === 'Approved' || t.status === 'Completed' ? 'bg-emerald-100 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400' :
-                                t.status === 'Rejected' ? 'bg-rose-100 dark:bg-rose-950/20 text-rose-700 dark:text-rose-455' :
+                                t.status === 'Rejected' ? 'bg-rose-100 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400' :
                                 'bg-amber-100 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400'
                               }`}>
                                 {t.status}
                               </Badge>
                             </TableCell>
-                            <TableCell className={`text-right pr-6 font-black font-sans ${t.type === 'profit' ? 'text-emerald-600 dark:text-emerald-450' : 'text-rose-600 dark:text-rose-450'}`}>
+                            <TableCell className={`text-right pr-6 font-black font-sans ${t.type === 'profit' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                               {t.type === 'profit' ? '+' : '-'} {formatPrice(t.amount)}
                             </TableCell>
                           </TableRow>
@@ -361,7 +362,7 @@ export function WalletPage() {
                       ) : (
                         pendingPayouts.map((order) => (
                           <TableRow key={order.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 transition-colors">
-                            <TableCell className="pl-6 text-slate-500 dark:text-slate-450">{format(parseISO(order.createdAt), 'MMM dd, yyyy')}</TableCell>
+                            <TableCell className="pl-6 text-slate-500 dark:text-slate-400">{format(parseISO(order.createdAt), 'MMM dd, yyyy')}</TableCell>
                             <TableCell className="font-mono text-xs text-slate-500 dark:text-slate-400">#{order.id.slice(0, 8)}</TableCell>
                             <TableCell>
                               <Badge className="bg-blue-100 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 border-none rounded-full px-3 py-0.5">
@@ -371,15 +372,6 @@ export function WalletPage() {
                             <TableCell className="text-right pr-6">
                               <div className="flex items-center justify-end gap-2">
                                 <span className="font-black text-amber-600 dark:text-amber-400 font-sans">{formatPrice(order.profit)}</span>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => handleFastTrackRelease(order)}
-                                  className="h-7 text-[10px] text-indigo-650 dark:text-indigo-400 font-bold hover:bg-indigo-50 dark:hover:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 rounded-lg px-2"
-                                  title="Skip 15-day holding period for testing"
-                                >
-                                  Fast-Track
-                                </Button>
                               </div>
                             </TableCell>
                           </TableRow>
@@ -389,8 +381,8 @@ export function WalletPage() {
                   </Table>
                 </CardContent>
                 <div className="p-4 bg-amber-50 dark:bg-amber-950/20 border-t border-amber-100 dark:border-amber-900/30 flex items-start gap-3">
-                  <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-450 shrink-0 mt-0.5" />
-                  <p className="text-xs text-amber-800 dark:text-amber-350 leading-relaxed">
+                  <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                  <p className="text-xs text-amber-800 dark:text-amber-400 leading-relaxed">
                     Profits from delivered orders are held for 15 days to account for potential returns or disputes. 
                     Once this period passes, the profit will be automatically added to your available balance.
                   </p>
@@ -423,18 +415,18 @@ export function WalletPage() {
                       ) : (
                         withdrawals.map((w) => (
                           <TableRow key={w.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 transition-colors">
-                            <TableCell className="pl-6 text-slate-505 dark:text-slate-450">{format(parseISO(w.createdAt), 'MMM dd, yyyy')}</TableCell>
+                            <TableCell className="pl-6 text-slate-500 dark:text-slate-400">{format(parseISO(w.createdAt), 'MMM dd, yyyy')}</TableCell>
                             <TableCell className="font-medium text-slate-700 dark:text-slate-300">{w.method}</TableCell>
                             <TableCell>
                               <Badge className={`${
                                 w.status === 'Approved' ? 'bg-emerald-100 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400' :
-                                w.status === 'Rejected' ? 'bg-rose-100 dark:bg-rose-950/20 text-rose-700 dark:text-rose-455' :
+                                w.status === 'Rejected' ? 'bg-rose-100 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400' :
                                 'bg-amber-100 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400'
                               } border-none rounded-full px-3 py-0.5 text-[10px] font-bold`}>
                                 {w.status}
                               </Badge>
                             </TableCell>
-                            <TableCell className="text-right pr-6 font-black text-rose-650 dark:text-rose-400 font-sans">
+                            <TableCell className="text-right pr-6 font-black text-rose-600 dark:text-rose-400 font-sans">
                               - {formatPrice(w.amount)}
                             </TableCell>
                           </TableRow>

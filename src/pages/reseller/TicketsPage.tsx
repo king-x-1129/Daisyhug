@@ -86,10 +86,10 @@ export function TicketsPage() {
   };
 
   return (
-    <div className="space-y-8 text-slate-900 dark:text-white transition-colors duration-350">
+    <div className="space-y-8 text-slate-900 dark:text-white transition-colors duration-300">
       <div>
         <h1 className="text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-          <MessageSquare className="w-8 h-8 text-indigo-650 dark:text-indigo-400" />
+          <MessageSquare className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
           Support Tickets
         </h1>
         <p className="text-slate-500 dark:text-slate-400 mt-1">Submit complaints, report payment issues, or seek general guidance</p>
@@ -105,7 +105,7 @@ export function TicketsPage() {
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="font-bold text-slate-700 dark:text-slate-350">Category</Label>
+                  <Label className="font-bold text-slate-700 dark:text-slate-400">Category</Label>
                   <Select value={category} onValueChange={setCategory}>
                     <SelectTrigger className="w-full rounded-xl h-11 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                       <SelectValue />
@@ -119,36 +119,36 @@ export function TicketsPage() {
 
                 {category === 'Order Related Issue' && (
                   <div className="space-y-2">
-                    <Label className="font-bold text-slate-700 dark:text-slate-350">Associated Order ID</Label>
+                    <Label className="font-bold text-slate-700 dark:text-slate-400">Associated Order ID</Label>
                     <Input
                       required
                       value={orderId}
                       onChange={e => setOrderId(e.target.value)}
                       placeholder="e.g. ord-12345"
-                      className="rounded-xl h-11 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-805 text-slate-900 dark:text-white"
+                      className="rounded-xl h-11 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                     />
                   </div>
                 )}
 
                 <div className="space-y-2">
-                  <Label className="font-bold text-slate-700 dark:text-slate-350">Subject / Title</Label>
+                  <Label className="font-bold text-slate-700 dark:text-slate-400">Subject / Title</Label>
                   <Input
                     required
                     value={title}
                     onChange={e => setTitle(e.target.value)}
                     placeholder="Short description of the issue"
-                    className="rounded-xl h-11 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-805 text-slate-900 dark:text-white"
+                    className="rounded-xl h-11 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="font-bold text-slate-700 dark:text-slate-350">Describe Your Problem</Label>
+                  <Label className="font-bold text-slate-700 dark:text-slate-400">Describe Your Problem</Label>
                   <Textarea
                     required
                     value={description}
                     onChange={e => setDescription(e.target.value)}
                     placeholder="Provide as much details as possible..."
-                    className="rounded-xl min-h-[140px] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-805 text-slate-900 dark:text-white"
+                    className="rounded-xl min-h-[140px] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                   />
                 </div>
 
@@ -203,8 +203,8 @@ export function TicketsPage() {
                             <TableCell className="text-[10px] text-slate-500">{new Date(t.createdAt).toLocaleDateString()}</TableCell>
                             <TableCell className="text-center">
                               <Badge className={`${
-                                t.status === 'Resolved' ? 'bg-emerald-100 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-450' :
-                                t.status === 'In Progress' ? 'bg-amber-100 dark:bg-amber-950/20 text-amber-700 dark:text-amber-450' :
+                                t.status === 'Resolved' ? 'bg-emerald-100 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400' :
+                                t.status === 'In Progress' ? 'bg-amber-100 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400' :
                                 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
                               } border-none rounded-full px-2 py-0 text-[10px] font-bold`}>
                                 {t.status}
@@ -217,7 +217,7 @@ export function TicketsPage() {
                                 <div className="space-y-2">
                                   <div>
                                     <span className="font-bold text-slate-400 block text-[10px] uppercase tracking-wider">Your Query:</span>
-                                    <p className="text-slate-650 dark:text-slate-300 pl-2 border-l border-indigo-200 dark:border-indigo-900 mt-1 whitespace-pre-wrap">{t.description}</p>
+                                    <p className="text-slate-600 dark:text-slate-300 pl-2 border-l border-indigo-200 dark:border-indigo-900 mt-1 whitespace-pre-wrap">{t.description}</p>
                                   </div>
                                   {t.responseNotes && (
                                     <div className="pt-2">

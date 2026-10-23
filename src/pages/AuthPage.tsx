@@ -2,6 +2,7 @@
 const getAuthErrorMessage = (code: string): string => {
   const messages: Record<string, string> = {
     'auth/operation-not-allowed': 'Email/Password sign-in is not enabled. Please contact support.',
+    'auth/missing-email': 'Please enter your email address.',
     'auth/email-already-in-use': 'This email is already registered. Please sign in instead.',
     'auth/invalid-email': 'Please enter a valid email address.',
     'auth/weak-password': 'Password must be at least 6 characters.',
@@ -32,6 +33,7 @@ import {
   signInWithPopup,
   updatePassword,
   signOut,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
@@ -39,9 +41,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { UserRole } from '@/types';
-import { User, Store, Eye, EyeOff } from 'lucide-react';
+import { User, Store, Eye, EyeOff, KeyRound, CheckCircle2, Mail, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 export function AuthPage() {
@@ -88,6 +91,35 @@ export function AuthPage() {
   // Password visibility
   const [showLoginPwd, setShowLoginPwd] = useState(false);
   const [showRegPwd, setShowRegPwd] = useState(false);
+
+  // Forgot password reset state
+  const [isResetOpen, setIsResetOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
+  const [resetError, setResetError] = useState('');
+
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanEmail = resetEmail.trim().toLowerCase();
+    if (!cleanEmail || !/\S+@\S+\.\S+/.test(cleanEmail)) {
+      setResetError('Please enter a valid email address.');
+      return;
+    }
+    setResetError('');
+    setResetLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, cleanEmail);
+      setResetSent(true);
+      toast.success('Password reset link sent! Please check your inbox.');
+    } catch (err: any) {
+      const msg = getAuthErrorMessage(err.code);
+      setResetError(msg);
+      toast.error(msg);
+    } finally {
+      setResetLoading(false);
+    }
+  };
 
   const validateLogin = () => {
     const errs: typeof loginErrors = {};
@@ -455,7 +487,21 @@ export function AuthPage() {
                     {loginErrors.email && <p className="text-xs text-rose-500 font-medium">{loginErrors.email}</p>}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="login-password" className="font-semibold text-slate-700 dark:text-slate-300">Password</Label>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="login-password" className="font-semibold text-slate-700 dark:text-slate-300">Password</Label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setResetEmail(loginEmail || '');
+                          setResetError('');
+                          setResetSent(false);
+                          setIsResetOpen(true);
+                        }}
+                        className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hover:underline transition-colors cursor-pointer"
+                      >
+                        Forgot Password?
+                      </button>
+                    </div>
                     <div className="relative">
                       <Input
                         id="login-password"
@@ -495,6 +541,97 @@ export function AuthPage() {
             </TabsContent>
           </Tabs>
         </Card>
+
+        {/* FORGOT PASSWORD MODAL */}
+        <Dialog open={isResetOpen} onOpenChange={setIsResetOpen}>
+          <DialogContent className="sm:max-w-md rounded-3xl bg-white dark:bg-slate-900 border dark:border-slate-800 p-6 sm:p-8 shadow-2xl">
+            <DialogHeader className="space-y-2 text-center sm:text-left">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto sm:mx-0">
+                <KeyRound className="w-6 h-6" />
+              </div>
+              <DialogTitle className="text-2xl font-black text-slate-900 dark:text-white">Reset Password</DialogTitle>
+              <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm">
+                Enter your registered email address and we will send you a secure link to reset your account password.
+              </DialogDescription>
+            </DialogHeader>
+
+            {resetSent ? (
+              <div className="space-y-6 pt-4 text-center">
+                <div className="p-5 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-2xl text-emerald-800 dark:text-emerald-300 text-sm space-y-2">
+                  <CheckCircle2 className="w-10 h-10 text-emerald-600 dark:text-emerald-400 mx-auto" />
+                  <p className="font-bold text-base">Check Your Inbox</p>
+                  <p className="text-xs text-emerald-700 dark:text-emerald-400 leading-relaxed">
+                    We sent password reset instructions to <strong className="text-emerald-900 dark:text-emerald-200">{resetEmail}</strong>. Follow the link in the email to set a new password.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      setIsResetOpen(false);
+                      setResetSent(false);
+                    }}
+                    className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md cursor-pointer"
+                  >
+                    Back to Login
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={() => setResetSent(false)}
+                    className="text-xs text-slate-500 dark:text-slate-400 hover:underline pt-1 cursor-pointer"
+                  >
+                    Did not receive an email? Try another address
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handlePasswordReset} className="space-y-4 pt-2">
+                <div className="space-y-2">
+                  <Label htmlFor="reset-email" className="font-semibold text-slate-700 dark:text-slate-300">
+                    Registered Email Address
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="reset-email"
+                      type="email"
+                      required
+                      placeholder="name@example.com"
+                      value={resetEmail}
+                      onChange={(e) => {
+                        setResetEmail(e.target.value);
+                        setResetError('');
+                      }}
+                      className="rounded-xl h-12 border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white pl-10 focus-visible:ring-indigo-500 text-sm"
+                      autoComplete="email"
+                    />
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  </div>
+                  {resetError && (
+                    <p className="text-xs text-rose-500 font-medium">{resetError}</p>
+                  )}
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsResetOpen(false)}
+                    className="flex-1 h-12 rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 font-bold text-sm cursor-pointer"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={resetLoading}
+                    className="flex-1 h-12 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md cursor-pointer text-sm"
+                  >
+                    {resetLoading ? 'Sending link...' : 'Send Reset Link'}
+                  </Button>
+                </div>
+              </form>
+            )}
+          </DialogContent>
+        </Dialog>
 
         <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-6">
           By continuing, you agree to our Terms of Service and Privacy Policy.

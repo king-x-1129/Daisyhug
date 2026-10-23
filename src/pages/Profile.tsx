@@ -586,7 +586,7 @@ export function Profile() {
                             <p className="text-sm font-black text-slate-900 dark:text-white">{(profile as any).cardInfo.cardHolder}</p>
                             <p className="text-xs font-bold text-slate-500 font-mono">{(profile as any).cardInfo.cardExpiry}</p>
                           </div>
-                          <p className="text-slate-655 dark:text-slate-350 font-mono text-xs tracking-wider">
+                          <p className="text-slate-655 dark:text-slate-400 font-mono text-xs tracking-wider">
                             {(profile as any).cardInfo.cardNumber.replace(/\d(?=\d{4})/g, "*")}
                           </p>
                         </div>

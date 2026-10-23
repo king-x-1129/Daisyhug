@@ -77,10 +77,10 @@ export function TicketManagement() {
   };
 
   return (
-    <div className="space-y-8 text-slate-900 dark:text-white transition-colors duration-350">
+    <div className="space-y-8 text-slate-900 dark:text-white transition-colors duration-300">
       <div>
         <h1 className="text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-          <MessageSquare className="w-8 h-8 text-indigo-650 dark:text-indigo-400" />
+          <MessageSquare className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
           Reseller Support Tickets
         </h1>
         <p className="text-slate-500 dark:text-slate-400 mt-1">Manage, investigate, and respond to reseller complaints and order queries</p>
@@ -115,12 +115,12 @@ export function TicketManagement() {
                     <TableCell className="font-mono font-bold text-xs">{t.id.slice(0, 8)}...</TableCell>
                     <TableCell className="font-bold text-slate-900 dark:text-white">{t.resellerName}</TableCell>
                     <TableCell>{t.category}</TableCell>
-                    <TableCell className="font-mono text-xs text-slate-550 dark:text-slate-400">{t.orderId || '-'}</TableCell>
+                    <TableCell className="font-mono text-xs text-slate-500 dark:text-slate-400">{t.orderId || '-'}</TableCell>
                     <TableCell className="text-xs text-slate-500">{new Date(t.createdAt).toLocaleDateString()}</TableCell>
                     <TableCell className="text-center">
                       <Badge className={`${
-                        t.status === 'Resolved' ? 'bg-emerald-100 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-450' :
-                        t.status === 'In Progress' ? 'bg-amber-100 dark:bg-amber-950/20 text-amber-700 dark:text-amber-450' :
+                        t.status === 'Resolved' ? 'bg-emerald-100 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400' :
+                        t.status === 'In Progress' ? 'bg-amber-100 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400' :
                         'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
                       } border-none rounded-full px-2 py-0.5 text-[10px] font-bold`}>
                         {t.status}
@@ -162,26 +162,26 @@ export function TicketManagement() {
               {/* Ticket details summary */}
               <div className="p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-3 text-xs">
                 <div className="flex justify-between border-b border-slate-200/50 dark:border-slate-800 pb-2">
-                  <span className="text-slate-450">Reseller:</span>
+                  <span className="text-slate-400">Reseller:</span>
                   <span className="font-bold">{selectedTicket.resellerName}</span>
                 </div>
                 <div className="flex justify-between border-b border-slate-200/50 dark:border-slate-800 pb-2">
-                  <span className="text-slate-450">Category:</span>
+                  <span className="text-slate-400">Category:</span>
                   <span className="font-bold">{selectedTicket.category}</span>
                 </div>
                 {selectedTicket.orderId && (
                   <div className="flex justify-between border-b border-slate-200/50 dark:border-slate-800 pb-2">
-                    <span className="text-slate-450">Order ID:</span>
+                    <span className="text-slate-400">Order ID:</span>
                     <span className="font-mono font-bold">{selectedTicket.orderId}</span>
                   </div>
                 )}
                 <div className="flex justify-between border-b border-slate-200/50 dark:border-slate-800 pb-2">
-                  <span className="text-slate-450">Submitted:</span>
+                  <span className="text-slate-400">Submitted:</span>
                   <span className="font-bold">{new Date(selectedTicket.createdAt).toLocaleString()}</span>
                 </div>
                 <div className="space-y-1 pt-1">
-                  <span className="text-slate-450 font-bold uppercase tracking-wider text-[9px] block">Query Description:</span>
-                  <p className="font-bold text-slate-850 dark:text-slate-200 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-xl leading-relaxed whitespace-pre-wrap">{selectedTicket.description}</p>
+                  <span className="text-slate-400 font-bold uppercase tracking-wider text-[9px] block">Query Description:</span>
+                  <p className="font-bold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-xl leading-relaxed whitespace-pre-wrap">{selectedTicket.description}</p>
                 </div>
               </div>
 

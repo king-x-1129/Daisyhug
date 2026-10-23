@@ -49,7 +49,7 @@ export interface Product {
   category: string;
   price: number;
   companyPrice: number;
-  stock: number;
+  compareAtPrice?: number; // Retail/MSRP strikethrough price shown to customers (distinct from companyPrice)
   lowStockThreshold?: number;
   tags?: string[];
   images: string[];

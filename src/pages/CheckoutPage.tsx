@@ -14,6 +14,7 @@ import {
   doc,
   updateDoc,
   increment,
+  runTransaction,
 } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -198,7 +199,7 @@ export function CheckoutPage() {
 
   const discountAmount = appliedCoupon
     ? appliedCoupon.type === 'percentage'
-      ? total * (appliedCoupon.value / 100)
+      ? Math.round(total * (appliedCoupon.value / 100)) // Round to avoid floating-point cents
       : appliedCoupon.value
     : 0;
 
@@ -368,10 +369,23 @@ export function CheckoutPage() {
         }
       }
 
-      // Wallet payment deduction
+      // Wallet payment deduction — use a transaction to prevent negative balance race conditions
       if (paymentMethod === 'wallet' && customerId) {
-        await updateDoc(doc(db, 'users', customerId), {
-          walletBalance: increment(-orderTotal),
+        await runTransaction(db, async (txn) => {
+          const userRef = doc(db, 'users', customerId!);
+          const userSnap = await txn.get(userRef);
+          if (!userSnap.exists()) throw new Error('User account not found');
+
+          const currentBalance = (userSnap.data().walletBalance as number) || 0;
+          if (currentBalance < orderTotal) {
+            throw new Error(
+              `Insufficient wallet balance. Available: Rs. ${currentBalance.toLocaleString()}, Required: Rs. ${orderTotal.toLocaleString()}`
+            );
+          }
+
+          txn.update(userRef, {
+            walletBalance: increment(-orderTotal),
+          });
         });
 
         await addDoc(collection(db, 'users', customerId, 'walletTransactions'), {
@@ -839,7 +853,7 @@ export function CheckoutPage() {
                   </div>
 
                   {paymentMethod === 'card' && (
-                    <div className="p-4 bg-slate-50/80 dark:bg-slate-850 border-t border-slate-200 dark:border-slate-800 space-y-3 cursor-default" onClick={(e) => e.stopPropagation()}>
+                    <div className="p-4 bg-slate-50/80 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-800 space-y-3 cursor-default" onClick={(e) => e.stopPropagation()}>
                       {savedCards.length > 0 && (
                         <div className="space-y-2">
                           <Label className="text-xs font-bold text-slate-700 dark:text-slate-300">Saved Cards</Label>
@@ -997,7 +1011,7 @@ export function CheckoutPage() {
                   </div>
 
                   {paymentMethod === 'wallet' && (
-                    <div className="p-4 bg-slate-50/80 dark:bg-slate-850 border-t border-slate-200 dark:border-slate-800 space-y-2 text-xs">
+                    <div className="p-4 bg-slate-50/80 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-800 space-y-2 text-xs">
                       <div className="flex justify-between">
                         <span className="text-slate-500">Available Wallet Balance:</span>
                         <span className="font-bold text-slate-900 dark:text-white">

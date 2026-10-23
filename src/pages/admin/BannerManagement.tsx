@@ -462,7 +462,7 @@ export function BannerManagement() {
         <div className="space-y-8">
           {/* Create / Edit Banner Form */}
           <Card className="rounded-3xl border-none shadow-xl bg-white dark:bg-slate-900 overflow-hidden">
-            <CardHeader className="bg-slate-50/80 dark:bg-slate-850 p-6 border-b dark:border-slate-800 flex flex-row items-center justify-between">
+            <CardHeader className="bg-slate-50/80 dark:bg-slate-800 p-6 border-b dark:border-slate-800 flex flex-row items-center justify-between">
               <CardTitle className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-indigo-600" />
                 <span>{isEditingBanner ? 'Edit Hero Banner Slide' : 'Add New Hero Banner Slide'}</span>
@@ -793,7 +793,7 @@ export function BannerManagement() {
         <div className="space-y-8">
           {/* Create / Edit Announcement Form */}
           <Card className="rounded-3xl border-none shadow-xl bg-white dark:bg-slate-900 overflow-hidden">
-            <CardHeader className="bg-slate-50/80 dark:bg-slate-850 p-6 border-b dark:border-slate-800 flex flex-row items-center justify-between">
+            <CardHeader className="bg-slate-50/80 dark:bg-slate-800 p-6 border-b dark:border-slate-800 flex flex-row items-center justify-between">
               <CardTitle className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
                 <Megaphone className="w-4 h-4 text-indigo-600" />
                 <span>{isEditingAnnouncement ? 'Edit Announcement Message' : 'Add New Announcement Alert'}</span>

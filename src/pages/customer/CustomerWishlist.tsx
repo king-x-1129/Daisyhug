@@ -75,10 +75,10 @@ export function CustomerWishlist() {
       {wishlistWithProducts.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-slate-400 dark:text-slate-500">
           <div className="w-20 h-20 rounded-3xl bg-rose-50 dark:bg-rose-950/20 flex items-center justify-center mb-4">
-            <Heart className="w-10 h-10 text-rose-300 dark:text-rose-450" />
+            <Heart className="w-10 h-10 text-rose-300 dark:text-rose-400" />
           </div>
           <p className="text-lg font-bold text-slate-500 dark:text-slate-400 mb-2">Your wishlist is empty</p>
-          <p className="text-sm text-slate-455 dark:text-slate-500 mb-6">Save products you love to buy later.</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500 mb-6">Save products you love to buy later.</p>
           <Link
             to="/shop"
             className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-2xl transition-all shadow-lg shadow-indigo-200 dark:shadow-none"
@@ -115,7 +115,7 @@ export function CustomerWishlist() {
                   {/* Remove Button */}
                   <button
                     onClick={() => handleRemove(item.productId)}
-                    className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 dark:bg-slate-850/90 backdrop-blur-sm shadow flex items-center justify-center text-slate-400 dark:text-slate-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 hover:text-rose-600 dark:hover:text-rose-400 transition-all opacity-0 group-hover:opacity-100"
+                    className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm shadow flex items-center justify-center text-slate-400 dark:text-slate-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 hover:text-rose-600 dark:hover:text-rose-400 transition-all opacity-0 group-hover:opacity-100"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -137,7 +137,7 @@ export function CustomerWishlist() {
                     <button
                       onClick={() => handleAddToCart(product)}
                       disabled={product.stock === 0}
-                      className="flex-grow flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-400 dark:disabled:text-slate-650 text-white font-bold text-xs py-2.5 rounded-xl transition-all"
+                      className="flex-grow flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-400 dark:disabled:text-slate-600 text-white font-bold text-xs py-2.5 rounded-xl transition-all"
                     >
                       <ShoppingCart className="w-3.5 h-3.5" />
                       Add to Cart

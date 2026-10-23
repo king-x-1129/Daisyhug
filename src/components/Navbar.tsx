@@ -410,7 +410,7 @@ export function Navbar() {
                     </div>
                   ) : (
                     !user && location.pathname === '/become-a-reseller' ? (
-                      <Link to="/auth" className="flex items-center justify-center p-3 bg-indigo-650 hover:bg-indigo-700 text-white rounded-2xl font-bold shadow-md" onClick={() => setIsOpen(false)}>
+                      <Link to="/auth" className="flex items-center justify-center p-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold shadow-md" onClick={() => setIsOpen(false)}>
                         Reseller Login
                       </Link>
                     ) : null

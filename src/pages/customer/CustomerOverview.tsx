@@ -17,7 +17,7 @@ const statusConfig: Record<string, { color: string; bg: string; icon: any }> = {
   Delivered: { color: 'text-emerald-700 dark:text-emerald-400',bg: 'bg-emerald-100 dark:bg-emerald-950/20 border border-emerald-200/50 dark:border-emerald-900/30', icon: CheckCircle },
   Returned:  { color: 'text-rose-700 dark:text-rose-400',    bg: 'bg-rose-100 dark:bg-rose-950/20 border border-rose-200/50 dark:border-rose-900/30',    icon: ShoppingBag },
   Refused:   { color: 'text-rose-700 dark:text-rose-400',    bg: 'bg-rose-100 dark:bg-rose-950/20 border border-rose-200/50 dark:border-rose-900/30',    icon: ShoppingBag },
-  Cancelled: { color: 'text-slate-550 dark:text-slate-400',  bg: 'bg-slate-100 dark:bg-slate-800 border border-slate-200/50 dark:border-slate-700/30',   icon: ShoppingBag },
+  Cancelled: { color: 'text-slate-500 dark:text-slate-400',  bg: 'bg-slate-100 dark:bg-slate-800 border border-slate-200/50 dark:border-slate-700/30',   icon: ShoppingBag },
 };
 
 export function CustomerOverview() {

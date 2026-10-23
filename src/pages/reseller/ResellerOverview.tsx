@@ -35,7 +35,7 @@ export function ResellerOverview() {
     { label: 'Delivered', value: orders.filter(o => o.status === 'Delivered').length, icon: CheckCircle, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-950/20' },
     { label: 'Returned', value: orders.filter(o => o.status === 'Returned').length, icon: RotateCcw, color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-950/20' },
     { label: 'Refused', value: orders.filter(o => o.status === 'Refused').length, icon: XCircle, color: 'text-rose-600 dark:text-rose-400', bg: 'bg-rose-50 dark:bg-rose-950/20' },
-    { label: 'Total Profit', value: formatPrice((profile?.walletBalance || 0) + (profile?.pendingProfit || 0) + (profile?.totalWithdrawn || 0)), icon: Wallet, color: 'text-indigo-650 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-950/20' },
+    { label: 'Total Profit', value: formatPrice((profile?.walletBalance || 0) + (profile?.pendingProfit || 0) + (profile?.totalWithdrawn || 0)), icon: Wallet, color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-950/20' },
   ];
 
   if (loading) return (
@@ -79,14 +79,14 @@ export function ResellerOverview() {
                   <div key={order.id} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-950 rounded-xl">
                     <div>
                       <p className="font-bold text-slate-900 dark:text-white">{order.customerName}</p>
-                      <p className="text-xs text-slate-505 dark:text-slate-450 mt-0.5">{order.customerCity} • {new Date(order.createdAt).toLocaleDateString()}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{order.customerCity} • {new Date(order.createdAt).toLocaleDateString()}</p>
                     </div>
                     <div className="text-right">
                       <p className="font-black text-indigo-600 dark:text-indigo-400">{formatPrice(order.sellingPrice)}</p>
                       <p className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full inline-block mt-1 ${
-                        order.status === 'Delivered' ? 'bg-emerald-105 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400' :
-                        order.status === 'Returned' || order.status === 'Refused' ? 'bg-rose-105 text-rose-700 dark:bg-rose-950/20 dark:text-rose-455' :
-                        'bg-amber-105 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400'
+                        order.status === 'Delivered' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400' :
+                        order.status === 'Returned' || order.status === 'Refused' ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400' :
+                        'bg-amber-100 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400'
                       }`}>
                         {order.status}
                       </p>
@@ -166,19 +166,19 @@ export function ResellerOverview() {
                   [...orders].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 10).map((order) => (
                     <TableRow key={order.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors border-b border-slate-100 dark:border-slate-800">
                       <TableCell className="font-mono text-xs text-slate-500 dark:text-slate-400">#{order.id.slice(0, 8)}</TableCell>
-                      <TableCell className="text-xs text-slate-500 dark:text-slate-450">
+                      <TableCell className="text-xs text-slate-500 dark:text-slate-400">
                         {format(parseISO(order.createdAt), 'MMM dd, yyyy')}
                       </TableCell>
                       <TableCell className="font-bold text-slate-900 dark:text-white">{order.customerName}</TableCell>
-                      <TableCell className="text-slate-600 dark:text-slate-350">{order.customerCity}</TableCell>
+                      <TableCell className="text-slate-600 dark:text-slate-400">{order.customerCity}</TableCell>
                       <TableCell className="font-bold text-slate-900 dark:text-white font-sans">{formatPrice(order.sellingPrice)}</TableCell>
-                      <TableCell className="font-bold text-emerald-600 dark:text-emerald-450 font-sans">{formatPrice(order.profit)}</TableCell>
+                      <TableCell className="font-bold text-emerald-600 dark:text-emerald-400 font-sans">{formatPrice(order.profit)}</TableCell>
                       <TableCell>
                         <Badge className={`border-none rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
                           order.status === 'Delivered' ? 'bg-emerald-100 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400' :
                           order.status === 'Shipped' ? 'bg-indigo-100 dark:bg-indigo-950/20 text-indigo-700 dark:text-indigo-400' :
                           order.status === 'Cancelled' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400' :
-                          order.status === 'Returned' || order.status === 'Refused' ? 'bg-rose-100 dark:bg-rose-950/20 text-rose-700 dark:text-rose-455' :
+                          order.status === 'Returned' || order.status === 'Refused' ? 'bg-rose-100 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400' :
                           'bg-amber-100 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400'
                         }`}>
                           {order.status}

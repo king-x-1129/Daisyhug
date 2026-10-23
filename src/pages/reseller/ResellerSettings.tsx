@@ -110,8 +110,8 @@ export function ResellerSettings() {
           profile?.isVerified ? 'bg-emerald-100 dark:bg-emerald-950/20' : 'bg-amber-100 dark:bg-amber-950/20'
         }`}>
           {profile?.isVerified
-            ? <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-450" />
-            : <ShieldCheck className="w-5 h-5 text-amber-600 dark:text-amber-450" />}
+            ? <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            : <ShieldCheck className="w-5 h-5 text-amber-600 dark:text-amber-400" />}
         </div>
         <div>
           <p className={`font-black text-sm ${profile?.isVerified ? 'text-emerald-800 dark:text-emerald-400' : 'text-amber-800 dark:text-amber-400'}`}>

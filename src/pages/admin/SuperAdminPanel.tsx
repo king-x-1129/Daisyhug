@@ -285,7 +285,7 @@ export function SuperAdminPanel() {
 
       {/* Main Content Area */}
       <main className="flex-grow p-4 md:p-8 space-y-8 overflow-y-auto max-h-screen">
-        <div className="flex justify-between items-center border-b pb-6 border-slate-200 dark:border-slate-850">
+        <div className="flex justify-between items-center border-b pb-6 border-slate-200 dark:border-slate-800">
           <div>
             <h1 className="text-3xl font-black text-slate-900 dark:text-white">Super Admin Command Center</h1>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Direct access to database user records, verification documents, and payment details.</p>
@@ -365,13 +365,13 @@ export function SuperAdminPanel() {
                     placeholder="Search name, email, phone, CNIC..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 h-11 bg-slate-50 dark:bg-slate-850 dark:text-white border-none rounded-xl"
+                    className="pl-10 h-11 bg-slate-50 dark:bg-slate-800 dark:text-white border-none rounded-xl"
                   />
                 </div>
 
                 {/* Role filter */}
                 <Select value={roleFilter} onValueChange={setRoleFilter}>
-                  <SelectTrigger className="h-11 md:w-44 bg-slate-50 dark:bg-slate-850 dark:text-white border-none rounded-xl font-bold">
+                  <SelectTrigger className="h-11 md:w-44 bg-slate-50 dark:bg-slate-800 dark:text-white border-none rounded-xl font-bold">
                     <SelectValue placeholder="All Roles" />
                   </SelectTrigger>
                   <SelectContent className="bg-white dark:bg-slate-900 dark:text-white border-slate-100 dark:border-slate-800 rounded-xl">
@@ -391,7 +391,7 @@ export function SuperAdminPanel() {
             ) : (
               <div className="border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden">
                 <Table>
-                  <TableHeader className="bg-slate-50 dark:bg-slate-850">
+                  <TableHeader className="bg-slate-50 dark:bg-slate-800">
                     <TableRow>
                       <TableHead className="font-bold">Full Name</TableHead>
                       <TableHead className="font-bold">Email & Verification ID</TableHead>
@@ -405,7 +405,7 @@ export function SuperAdminPanel() {
                   </TableHeader>
                   <TableBody>
                     {filteredUsers.map((u) => (
-                      <TableRow key={u.uid} className="hover:bg-slate-50/50 dark:hover:bg-slate-850/50">
+                      <TableRow key={u.uid} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50">
                         <TableCell className="font-bold">
                           <div>
                             <p className="text-slate-900 dark:text-white">{u.fullName || 'No Name'}</p>
@@ -466,7 +466,7 @@ export function SuperAdminPanel() {
                               variant="secondary" 
                               size="sm" 
                               onClick={() => handleOpenEdit(u)}
-                              className="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-350 hover:bg-indigo-50 dark:hover:bg-slate-700 h-9 font-bold rounded-lg border-none"
+                              className="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-slate-700 h-9 font-bold rounded-lg border-none"
                             >
                               <Settings2 className="w-4 h-4" /> Manage
                             </Button>
@@ -495,7 +495,7 @@ export function SuperAdminPanel() {
         <DialogContent className="bg-white dark:bg-slate-900 border-none rounded-3xl max-w-4xl shadow-2xl p-6 dark:text-white animate-in fade-in zoom-in duration-200 overflow-y-auto max-h-[90vh]">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold flex items-center gap-2">
-              <UserCog className="w-6 h-6 text-indigo-650 dark:text-indigo-400" /> Super Admin Console: Account Profile
+              <UserCog className="w-6 h-6 text-indigo-600 dark:text-indigo-400" /> Super Admin Console: Account Profile
             </DialogTitle>
             <DialogDescription className="dark:text-slate-400 text-xs">
               Review verification documents, scanned cards, residential addresses, and payment configurations.
@@ -506,7 +506,7 @@ export function SuperAdminPanel() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
               {/* Left Column: Account Settings & Wallet override */}
               <div className="space-y-5">
-                <h3 className="font-bold text-sm text-indigo-650 dark:text-indigo-400 uppercase tracking-wider pb-1.5 border-b border-slate-100 dark:border-slate-800">
+                <h3 className="font-bold text-sm text-indigo-600 dark:text-indigo-400 uppercase tracking-wider pb-1.5 border-b border-slate-100 dark:border-slate-800">
                   Account Core Settings
                 </h3>
 
@@ -516,7 +516,7 @@ export function SuperAdminPanel() {
                     id="editName"
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
-                    className="bg-slate-50 dark:bg-slate-850 dark:text-white border-none rounded-xl h-11"
+                    className="bg-slate-50 dark:bg-slate-800 dark:text-white border-none rounded-xl h-11"
                   />
                 </div>
 
@@ -524,7 +524,7 @@ export function SuperAdminPanel() {
                   <div className="space-y-1.5">
                     <Label htmlFor="editRole" className="font-bold text-slate-500 dark:text-slate-400">Account Role</Label>
                     <Select value={editRole} onValueChange={(val: UserRole) => setEditRole(val)}>
-                      <SelectTrigger id="editRole" className="bg-slate-50 dark:bg-slate-850 dark:text-white border-none rounded-xl h-11 font-bold">
+                      <SelectTrigger id="editRole" className="bg-slate-50 dark:bg-slate-800 dark:text-white border-none rounded-xl h-11 font-bold">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-white dark:bg-slate-900 dark:text-white border-slate-100 dark:border-slate-800 rounded-xl">
@@ -560,7 +560,7 @@ export function SuperAdminPanel() {
                       type="number"
                       value={editBalance}
                       onChange={(e) => setEditBalance(Number(e.target.value))}
-                      className="bg-slate-50 dark:bg-slate-850 dark:text-white border-none rounded-xl h-11"
+                      className="bg-slate-50 dark:bg-slate-800 dark:text-white border-none rounded-xl h-11"
                     />
                   </div>
 
@@ -573,14 +573,14 @@ export function SuperAdminPanel() {
                       type="number"
                       value={editPending}
                       onChange={(e) => setEditPending(Number(e.target.value))}
-                      className="bg-slate-50 dark:bg-slate-850 dark:text-white border-none rounded-xl h-11"
+                      className="bg-slate-50 dark:bg-slate-800 dark:text-white border-none rounded-xl h-11"
                     />
                   </div>
                 </div>
 
                 {/* Scanned / Manual Credit Card details section */}
                 <div className="space-y-4 pt-3">
-                  <h3 className="font-bold text-sm text-indigo-650 dark:text-indigo-400 uppercase tracking-wider pb-1.5 border-b border-slate-100 dark:border-slate-800 flex items-center gap-1.5">
+                  <h3 className="font-bold text-sm text-indigo-600 dark:text-indigo-400 uppercase tracking-wider pb-1.5 border-b border-slate-100 dark:border-slate-800 flex items-center gap-1.5">
                     <CreditCard className="w-4 h-4" /> Credit/Debit Card Details
                   </h3>
                   
@@ -592,7 +592,7 @@ export function SuperAdminPanel() {
                         value={editCardHolder}
                         onChange={(e) => setEditCardHolder(e.target.value)}
                         placeholder="John Doe"
-                        className="bg-slate-50 dark:bg-slate-850 dark:text-white border-none rounded-xl h-10 text-xs"
+                        className="bg-slate-50 dark:bg-slate-800 dark:text-white border-none rounded-xl h-10 text-xs"
                       />
                     </div>
                     
@@ -604,7 +604,7 @@ export function SuperAdminPanel() {
                           value={editCardNumber}
                           onChange={(e) => setEditCardNumber(e.target.value)}
                           placeholder="xxxx xxxx xxxx xxxx"
-                          className="bg-slate-50 dark:bg-slate-850 dark:text-white border-none rounded-xl h-10 text-xs font-mono"
+                          className="bg-slate-50 dark:bg-slate-800 dark:text-white border-none rounded-xl h-10 text-xs font-mono"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -614,7 +614,7 @@ export function SuperAdminPanel() {
                           value={editCardExpiry}
                           onChange={(e) => setEditCardExpiry(e.target.value)}
                           placeholder="MM/YY"
-                          className="bg-slate-50 dark:bg-slate-850 dark:text-white border-none rounded-xl h-10 text-xs font-mono"
+                          className="bg-slate-50 dark:bg-slate-800 dark:text-white border-none rounded-xl h-10 text-xs font-mono"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -624,7 +624,7 @@ export function SuperAdminPanel() {
                           value={editCardCVV}
                           onChange={(e) => setEditCardCVV(e.target.value)}
                           placeholder="xxx"
-                          className="bg-slate-50 dark:bg-slate-850 dark:text-white border-none rounded-xl h-10 text-xs font-mono"
+                          className="bg-slate-50 dark:bg-slate-800 dark:text-white border-none rounded-xl h-10 text-xs font-mono"
                         />
                       </div>
                     </div>
@@ -636,7 +636,7 @@ export function SuperAdminPanel() {
               <div className="space-y-6">
                 {/* Contact & Location */}
                 <div className="space-y-4">
-                  <h3 className="font-bold text-sm text-indigo-650 dark:text-indigo-400 uppercase tracking-wider pb-1.5 border-b border-slate-100 dark:border-slate-800 flex items-center gap-1.5">
+                  <h3 className="font-bold text-sm text-indigo-600 dark:text-indigo-400 uppercase tracking-wider pb-1.5 border-b border-slate-100 dark:border-slate-800 flex items-center gap-1.5">
                     <Phone className="w-4 h-4" /> Address & Contact Details
                   </h3>
                   
@@ -647,7 +647,7 @@ export function SuperAdminPanel() {
                         id="editMobile"
                         value={editMobile}
                         onChange={(e) => setEditMobile(e.target.value)}
-                        className="bg-slate-50 dark:bg-slate-850 dark:text-white border-none rounded-xl h-10 text-xs"
+                        className="bg-slate-50 dark:bg-slate-800 dark:text-white border-none rounded-xl h-10 text-xs"
                       />
                     </div>
                     <div className="space-y-1.5">
@@ -656,7 +656,7 @@ export function SuperAdminPanel() {
                         id="editMobile2"
                         value={editMobile2}
                         onChange={(e) => setEditMobile2(e.target.value)}
-                        className="bg-slate-50 dark:bg-slate-850 dark:text-white border-none rounded-xl h-10 text-xs"
+                        className="bg-slate-50 dark:bg-slate-800 dark:text-white border-none rounded-xl h-10 text-xs"
                       />
                     </div>
                   </div>
@@ -668,7 +668,7 @@ export function SuperAdminPanel() {
                         id="editCity"
                         value={editCity}
                         onChange={(e) => setEditCity(e.target.value)}
-                        className="bg-slate-50 dark:bg-slate-850 dark:text-white border-none rounded-xl h-10 text-xs"
+                        className="bg-slate-50 dark:bg-slate-800 dark:text-white border-none rounded-xl h-10 text-xs"
                       />
                     </div>
                     <div className="space-y-1.5">
@@ -677,7 +677,7 @@ export function SuperAdminPanel() {
                         id="editProvince"
                         value={editProvince}
                         onChange={(e) => setEditProvince(e.target.value)}
-                        className="bg-slate-50 dark:bg-slate-850 dark:text-white border-none rounded-xl h-10 text-xs"
+                        className="bg-slate-50 dark:bg-slate-800 dark:text-white border-none rounded-xl h-10 text-xs"
                       />
                     </div>
                   </div>
@@ -688,7 +688,7 @@ export function SuperAdminPanel() {
                       id="editAddress"
                       value={editAddress}
                       onChange={(e) => setEditAddress(e.target.value)}
-                      className="bg-slate-50 dark:bg-slate-850 dark:text-white border-none rounded-xl h-10 text-xs"
+                      className="bg-slate-50 dark:bg-slate-800 dark:text-white border-none rounded-xl h-10 text-xs"
                     />
                   </div>
 
@@ -698,14 +698,14 @@ export function SuperAdminPanel() {
                       id="editPermanentAddress"
                       value={editPermanentAddress}
                       onChange={(e) => setEditPermanentAddress(e.target.value)}
-                      className="bg-slate-50 dark:bg-slate-850 dark:text-white border-none rounded-xl h-10 text-xs"
+                      className="bg-slate-50 dark:bg-slate-800 dark:text-white border-none rounded-xl h-10 text-xs"
                     />
                   </div>
                 </div>
 
                 {/* Verification IDs & CNIC */}
                 <div className="space-y-4">
-                  <h3 className="font-bold text-sm text-indigo-650 dark:text-indigo-400 uppercase tracking-wider pb-1.5 border-b border-slate-100 dark:border-slate-800 flex items-center gap-1.5">
+                  <h3 className="font-bold text-sm text-indigo-600 dark:text-indigo-400 uppercase tracking-wider pb-1.5 border-b border-slate-100 dark:border-slate-800 flex items-center gap-1.5">
                     <Shield className="w-4 h-4" /> Identity Documentation
                   </h3>
                   
@@ -717,7 +717,7 @@ export function SuperAdminPanel() {
                         value={editCnic}
                         onChange={(e) => setEditCnic(e.target.value)}
                         placeholder="e.g. 37405-xxxxxxx-x"
-                        className="bg-slate-50 dark:bg-slate-850 dark:text-white border-none rounded-xl h-10 text-xs font-mono"
+                        className="bg-slate-50 dark:bg-slate-800 dark:text-white border-none rounded-xl h-10 text-xs font-mono"
                       />
                     </div>
 
@@ -754,7 +754,7 @@ export function SuperAdminPanel() {
 
                 {/* Payment Methods */}
                 <div className="space-y-4">
-                  <h3 className="font-bold text-sm text-indigo-650 dark:text-indigo-400 uppercase tracking-wider pb-1.5 border-b border-slate-100 dark:border-slate-800 flex items-center gap-1.5">
+                  <h3 className="font-bold text-sm text-indigo-600 dark:text-indigo-400 uppercase tracking-wider pb-1.5 border-b border-slate-100 dark:border-slate-800 flex items-center gap-1.5">
                     <Coins className="w-4 h-4" /> Account Payment details
                   </h3>
                   
@@ -765,7 +765,7 @@ export function SuperAdminPanel() {
                         value={editPaymentMethod || "none"} 
                         onValueChange={(val: any) => setEditPaymentMethod(val === "none" ? "" : val)}
                       >
-                        <SelectTrigger id="editPaymentMethod" className="bg-slate-50 dark:bg-slate-850 dark:text-white border-none rounded-xl h-10 text-xs font-bold">
+                        <SelectTrigger id="editPaymentMethod" className="bg-slate-50 dark:bg-slate-800 dark:text-white border-none rounded-xl h-10 text-xs font-bold">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-white dark:bg-slate-900 dark:text-white border-slate-100 dark:border-slate-800 rounded-xl">
@@ -784,7 +784,7 @@ export function SuperAdminPanel() {
                         value={editPaymentDetails}
                         onChange={(e) => setEditPaymentDetails(e.target.value)}
                         placeholder="IBAN or account identifier number"
-                        className="bg-slate-50 dark:bg-slate-850 dark:text-white border-none rounded-xl h-10 text-xs font-mono"
+                        className="bg-slate-50 dark:bg-slate-800 dark:text-white border-none rounded-xl h-10 text-xs font-mono"
                       />
                     </div>
                   </div>
@@ -799,7 +799,7 @@ export function SuperAdminPanel() {
               <Button 
                 variant="outline" 
                 onClick={() => setIsEditOpen(false)}
-                className="rounded-xl h-11 border-slate-200 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-850 font-bold"
+                className="rounded-xl h-11 border-slate-200 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800 font-bold"
               >
                 Cancel
               </Button>
