@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from '@/components/ui/sonner';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
+import { FloatingSupportWidget } from '@/components/FloatingSupportWidget';
 import { Home } from '@/pages/Home';
 import { ProductDetail } from '@/pages/ProductDetail';
 import { ResellerDashboard } from '@/pages/ResellerDashboard';
@@ -162,6 +163,7 @@ function AppShell() {
         </Routes>
       </main>
       <Footer />
+      <FloatingSupportWidget />
       <Toaster position="top-center" />
     </div>
   );

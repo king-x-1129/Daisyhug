@@ -1,5 +1,5 @@
 import { Routes, Route, Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingCart, Users, CreditCard, ChevronRight, ShieldCheck, Palette, LogOut, MessageSquare, Image as ImageIcon } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, CreditCard, ChevronRight, ShieldCheck, Palette, LogOut, MessageSquare, Image as ImageIcon, MessageCircle } from 'lucide-react';
 import { PageHeader } from '@/components/PageHeader';
 import { AdminOverview } from './admin/AdminOverview';
 import { ProductManagement } from './admin/ProductManagement';
@@ -9,6 +9,7 @@ import { WithdrawalManagement } from './admin/WithdrawalManagement';
 import { ShopCustomization } from './admin/ShopCustomization';
 import { TicketManagement } from './admin/TicketManagement';
 import { BannerManagement } from './admin/BannerManagement';
+import { SupportWidgetSettings } from './admin/SupportWidgetSettings';
 import { useAuth } from '@/context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
@@ -41,6 +42,7 @@ export function AdminDashboard() {
     { icon: Users, label: 'Resellers', path: '/admin/resellers' },
     { icon: CreditCard, label: 'Withdrawals', path: '/admin/withdrawals' },
     { icon: MessageSquare, label: 'Support Tickets', path: '/admin/tickets' },
+    { icon: MessageCircle, label: 'WhatsApp & Support', path: '/admin/support' },
     { icon: ImageIcon, label: 'Banners & Alerts', path: '/admin/banners' },
     { icon: Palette, label: 'Customize Shop', path: '/admin/customize' },
   ];
@@ -104,6 +106,7 @@ export function AdminDashboard() {
           <Route path="resellers" element={<ResellerManagement />} />
           <Route path="withdrawals" element={<WithdrawalManagement />} />
           <Route path="tickets" element={<TicketManagement />} />
+          <Route path="support" element={<SupportWidgetSettings />} />
           <Route path="banners" element={<BannerManagement />} />
           <Route path="customize" element={<ShopCustomization />} />
         </Routes>

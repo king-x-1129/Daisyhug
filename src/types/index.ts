@@ -159,3 +159,20 @@ export interface AnnouncementItem {
   isActive: boolean;
   createdAt?: string;
 }
+
+export interface SupportSettings {
+  enabled: boolean;
+  whatsappNumber: string;
+  supportEmail?: string;
+  messengerUrl?: string;
+  telegramUrl?: string;
+  phoneNumber?: string;
+  showToCustomers: boolean;
+  showToResellers: boolean;
+  customerMessageTemplate: string;
+  resellerMessageTemplate: string;
+  widgetPosition: 'bottom-right' | 'bottom-left';
+  widgetTitle?: string;
+  widgetSubtitle?: string;
+  updatedAt?: string;
+}
