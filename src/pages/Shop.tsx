@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '@/lib/firebase';
 import { Product } from '@/types';
@@ -30,6 +31,15 @@ export function Shop() {
   const [tagFilter, setTagFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('newest');
   const { settings } = useShop();
+  const [searchParams] = useSearchParams();
+
+  // Sync filters from URL (?category=women&q=dresses) so header dropdown links land on filtered views
+  useEffect(() => {
+    const cat = searchParams.get('category');
+    const q = searchParams.get('q');
+    setActiveCategory(cat && CATEGORIES.some(c => c.id === cat) ? cat : 'all');
+    setSearchQuery(q || '');
+  }, [searchParams]);
 
   const allTags = useMemo(() => {
     const tags = new Set<string>();
@@ -68,7 +78,7 @@ export function Shop() {
       const matchesCategory = activeCategory === 'all' || 
                             product.category.toLowerCase() === activeCategory.toLowerCase() ||
                             (activeCategory === 'women' && product.category.toLowerCase().includes('women')) ||
-                            (activeCategory === 'men' && product.category.toLowerCase().includes('men')) ||
+                            (activeCategory === 'men' && /\bmen/.test(product.category.toLowerCase())) ||
                             (activeCategory === 'kids' && (product.category.toLowerCase().includes('kids') || product.category.toLowerCase().includes('mother')));
       
       const matchesMinPrice = !minPrice || product.price >= Number(minPrice);

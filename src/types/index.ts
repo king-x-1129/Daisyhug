@@ -176,3 +176,29 @@ export interface SupportSettings {
   widgetSubtitle?: string;
   updatedAt?: string;
 }
+
+
+export interface AboutStat {
+  label: string;
+  value: string;
+}
+
+export interface AboutValue {
+  title: string;
+  description: string;
+}
+
+export interface AboutUsContent {
+  title: string;
+  subtitle: string;
+  storyHeading: string;
+  storyParagraphs: string[];
+  mission: string;
+  vision: string;
+  values: AboutValue[];
+  stats: AboutStat[];
+  contactEmail?: string;
+  contactPhone?: string;
+  contactAddress?: string;
+  updatedAt?: string;
+}

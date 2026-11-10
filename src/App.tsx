@@ -16,6 +16,7 @@ import { BecomeResellerLanding } from '@/pages/BecomeResellerLanding';
 import { CartPage } from '@/pages/CartPage';
 import { CheckoutPage } from '@/pages/CheckoutPage';
 import { Contact } from '@/pages/Contact';
+import { AboutPage } from '@/pages/AboutPage';
 import { Profile } from '@/pages/Profile';
 import { Shop } from '@/pages/Shop';
 import { WishlistPage } from '@/pages/WishlistPage';
@@ -118,6 +119,7 @@ function AppShell() {
           <Route path="/become-reseller" element={<BecomeReseller />} />
           <Route path="/become-a-reseller" element={<BecomeResellerLanding />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/shop" element={<Shop />} />
 

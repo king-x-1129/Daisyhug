@@ -1,5 +1,6 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ShoppingCart, User, LogOut, Menu, X, LayoutDashboard, ShieldCheck, Sparkles, ShoppingBag, Zap, Heart, ChevronDown, Settings, Package, MessageCircle, Users, Sun, Moon } from 'lucide-react';
+import { ShoppingCart, User, LogOut, Menu, X, LayoutDashboard, ShieldCheck, Sparkles, ShoppingBag, Zap, Heart, ChevronDown, Settings, Package, MessageCircle, Users, Sun, Moon, Info } from 'lucide-react';
+import { CategoriesDropdown, MobileCategories } from '@/components/NavCategories';
 import { useState, useEffect } from 'react';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { useAuth } from '@/context/AuthContext';
@@ -170,18 +171,22 @@ export function Navbar() {
             </div>
 
             {/* Desktop Menu */}
-            <div className="hidden md:flex items-center space-x-1">
+            <div className="hidden lg:flex items-center space-x-1">
+              <div style={{ order: 2 }}><CategoriesDropdown /></div>
               {([
                 { to: '/', label: 'Home' },
                 { to: '/shop', label: 'Shop' },
+                { to: '/about', label: 'About Us' },
+                { to: '/contact', label: 'Contact Us' },
                 { to: '/become-a-reseller', label: 'Become a Reseller' },
               ] as { to: string; label: string; icon?: any; color?: string }[])
-                .filter(link => user ? true : link.to === '/become-a-reseller')
+                .filter(() => true)
                 .map((link) => (
                 <Link
                   key={link.to}
+                  style={{ order: link.to === '/' ? 0 : link.to === '/shop' ? 1 : 3 }}
                   to={link.to}
-                  className="relative px-4 py-2 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold text-sm transition-all group"
+                  className="relative px-3 py-2 whitespace-nowrap text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold text-sm transition-all group"
                 >
                   <span className="relative z-10 flex items-center gap-1.5">
                     {link.icon && <link.icon className={`w-4 h-4 ${link.color}`} />}
@@ -198,7 +203,7 @@ export function Navbar() {
           </div>
 
           {/* Right Actions */}
-          <div className="hidden md:flex items-center space-x-3">
+          <div className="hidden lg:flex items-center space-x-3">
             {/* Theme Toggle */}
             <ThemeToggle />
 
@@ -325,7 +330,7 @@ export function Navbar() {
           </div>
 
           {/* Mobile Buttons */}
-          <div className="md:hidden flex items-center space-x-2">
+          <div className="lg:hidden flex items-center space-x-2">
             <ThemeToggle />
             <Link to="/cart" className="relative p-2 text-slate-600 dark:text-slate-300">
               <ShoppingCart className="w-6 h-6" />
@@ -348,13 +353,13 @@ export function Navbar() {
           <>
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 md:hidden"
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden"
               onClick={() => setIsOpen(false)}
             />
             <motion.div
               initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed right-0 top-0 bottom-0 w-[85%] max-w-sm bg-white dark:bg-slate-900 z-50 md:hidden shadow-2xl flex flex-col"
+              className="fixed right-0 top-0 bottom-0 w-[85%] max-w-sm bg-white dark:bg-slate-900 z-50 lg:hidden shadow-2xl flex flex-col"
             >
               <div className="p-6 border-b dark:border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -377,11 +382,13 @@ export function Navbar() {
                     { to: '/wishlist', label: 'My Wishlist', icon: Heart },
                     { to: '/become-a-reseller', label: 'Become a Reseller', icon: Users },
                     { to: '/contact', label: 'Contact Us', icon: MessageCircle },
+                    { to: '/about', label: 'About Us', icon: Info },
                   ] as { to: string; label: string; icon: any; color?: string }[])
-                    .filter(link => user ? true : link.to === '/become-a-reseller')
+                    .filter(() => true)
                     .map((link) => (
                     <Link
-                      key={link.to} to={link.to}
+                      key={link.to}
+                  style={{ order: link.to === '/' ? 0 : link.to === '/shop' ? 1 : 3 }} to={link.to}
                       className={`flex items-center gap-4 p-3 rounded-2xl font-bold transition-all ${
                         link.color
                           ? link.color + ' bg-indigo-50/50 dark:bg-indigo-950/30'
@@ -395,6 +402,9 @@ export function Navbar() {
                   ))}
                 </div>
 
+                <div className="space-y-1">
+                  <MobileCategories onNavigate={() => setIsOpen(false)} />
+                </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2 mb-3">Account</p>
                   {user ? (
